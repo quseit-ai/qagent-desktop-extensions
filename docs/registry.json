@@ -1,0 +1,1617 @@
+{
+  "version": 1,
+  "generated_at": "2026-08-17T22:29:25.976Z",
+  "extensions": [
+    {
+      "id": "assistant-avatar",
+      "name": "Assistant Avatar",
+      "description": "2D animated companion character that reacts to AI state and follows your cursor. Pure Canvas 2D — zero dependencies, 100% MIT.",
+      "version": "0.4.0",
+      "author": "chonsong",
+      "assets": {
+        "scripts": [
+          "assets/avatar.js"
+        ],
+        "stylesheets": [
+          "assets/avatar.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+            "hwx-avatar-config",
+            "hwx-avatar-preset"
+          ],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/assistant-avatar/extension.json",
+      "runtime_manifest_path": "extensions/assistant-avatar/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/assistant-avatar-0.4.0.zip",
+      "sha256": "88bf7830452c4bb46472fd829e4e4d83ed706cdbe853a836104465361986ff71",
+      "artifact_size": 39366,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "18ae846fe72b6572a6fb21c0713846729da538f1252414f73dd75413cd1012ee"
+        },
+        {
+          "path": "assets/avatar.css",
+          "sha256": "73b3a0a6e04c244b60fbb2a9d617c489832e86585b344c256285553cd31d4a33"
+        },
+        {
+          "path": "assets/avatar.js",
+          "sha256": "2ed71fa2549db47c1aa595ce876381cfed4afd450614c09927022d761fd3f8f8"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "fa24d20c3efd3e1e4319f513032d8541e8efcf3f4feb1de2b866448656b7063c"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "47b1436018f54e77f8a6654ca4bc0f8f173abbe56f52fe02e8bc30efe1e2cee8"
+        }
+      ]
+    },
+    {
+      "id": "auto-list",
+      "name": "Auto List",
+      "description": "Smart list typing in the message composer: pressing the newline key inside an ordered (1., 1)) or unordered (-, *, +) list item auto-inserts the next marker (preserving indent); an empty item + newline breaks out of the list; Tab indents the item by 2 spaces and Shift+Tab outdents — like modern editors. Send-key aware (acts only on the newline combo, never the send combo). Pure JS, no sidecar.",
+      "version": "0.1.0",
+      "author": "asorourx",
+      "assets": {
+        "scripts": [
+          "assets/auto-list.js"
+        ],
+        "stylesheets": []
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": false,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/auto-list/extension.json",
+      "runtime_manifest_path": "extensions/auto-list/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/auto-list-0.1.0.zip",
+      "sha256": "57157ce7b3317ba5011689198dae1fcec3eb4ef82737d65b5d5a7574da7b9fea",
+      "artifact_size": 18347,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 4,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "2972c4352352664ff7987423fab1d9565a1e664322ed72830886336ca823b260"
+        },
+        {
+          "path": "assets/auto-list.js",
+          "sha256": "3b067ff2c7117ab833a9c39c9d214807c6eca572cf7ba7cbceb1ba1b59e84dfd"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "bbc5422d87788e1d7a91eca92902f00550e96c382b79831f033a902c3fcf08d9"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "caa113562bcb90ede9f15c90fe43d0c23cd615b3341ac3e777fd79b6df5317b3"
+        }
+      ]
+    },
+    {
+      "id": "custom-avatar",
+      "name": "Custom Assistant Avatar",
+      "description": "Give the assistant a custom avatar image in the chat transcript. Click any assistant avatar badge to upload or clear an image; it's downscaled and stored locally and re-applied as the transcript re-renders.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/custom-avatar.js"
+        ],
+        "stylesheets": [
+          "assets/custom-avatar.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+            "hermes-ext-assistant-avatar"
+          ],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/custom-avatar/extension.json",
+      "runtime_manifest_path": "extensions/custom-avatar/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/custom-avatar-0.1.0.zip",
+      "sha256": "69500228fdc4c8b2a4b94d26ee4f6d29c604b3709fd2f342c2f03416e18ee76f",
+      "artifact_size": 18511,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "50d08e5229cf9ca683ca28327e5f3966c83c8da578b1e50e69e93b9400856476"
+        },
+        {
+          "path": "assets/custom-avatar.css",
+          "sha256": "824c3caaa236d7a6f2e26071725f45cf5b0675b7e7133bd5ba086253dade0191"
+        },
+        {
+          "path": "assets/custom-avatar.js",
+          "sha256": "fb150deb0e1f1a399a7c7fcde639384a4d822ecd39117d97753358582dae50e2"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "da94cf65e717506439c256d4ee0fd62a6ccf7913a8f74dfd43bd6b138ac572cd"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "dbf62d41c38c0648c82bda48afc0a3ed31c23408c4c16c77fb201a31dd7fe5e0"
+        }
+      ]
+    },
+    {
+      "id": "custom-branding",
+      "name": "Custom Branding",
+      "description": "White-label the Hermes WebUI chrome with your own logo and favicon. Click the titlebar logo to upload a custom logo (swaps the titlebar + empty-state marks) and a custom favicon (swaps the browser tab icon). Images are downscaled and stored locally, and re-applied as the UI re-renders.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/custom-branding.js"
+        ],
+        "stylesheets": [
+          "assets/custom-branding.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+            "hermes-ext-custom-branding-logo",
+            "hermes-ext-custom-branding-favicon"
+          ],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/custom-branding/extension.json",
+      "runtime_manifest_path": "extensions/custom-branding/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/custom-branding-0.1.0.zip",
+      "sha256": "dffb81cf868a143ad6e1855ba8da7edd85e3c7a890ae3259fa707ec73a743593",
+      "artifact_size": 31683,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "e805bb073b62c8321831fb7f3ba603e80caa5e0da2c26c1ca5880cc4e0d382a7"
+        },
+        {
+          "path": "assets/custom-branding.css",
+          "sha256": "38f10fd073ed732c94b80cb68ab62cac306f0cd1ca3010fcda5ba65648d12e7a"
+        },
+        {
+          "path": "assets/custom-branding.js",
+          "sha256": "2996b15a27e6ad78412a5092fdba2438709725a974d79e6dee0dba00690e335d"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "76e77bd7e05a8f0e209a10ba147f7c56936de498d5742cec0fd19b7dc803bb5f"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "0ade3422cef06b5fb335e13d5cc6488a6602390db8b661dafdc50c96ca30a9f4"
+        }
+      ]
+    },
+    {
+      "id": "desktop-companion",
+      "name": "Desktop Companion",
+      "description": "Trusted local desktop companion for Hermes WebUI. Ships a WebUI adapter, a loopback sidecar protocol, and a native desktop pet host.",
+      "version": "0.1.0",
+      "author": "franksong2702",
+      "homepage": "https://github.com/franksong2702/hermes-webui-desktop-companion",
+      "assets": {
+        "scripts": [
+          "assets/companion-adapter.js"
+        ],
+        "stylesheets": []
+      },
+      "capabilities": [
+        "manifest-bundle",
+        "loopback-sidecar"
+      ],
+      "sidecar": {
+        "type": "loopback",
+        "origin": "http://127.0.0.1:17787",
+        "health_path": "/health",
+        "proxy_auth": "legacy",
+        "runtime": {
+          "kind": "external",
+          "repository": "https://github.com/franksong2702/hermes-webui-desktop-companion"
+        }
+      },
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": true,
+        "native_host_start_required": true,
+        "native_host_autostart": "extension_owned"
+      },
+      "post_install": {
+        "summary": "Install enables the WebUI bridge. In the Desktop Companion repo, run npm run start:pet to launch the desktop pet.",
+        "docs_url": "https://github.com/franksong2702/hermes-webui-desktop-companion#after-gallery-install",
+        "requires_local_app": true,
+        "local_app_label": "Desktop Companion app"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [
+            "sessions",
+            "session",
+            "approval/pending",
+            "clarify/pending"
+          ],
+          "write": [
+            "session/draft",
+            "approval/respond",
+            "clarify/respond"
+          ]
+        },
+        "webui_navigation": true,
+        "sidecar_commands": {
+          "from_loopback": true,
+          "can_switch_sessions": true,
+          "can_write_drafts": true,
+          "can_autosend": true,
+          "autosend_default": false,
+          "can_respond_approval": true,
+          "can_respond_clarify": true,
+          "approval_clarify_response_default": false
+        },
+        "dom": {
+          "owned": false,
+          "mutates_core_views": false
+        },
+        "storage": {
+          "owned": [
+            "hermes-pet-navigation-last-id",
+            "hermes-pet-action-last-id"
+          ],
+          "shared_webui_keys": [
+            "hermes-session-viewed-counts",
+            "hermes-session-completion-unread"
+          ]
+        },
+        "loopback_sidecar": true,
+        "native_host": true,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/desktop-companion/extension.json",
+      "runtime_manifest_path": "extensions/desktop-companion/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/desktop-companion-0.1.0.zip",
+      "sha256": "c9f2724f778a4b89ecd5ea9079d36cf56a253d617514b86d93a4815a60c5601c",
+      "artifact_size": 4189215,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 10,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "d2d2a75c2b609b553a3b9e9ab597d083723dcfc4060cf227430cc3a89c1f2bac"
+        },
+        {
+          "path": "assets/companion-adapter.js",
+          "sha256": "37d0f1033432fcf4bafb2be9d9fb7b871efcc98f34e7b447fe7a881e8ddfef1c"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "9f9a0cdddba0fe2e688f6d6868841f4631fe247fe898c4dd5b44e9ad9c73c334"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "3b43095f8ceecb77b650f725fb3543a75a7c25f7e07644d7bd67643e6eedba44"
+        },
+        {
+          "path": "pets/courier/pet.json",
+          "sha256": "908c288edfe3f4eba0c864852aac2587917a6c82285f909a05941730e6c704de"
+        },
+        {
+          "path": "pets/courier/spritesheet.webp",
+          "sha256": "b742683e12ba805505fd507b2cb066eaba51ac9a29699ca5946afcb1aede8399"
+        },
+        {
+          "path": "pets/keeper/pet.json",
+          "sha256": "85deb48d6d6952390054614105b0403ceae90a088887f287bc07339e33c7456d"
+        },
+        {
+          "path": "pets/keeper/spritesheet.webp",
+          "sha256": "db5990aaf73c0ef9d55da04e1733d1bf2c5f8a82a7744f9427b1c6b9570eb610"
+        },
+        {
+          "path": "pets/shiba/pet.json",
+          "sha256": "007b43c76eee10cc47c4d0752d107ee77708b8ec84a7e32ad37ab18cf6b16540"
+        },
+        {
+          "path": "pets/shiba/spritesheet.webp",
+          "sha256": "3e51ed0cde19e502afcda0cb6123ec0fad324c1c5ff9d631a21b1b7ce7b9039e"
+        }
+      ]
+    },
+    {
+      "id": "e-ink-skin",
+      "name": "E-Ink Skin",
+      "description": "A maximum-contrast, near-monochrome light skin tuned for e-ink displays (Kindle, Boox, reMarkable). Pure-white background, near-black text, no gray-on-gray, flattened shadows. Registers into the native Settings → Appearance skin picker.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/e-ink-skin.js"
+        ],
+        "stylesheets": []
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": false,
+          "mutates_core_views": false
+        },
+        "storage": {
+          "owned": [],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false,
+        "registers_skin": true
+      },
+      "entry_path": "extensions/e-ink-skin/extension.json",
+      "runtime_manifest_path": "extensions/e-ink-skin/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/e-ink-skin-0.1.0.zip",
+      "sha256": "b7f5d253c94bf649201d25b0eaabb481da83e2adccd47b710c90b98ffe7873c5",
+      "artifact_size": 10910,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 4,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "e5e3cfbf099cd7c8c9318280b0d07f6586be6020559802988ee23f3a430e6799"
+        },
+        {
+          "path": "assets/e-ink-skin.js",
+          "sha256": "85de9dcb7529a833a32cb8d2fef7ef490676bb79716be4c202e1ea14148cafb4"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "46e4c8210d0029467d0dd0dca97913296199d10013dc9b97986064c36c70e8c3"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "dea73a2bbb1f1a54a26c02f67a290fbc1c08152039a8c8331f66298aac3109bb"
+        }
+      ]
+    },
+    {
+      "id": "external-app-tab",
+      "name": "External App Tab",
+      "description": "Pin a compatible self-hosted web app (Grafana, a dashboard, or another framable tool) as a tab inside Hermes WebUI via an iframe. Adds a rail button that opens a full-area panel framing a configurable URL.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/external-app-tab.js"
+        ],
+        "stylesheets": [
+          "assets/external-app-tab.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": true,
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": true,
+        "embeds_iframe": true,
+        "requires_csp_frame_extra": true
+      },
+      "settings_schema": [
+        {
+          "key": "url",
+          "type": "string",
+          "label": "App URL",
+          "default": ""
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "label": "Rail label",
+          "default": "App"
+        }
+      ],
+      "entry_path": "extensions/external-app-tab/extension.json",
+      "runtime_manifest_path": "extensions/external-app-tab/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/external-app-tab-0.1.0.zip",
+      "sha256": "9ee559edfca15a323b5cce76a4132b23c6cc72cb525e27efe76a42f17da7fa10",
+      "artifact_size": 28442,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "75662a1eb3a5732fd046c81a181bf909dd5526dd9535a340eca6f479b99141fd"
+        },
+        {
+          "path": "assets/external-app-tab.css",
+          "sha256": "c2e46db863409f79ba44867a2ace68e055facb2809eda7852500aee5dfb3064c"
+        },
+        {
+          "path": "assets/external-app-tab.js",
+          "sha256": "a4235ffd909290af6c5e426288523751bf9e36c76ae642e6f56e41edbabd8cd3"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "1e7af5d38789b128ee812c56a6ceef117f7f66e2b062667d1c6ad49f637b97d5"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "7a9f68cc21cd5b2f121579babcbc09a7789b2c60e5f2ea5c65fed65c8a7f83d1"
+        }
+      ]
+    },
+    {
+      "id": "mcp-tool-shortcuts",
+      "name": "MCP Tool Shortcuts",
+      "description": "Pin frequently-used MCP tools and get a one-click strip that DRAFTS a ready-to-send natural-language tool request into the composer. Never auto-executes a tool — it only inserts a prompt you review and send. Lives in Settings → MCP Tools.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/mcp-tool-shortcuts.js"
+        ],
+        "stylesheets": [
+          "assets/mcp-tool-shortcuts.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [
+            "mcp/tools"
+          ],
+          "write": []
+        },
+        "webui_navigation": true,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+[O            "hermes-ext-mcp-pinned-tools"
+          ],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false,
+        "drafts_composer_prompt": true,
+        "never_executes_tools": true
+      },
+      "entry_path": "extensions/mcp-tool-shortcuts/extension.json",
+      "runtime_manifest_path": "extensions/mcp-tool-shortcuts/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mcp-tool-shortcuts-0.1.0.zip",
+      "sha256": "96b75f3c61855b51bed73dc8501f097fadd8eacf4abad422e61895922e61c770",
+      "artifact_size": 21481,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "7090d65333a829c8ddd15bd34f68ca2cf766eac7f12bec858b281848beaef4f7"
+        },
+        {
+          "path": "assets/mcp-tool-shortcuts.css",
+          "sha256": "141c992bde6c5eb3cdf2393bf15498ad038e8ab7eec73014d01cf274669e75fb"
+        },
+        {
+          "path": "assets/mcp-tool-shortcuts.js",
+          "sha256": "d6063365cf5bf303da2ae14363f9a60adfeede9b4f29e64aafe8d1ccb00d4015"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "7b38ca25935e6fd9fabdf9e98917812907336e250e7c2329e1098c8cc251004f"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "b0e01c48e3afbdcbe81906039e508120e20e52dbd876036493c0891cf2439199"
+        }
+      ]
+    },
+    {
+      "id": "message-pins",
+      "name": "Message Pins",
+      "description": "Pin individual messages in a conversation. Adds a pin button to each message, a header popover listing pinned messages with click-to-jump, and a small badge with the pin count. Pins persist locally per session.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/message-pins.js"
+        ],
+        "stylesheets": [
+          "assets/message-pins.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+            "hermes-ext-message-pins"
+          ],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/message-pins/extension.json",
+      "runtime_manifest_path": "extensions/message-pins/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/message-pins-0.1.0.zip",
+      "sha256": "c7ec3dbbe253b7f742e20eabc9e306720b102275ec043879bd4dd7e9928dfbea",
+      "artifact_size": 39587,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "9ead0b97daa4101af1170c48ca0ef1e38f8081209172cd9ea1ff9fbdc1ec4515"
+        },
+        {
+          "path": "assets/message-pins.css",
+          "sha256": "ceb658de33d6a791988ab104f740a1eec2418ed9b254f71e20ad5be4bbc0342f"
+        },
+        {
+          "path": "assets/message-pins.js",
+          "sha256": "11559e9f506fe95835a501aebfea25b3add2073b631868d5f89b235c1036ed5f"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "c0b4fa0f644c0502d45b9cfc2d7767a878eeee0284c3aec57906d707a9b92d9d"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "580daaa9c408416456d6e5ad1144dec42c471e11c2c0792281f738f7968c9f6e"
+        }
+      ]
+    },
+    {
+      "id": "mobile-conversations",
+      "name": "Mobile Conversations Button",
+      "description": "Phone-only floating Conversations button for Hermes WebUI that opens the existing mobile conversations drawer, becomes a same-location close X while the drawer is open, and exposes long-press shortcuts.",
+      "version": "0.1.1",
+      "author": "santastabber",
+      "assets": {
+        "scripts": [
+          "assets/mobile-conversations.js"
+        ],
+        "stylesheets": [
+          "assets/mobile-conversations.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": true,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/mobile-conversations/extension.json",
+      "runtime_manifest_path": "extensions/mobile-conversations/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mobile-conversations-0.1.1.zip",
+      "sha256": "6c9f73ba8043deb56ad6d536c6d837ef591bb2546e21c56c782384d67725bb16",
+      "artifact_size": 27322,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "3a140309d3fb2cd5fca673db38dc9bf4bd4a881fb4676e22bf94e843b670b6c6"
+        },
+        {
+          "path": "assets/mobile-conversations.css",
+          "sha256": "bccc0ea5ff6d6642a57e4e0a578c6f8db23dba168027873438133f0e758d2bec"
+        },
+        {
+          "path": "assets/mobile-conversations.js",
+          "sha256": "09716f178b33bbb2d0e63f8ae293354c19b2939561c5366b280a6f6fe79f792b"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "d8dc9a364e65bb4690abc3f6e212beca50909b7497036fd361ebb7ba8871be61"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "931fc547eccca98d00fc1981d7b1b1b389f3b8006803046c80c2a23a282effbf"
+        }
+      ]
+    },
+    {
+      "id": "mobile-haptics",
+      "name": "Mobile Haptics",
+      "description": "A short device vibration when an assistant turn finishes, so a phone user who set the device down gets a physical \"it's done\" cue. Opt-in; Android / Android-PWA only (no-ops on desktop and iOS Safari).",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/mobile-haptics.js"
+        ],
+        "stylesheets": []
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": false,
+          "mutates_core_views": false
+        },
+        "storage": {
+          "owned": true,
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false,
+        "device_vibration": true
+      },
+      "settings_schema": [
+        {
+          "key": "enabled",
+          "type": "boolean",
+          "label": "Vibrate when a turn finishes",
+          "default": true
+        }
+      ],
+      "entry_path": "extensions/mobile-haptics/extension.json",
+      "runtime_manifest_path": "extensions/mobile-haptics/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mobile-haptics-0.1.0.zip",
+      "sha256": "c1b9828de8c2e7eee3ba78c453e6918b97bb15bb4eb38f58f312936da75d7d8c",
+      "artifact_size": 11383,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 4,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "d9d0256011ee51acb88744ee2f7e2b97e21d02a35697428f6534a5e14c999b53"
+        },
+        {
+          "path": "assets/mobile-haptics.js",
+          "sha256": "af3f6af0fded46128ea588dcdc0c1bc5969e8d0efb84270662ea6a3b9228bad4"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "c64e9f18432cbade69cb3307c458cedc336b890782311f79b74ff99cc610546e"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "c69bb73508ea82fd0e2c2e02caa1af5ad63f02d0959e577242c79ac6584d98dd"
+        }
+      ]
+    },
+    {
+      "id": "model-favorites",
+      "name": "Model Favorites",
+      "description": "Star your most-used models in the composer model picker. Favorited models are promoted to a ★ Favorites group at the top of the dropdown for one-click switching. Provider-aware and persisted locally.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/model-favorites.js"
+        ],
+        "stylesheets": [
+          "assets/model-favorites.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+            "hermes-ext-model-favorites"
+          ],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/model-favorites/extension.json",
+      "runtime_manifest_path": "extensions/model-favorites/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/model-favorites-0.1.0.zip",
+      "sha256": "4bb82d50bdbb94a18d7c9a163d68a3537bcaec9aea55aa84bce3e43eb0dec409",
+      "artifact_size": 20068,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "4d9f2cb58ca6e9cb554981b377b5a97ddc871e735bf550400b13d09084552a13"
+        },
+        {
+          "path": "assets/model-favorites.css",
+          "sha256": "b477ce8740fc367b2ddbd32f512e548116f7f25bda01c0b4f69d7a125e700006"
+        },
+        {
+          "path": "assets/model-favorites.js",
+          "sha256": "4fea1913e9ce57480013509d661bc88dc8f32bf6210ab5476ad3ff70dea50561"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "4f5c7207ad6ba9ccc07406a500283b4af9e922648ebe3d894150ef2acc51fb8a"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "69a1205c5bfb15aa14dd21bd30e7edb838526131d684c82d6054a5647d46b28b"
+        }
+      ]
+    },
+    {
+      "id": "profile-avatars",
+      "name": "Profile Avatars",
+      "description": "Per-profile avatar images everywhere: profile chips, transcript assistant badges, and the session list (including other-profile chats). Server-stored via a loopback sidecar, so avatars sync across devices with zero localStorage.",
+      "version": "0.1.1",
+      "author": "asorourx",
+      "assets": {
+        "scripts": [
+          "assets/avatars.js"
+        ],
+        "stylesheets": [
+          "assets/avatars.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle",
+        "loopback-sidecar"
+      ],
+      "sidecar": {
+        "type": "loopback",
+        "origin": "http://127.0.0.1:17798",
+        "health_path": "/health",
+        "proxy_auth": "token-v1",
+        "runtime": {
+          "kind": "vendored",
+          "path": "sidecar"
+        }
+      },
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": true,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "post_install": {
+        "requires_local_app": true,
+        "local_app_label": "Profile Avatars sidecar",
+        "summary": "Run the bundled sidecar (sidecar/sidecar.py) on 127.0.0.1:17798, then approve the sidecar proxy in Settings → Extensions."
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [
+            "/api/profiles",
+            "sessions",
+            "/api/extensions/status",
+            "/api/extensions/profile-avatars/sidecar/api/avatars",
+            "/api/extensions/profile-avatars/sidecar/api/avatars/{profile}"
+          ],
+          "write": [
+            "/api/extensions/profile-avatars/sidecar/api/avatars/{profile}"
+          ]
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": true,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false
+      },
+      "entry_path": "extensions/profile-avatars/extension.json",
+      "runtime_manifest_path": "extensions/profile-avatars/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/profile-avatars-0.1.1.zip",
+      "sha256": "3aafd256e477d7122117e1f5a67e0dcd9b28b5add655c8424a4245a6f5327030",
+      "artifact_size": 110621,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 12,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "169094422f2598a23f2f28fbe9dd31df80aa36c26105d249b4a293f88d2d9bcc"
+        },
+        {
+          "path": "assets/avatars.css",
+          "sha256": "d09212bfad4632adea1c7811425880e9b76c86da62eebcc3dc37a371573e0dc1"
+        },
+        {
+          "path": "assets/avatars.js",
+          "sha256": "2e8a1f35d6664603ca111228f63fa30b6d089eb8f5963dc3cb5c4d1dc640a4ab"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "cfe291837715541a08c5ca37074f929efdca4a65ae6d89ecce5329c33868cea3"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "7b5a70610a282b49f09a5f4fb057904debc11fe467a2fe057db9e75c4551f50f"
+        },
+        {
+          "path": "sidecar/__pycache__/avatars.cpython-312.pyc",
+          "sha256": "231b11c448f2e4407384be9d7861fc2fe9dac81011254086b26f8d23cef19f49"
+        },
+        {
+          "path": "sidecar/avatars.py",
+          "sha256": "ac5761d8bfa8d92ed9c249aef8c23c385395fcbfa4251cdfaca31ba3c7ea7293"
+        },
+        {
+          "path": "sidecar/profile-avatars-sidecar.service",
+          "sha256": "c6de20d9209af7fdc9402bc336d5952ba7b4346a432c682c25f1bbd5d4979919"
+        },
+        {
+          "path": "sidecar/routes_impl.py",
+          "sha256": "1d8f7074183ebbdce2f1819fecc934bdca3080340d157f80f9f61a0c62127e45"
+        },
+        {
+          "path": "sidecar/sidecar.json",
+          "sha256": "d6e8870379c1f87b4344cdcfd19e07870eec2b29166a36b5f51cce6043caab05"
+        },
+        {
+          "path": "sidecar/sidecar.py",
+          "sha256": "2927b63251b967b6a8348c52fd98b35df3b2a17be926acea6e9868b1f42ec197"
+        },
+        {
+          "path": "sidecar/sidecar_base.py",
+          "sha256": "8ff63e0b7d3f4286f4d8b5dd56a8bce544e1b2fc5c8b74c86c74b2c3a70db7fd"
+        }
+      ]
+    },
+    {
+      "id": "rss-feeds",
+      "name": "RSS Feeds",
+      "description": "RSS/Atom reader for the WebUI — categorized subscriptions, keyword filters, search, read tracking, and optional AI summaries via a local loopback sidecar.",
+      "version": "0.1.0",
+      "author": "asorourx",
+      "assets": {
+        "scripts": [
+          "assets/feeds-inject.js",
+          "assets/feeds.js"
+        ],
+        "stylesheets": [
+          "assets/feeds.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle",
+        "loopback-sidecar"
+      ],
+      "sidecar": {
+        "type": "loopback",
+        "origin": "http://127.0.0.1:17797",
+        "health_path": "/health",
+        "proxy_auth": "token-v1",
+        "runtime": {
+          "kind": "vendored",
+          "path": "sidecar"
+        }
+      },
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": true,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "post_install": {
+        "requires_local_app": true,
+        "local_app_label": "RSS Feeds sidecar",
+        "summary": "Run the bundled sidecar (sidecar/sidecar.py) on 127.0.0.1:17797, then approve the sidecar proxy in Settings → Extensions."
+      },
+      "screenshots": [
+        "screenshots/reader-light.png",
+        "screenshots/reader-dark.png"
+      ],
+      "permissions": {
+        "webui_api": {
+          "read": [
+            "/api/extensions/status",
+            "/api/extensions/rss-feeds/sidecar/api/feeds",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/settings",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/entries",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/summaries",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/summary-status",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/refresh-status",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/summary-test-status",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/favicon"
+          ],
+          "write": [
+            "/api/extensions/rss-feeds/sidecar/api/feeds",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/refresh",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/read",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/summarize",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/summary-test",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/settings",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/{fid}",
+            "/api/extensions/rss-feeds/sidecar/api/feeds/summaries/{sid}"
+          ]
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+            "mc.feeds.read",
+            "mc.feeds.read.visibility",
+            "mc.feeds.pageSize",
+            "mc.feeds.pageSize.clicked",
+            "mc.feeds.pageSize.summaries"
+          ],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": true,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": true
+      },
+      "entry_path": "extensions/rss-feeds/extension.json",
+      "runtime_manifest_path": "extensions/rss-feeds/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/rss-feeds-0.1.0.zip",
+      "sha256": "d3ff30bbfadaba11e1c9cd6d6875d6663f5b536bf201f40c1b460a4277eaa2a4",
+      "artifact_size": 872090,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 17,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "aad5d203dbe873cd177cfa5c73cc5cbb1140ea1c36c5d049634aeb4c1ff6cf1e"
+        },
+        {
+          "path": "assets/feeds-inject.js",
+          "sha256": "aed30e103873cfd837163f3ddac4d38ef7ddc018c9b9049a471364d4a0796eda"
+        },
+        {
+          "path": "assets/feeds.css",
+          "sha256": "0b92b8c9db01fa78caa48e4b83f6d2f8805e3c51f7e5c0a4cfb0d3fbb22284a5"
+        },
+        {
+          "path": "assets/feeds.js",
+          "sha256": "cea26063588211038047a3e14b89b8f275911f2a34c28adeb80b0e37c2d4ac6a"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "53214fb52b290360090316a804563a1d16e71d23dbd78de629501943b9d3956b"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "9533dba06239d2d9d91750651f5b50d98b6b66ed58c5cad2601fe0f48ac6b641"
+        },
+        {
+          "path": "screenshots/reader-dark.png",
+          "sha256": "cf75370175b9d45cf16e9c35335c1c62216a03dd0576d2056b506248ee134806"
+        },
+        {
+          "path": "screenshots/reader-light.png",
+          "sha256": "b9be35a4f177f24e3cb2329575c82406d8f7af0b8aecaf6f359135941e599f1c"
+        },
+        {
+          "path": "sidecar/feeds.py",
+          "sha256": "07f2bd3ecabdf5dafad321e1b02dd16dfd3cd2f395fe4c3d9e87e33abb1da1f8"
+        },
+        {
+          "path": "sidecar/feeds_seed.txt",
+          "sha256": "7c2ca7d39e6646f09a0c9296bf13af0baa12dba01c228b85ca3481840b823c18"
+        },
+        {
+          "path": "sidecar/routes_impl.py",
+          "sha256": "856a31de67c783124ce4e1ce4963c38c707c7d593f3b34aa1db6b2d9c3bfd3ae"
+        },
+        {
+          "path": "sidecar/rss-feeds-sidecar.service",
+          "sha256": "17f90b1ffbd33e9554beae621187ea441414b4a299b6a7f6bc0ab8f927839fe8"
+        },
+        {
+          "path": "sidecar/shim.py",
+          "sha256": "2f29101fa19b14974a619a8d6e7d50470638e7179eb183bb103bb65f967a5c4e"
+        },
+        {
+          "path": "sidecar/sidecar.json",
+          "sha256": "70a9d4a3272e9e0f950795a1afd4032c675f52d1c5487d39cb6f8154f9232937"
+        },
+        {
+          "path": "sidecar/sidecar.py",
+          "sha256": "2927b63251b967b6a8348c52fd98b35df3b2a17be926acea6e9868b1f42ec197"
+        },
+        {
+          "path": "sidecar/sidecar_base.py",
+          "sha256": "8ff63e0b7d3f4286f4d8b5dd56a8bce544e1b2fc5c8b74c86c74b2c3a70db7fd"
+        },
+        {
+          "path": "sidecar/test_job_ownership.py",
+          "sha256": "d1cb400b393d83717a8b0965373fdc346bca2bfe215a8781bd13c3ccb4322294"
+        }
+      ]
+    },
+    {
+      "id": "session-export-pdf",
+      "name": "Session Export to PDF",
+      "description": "Export the current conversation to a clean PDF (via the browser print dialog, with a print-styled layout) or copy it as Markdown. Adds an export button to the app titlebar. No backend, no bundled PDF library.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/session-export-pdf.js"
+        ],
+        "stylesheets": [
+          "assets/session-export-pdf.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false,
+        "uses_clipboard": true,
+        "uses_print": true
+      },
+      "entry_path": "extensions/session-export-pdf/extension.json",
+      "runtime_manifest_path": "extensions/session-export-pdf/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/session-export-pdf-0.1.0.zip",
+      "sha256": "a363b5b04b01b5c5903a65785f8e3faba5717e78878cb10fbee7d2e8b79f7369",
+      "artifact_size": 27287,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "82b695e2bd23da8d84ee8ab84e3304843422c96045082dbd8625af8e84ddced0"
+        },
+        {
+          "path": "assets/session-export-pdf.css",
+          "sha256": "992b1dc128a51281171c238c7c219d3808b93fe67e442b56c194541d3977fdea"
+        },
+        {
+          "path": "assets/session-export-pdf.js",
+          "sha256": "199f0a2e4e7882bf404207d1b26a2529b921b08cf76c8c9cfcc1eefae6dca24a"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "6c8a22245311e6502707eb601241ca952aab4beff7dd88ad94e2039bd8ca377a"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "ba61c877d5a669d24dd2519912f1007ac762b53c1af95cac579732ca3ddee13e"
+        }
+      ]
+    },
+    {
+      "id": "skin-pack",
+      "name": "Skin Pack",
+      "description": "A pack of popular editor-inspired color themes (Dracula, Gruvbox, One Dark, Tokyo Night, Rosé Pine, Solarized Dark) that register into the native Settings → Appearance skin picker.",
+      "version": "0.1.0",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/skin-pack.js"
+        ],
+        "stylesheets": []
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": false,
+          "mutates_core_views": false
+        },
+        "storage": {
+          "owned": [],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false,
+        "registers_skin": true
+      },
+      "entry_path": "extensions/skin-pack/extension.json",
+      "runtime_manifest_path": "extensions/skin-pack/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/skin-pack-0.1.0.zip",
+      "sha256": "21519b5235a4c967e86f4624a8c6866d353ab4a8d1776efa13eaf955fac1a22d",
+      "artifact_size": 14481,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 4,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "cd28865f9636540ae85fb6be9a9e8a95596183b5c84b8f83fbd9de2761d9ac28"
+        },
+        {
+          "path": "assets/skin-pack.js",
+          "sha256": "06a48517041cd2ec789a167c4299f41ebb11cdb2ab6892501710421263a29219"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "8c8a887c9be29428fe6694d537122f94b92bbee1971b5d24fc8f505a19fde949"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "a09b6f85f3b67b6fb88aa59441665077afe6059f6321e75bf77c0b3327c6d678"
+        }
+      ]
+    },
+    {
+      "id": "theme-creator",
+      "name": "Theme Creator",
+      "description": "Build your own theme: pick colors for the key design tokens, see a live preview, name it, and save. Custom themes register into the native Settings → Appearance picker. Create, edit, and delete multiple themes; everything is stored locally.",
+      "version": "0.3.6",
+      "author": "nesquena-hermes",
+      "assets": {
+        "scripts": [
+          "assets/theme-creator.js"
+        ],
+        "stylesheets": [
+          "assets/theme-creator.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [
+        "screenshots/theme-creator-panel.png"
+      ],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": [
+            "settings"
+          ]
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": [
+            "hermes-ext-custom-themes"
+          ],
+          "shared_webui_keys": [
+            "hermes-skin"
+          ]
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": false,
+        "registers_skin": true
+      },
+      "entry_path": "extensions/theme-creator/extension.json",
+      "runtime_manifest_path": "extensions/theme-creator/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/theme-creator-0.3.6.zip",
+      "sha256": "c0d99ce20eaa4d842e7c9776c90c171925ea9c67b30adb04bd38c99f0a971bfa",
+      "artifact_size": 1934499,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 6,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "e783fbd24aa542248f434d753e816001c5257744a11b3fe2aed84248e719510e"
+        },
+        {
+          "path": "assets/theme-creator.css",
+          "sha256": "1f56c37168b203809ccac55b68a4c9afd93749f4f06b44c37a6ac9ea8617b30e"
+        },
+        {
+          "path": "assets/theme-creator.js",
+          "sha256": "fba18bbac7953cc57810346aea283c1dac847f48709b153207621b5dbb4e0940"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "43cfbb0120949f3c5b22b854264f424078e93a593bcb1ad696dac8e0e0b1af51"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "c6c03a9e281c955278c2da1f9940a3fce8b5deb429527301448f02d0d33a0a27"
+        },
+        {
+          "path": "screenshots/theme-creator-panel.png",
+          "sha256": "636842ae65ae2418ae4556cbbb3ab0e7d3c9356cda9545065af0e36abc95034f"
+        }
+      ]
+    },
+    {
+      "id": "typography",
+      "name": "Typography",
+      "description": "Choose interface, conversation, and code fonts independently with curated Google Fonts, role-based presets, and browser-local imports.",
+      "version": "0.1.0",
+      "author": "starship-s",
+      "min_webui_version": "0.52.184",
+      "assets": {
+        "scripts": [
+          "assets/typography.js"
+        ],
+        "stylesheets": [
+          "assets/typography.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle"
+      ],
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": false,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [],
+          "write": []
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": true
+        },
+        "storage": {
+          "owned": true,
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": false,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": true
+      },
+      "entry_path": "extensions/typography/extension.json",
+      "runtime_manifest_path": "extensions/typography/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/typography-0.1.0.zip",
+      "sha256": "682ff90d60199090d8371bd5259ac3a1e18b1e57780ee627747c996f12f52769",
+      "artifact_size": 76681,
+      "published_at": "2026-08-17T22:29:25.976Z",
+      "file_count": 5,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "e47eb53d406c1e3b2b1f2d0ebb74ded2d342fd678a898ddbdc08e51c86faf566"
+        },
+        {
+          "path": "assets/typography.css",
+          "sha256": "e7bd993d0b5379c21f85c84d37cbceb2d300c9066e9415f183f9f15dcb13fa2e"
+        },
+        {
+          "path": "assets/typography.js",
+          "sha256": "f976ea6b8bd24c7ce7a981900ed57f904c2a2b07720be6d453ebaba04f8c4a69"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "5cc32090cbeb7aa5927079fc27ecb253b833ed89c6568d4227f7a36975f981ac"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "0e8409cf435ed0416f94a0bc094e9db0f9e691ca017b10b6f2a8567819cc3a3b"
+        }
+      ]
+    }
+  ]
+}
