@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-08-19T03:24:15.924Z",
+  "generated_at": "2026-08-19T07:42:56.986Z",
   "extensions": [
     {
       "id": "assistant-avatar",
@@ -53,10 +53,10 @@
       },
       "entry_path": "extensions/assistant-avatar/extension.json",
       "runtime_manifest_path": "extensions/assistant-avatar/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/assistant-avatar-0.4.0.zip",
+      "download": "https://qde.quseit.com/artifacts/assistant-avatar-0.4.0.zip",
       "sha256": "88bf7830452c4bb46472fd829e4e4d83ed706cdbe853a836104465361986ff71",
       "artifact_size": 39366,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -127,10 +127,10 @@
       },
       "entry_path": "extensions/auto-list/extension.json",
       "runtime_manifest_path": "extensions/auto-list/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/auto-list-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/auto-list-0.1.0.zip",
       "sha256": "57157ce7b3317ba5011689198dae1fcec3eb4ef82737d65b5d5a7574da7b9fea",
       "artifact_size": 18347,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -201,10 +201,10 @@
       },
       "entry_path": "extensions/custom-avatar/extension.json",
       "runtime_manifest_path": "extensions/custom-avatar/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/custom-avatar-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/custom-avatar-0.1.0.zip",
       "sha256": "69500228fdc4c8b2a4b94d26ee4f6d29c604b3709fd2f342c2f03416e18ee76f",
       "artifact_size": 18511,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -280,10 +280,10 @@
       },
       "entry_path": "extensions/custom-branding/extension.json",
       "runtime_manifest_path": "extensions/custom-branding/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/custom-branding-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/custom-branding-0.1.0.zip",
       "sha256": "dffb81cf868a143ad6e1855ba8da7edd85e3c7a890ae3259fa707ec73a743593",
       "artifact_size": 31683,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -397,10 +397,10 @@
       },
       "entry_path": "extensions/desktop-companion/extension.json",
       "runtime_manifest_path": "extensions/desktop-companion/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/desktop-companion-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/desktop-companion-0.1.0.zip",
       "sha256": "c9f2724f778a4b89ecd5ea9079d36cf56a253d617514b86d93a4815a60c5601c",
       "artifact_size": 4189215,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 10,
       "file_sha256": [
         {
@@ -492,10 +492,10 @@
       },
       "entry_path": "extensions/e-ink-skin/extension.json",
       "runtime_manifest_path": "extensions/e-ink-skin/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/e-ink-skin-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/e-ink-skin-0.1.0.zip",
       "sha256": "b7f5d253c94bf649201d25b0eaabb481da83e2adccd47b710c90b98ffe7873c5",
       "artifact_size": 10910,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -580,10 +580,10 @@
       ],
       "entry_path": "extensions/external-app-tab/extension.json",
       "runtime_manifest_path": "extensions/external-app-tab/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/external-app-tab-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/external-app-tab-0.1.0.zip",
       "sha256": "9ee559edfca15a323b5cce76a4132b23c6cc72cb525e27efe76a42f17da7fa10",
       "artifact_size": 28442,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -662,10 +662,10 @@
       },
       "entry_path": "extensions/mcp-tool-shortcuts/extension.json",
       "runtime_manifest_path": "extensions/mcp-tool-shortcuts/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mcp-tool-shortcuts-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/mcp-tool-shortcuts-0.1.0.zip",
       "sha256": "96b75f3c61855b51bed73dc8501f097fadd8eacf4abad422e61895922e61c770",
       "artifact_size": 21481,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -740,10 +740,10 @@
       },
       "entry_path": "extensions/message-pins/extension.json",
       "runtime_manifest_path": "extensions/message-pins/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/message-pins-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/message-pins-0.1.0.zip",
       "sha256": "c7ec3dbbe253b7f742e20eabc9e306720b102275ec043879bd4dd7e9928dfbea",
       "artifact_size": 39587,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -816,10 +816,10 @@
       },
       "entry_path": "extensions/mobile-conversations/extension.json",
       "runtime_manifest_path": "extensions/mobile-conversations/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mobile-conversations-0.1.1.zip",
+      "download": "https://qde.quseit.com/artifacts/mobile-conversations-0.1.1.zip",
       "sha256": "6c9f73ba8043deb56ad6d536c6d837ef591bb2546e21c56c782384d67725bb16",
       "artifact_size": 27322,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -899,10 +899,10 @@
       ],
       "entry_path": "extensions/mobile-haptics/extension.json",
       "runtime_manifest_path": "extensions/mobile-haptics/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mobile-haptics-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/mobile-haptics-0.1.0.zip",
       "sha256": "c1b9828de8c2e7eee3ba78c453e6918b97bb15bb4eb38f58f312936da75d7d8c",
       "artifact_size": 11383,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -973,10 +973,10 @@
       },
       "entry_path": "extensions/model-favorites/extension.json",
       "runtime_manifest_path": "extensions/model-favorites/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/model-favorites-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/model-favorites-0.1.0.zip",
       "sha256": "4bb82d50bdbb94a18d7c9a163d68a3537bcaec9aea55aa84bce3e43eb0dec409",
       "artifact_size": 20068,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1073,10 +1073,10 @@
       },
       "entry_path": "extensions/profile-avatars/extension.json",
       "runtime_manifest_path": "extensions/profile-avatars/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/profile-avatars-0.1.1.zip",
+      "download": "https://qde.quseit.com/artifacts/profile-avatars-0.1.1.zip",
       "sha256": "a46fa3707ce136e430cee03bd500dabd16a82d60770c66dd5daeb0bd85c4c8d3",
       "artifact_size": 88994,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 11,
       "file_sha256": [
         {
@@ -1218,10 +1218,10 @@
       },
       "entry_path": "extensions/rss-feeds/extension.json",
       "runtime_manifest_path": "extensions/rss-feeds/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/rss-feeds-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/rss-feeds-0.1.0.zip",
       "sha256": "d3ff30bbfadaba11e1c9cd6d6875d6663f5b536bf201f40c1b460a4277eaa2a4",
       "artifact_size": 872090,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 17,
       "file_sha256": [
         {
@@ -1344,10 +1344,10 @@
       },
       "entry_path": "extensions/session-export-pdf/extension.json",
       "runtime_manifest_path": "extensions/session-export-pdf/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/session-export-pdf-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/session-export-pdf-0.1.0.zip",
       "sha256": "a363b5b04b01b5c5903a65785f8e3faba5717e78878cb10fbee7d2e8b79f7369",
       "artifact_size": 27287,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1419,10 +1419,10 @@
       },
       "entry_path": "extensions/skin-pack/extension.json",
       "runtime_manifest_path": "extensions/skin-pack/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/skin-pack-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/skin-pack-0.1.0.zip",
       "sha256": "21519b5235a4c967e86f4624a8c6866d353ab4a8d1776efa13eaf955fac1a22d",
       "artifact_size": 14481,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -1500,10 +1500,10 @@
       },
       "entry_path": "extensions/theme-creator/extension.json",
       "runtime_manifest_path": "extensions/theme-creator/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/theme-creator-0.3.6.zip",
+      "download": "https://qde.quseit.com/artifacts/theme-creator-0.3.6.zip",
       "sha256": "c0d99ce20eaa4d842e7c9776c90c171925ea9c67b30adb04bd38c99f0a971bfa",
       "artifact_size": 1934499,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 6,
       "file_sha256": [
         {
@@ -1581,10 +1581,10 @@
       },
       "entry_path": "extensions/typography/extension.json",
       "runtime_manifest_path": "extensions/typography/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/typography-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/typography-0.1.0.zip",
       "sha256": "682ff90d60199090d8371bd5259ac3a1e18b1e57780ee627747c996f12f52769",
       "artifact_size": 76681,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1680,10 +1680,10 @@
       },
       "entry_path": "extensions/whisper-model-installer/extension.json",
       "runtime_manifest_path": "extensions/whisper-model-installer/manifest.json",
-      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/whisper-model-installer-0.1.0.zip",
+      "download": "https://qde.quseit.com/artifacts/whisper-model-installer-0.1.0.zip",
       "sha256": "9c51f210721d96bd3b28e6a051c7ad6813328436a621cfe1756ce707738570fd",
       "artifact_size": 55925,
-      "published_at": "2026-08-19T03:24:15.924Z",
+      "published_at": "2026-08-19T07:42:56.986Z",
       "file_count": 11,
       "file_sha256": [
         {
