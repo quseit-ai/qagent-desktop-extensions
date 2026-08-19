@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-08-17T22:29:25.976Z",
+  "generated_at": "2026-08-19T03:24:15.924Z",
   "extensions": [
     {
       "id": "assistant-avatar",
@@ -56,7 +56,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/assistant-avatar-0.4.0.zip",
       "sha256": "88bf7830452c4bb46472fd829e4e4d83ed706cdbe853a836104465361986ff71",
       "artifact_size": 39366,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -130,7 +130,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/auto-list-0.1.0.zip",
       "sha256": "57157ce7b3317ba5011689198dae1fcec3eb4ef82737d65b5d5a7574da7b9fea",
       "artifact_size": 18347,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -204,7 +204,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/custom-avatar-0.1.0.zip",
       "sha256": "69500228fdc4c8b2a4b94d26ee4f6d29c604b3709fd2f342c2f03416e18ee76f",
       "artifact_size": 18511,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -283,7 +283,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/custom-branding-0.1.0.zip",
       "sha256": "dffb81cf868a143ad6e1855ba8da7edd85e3c7a890ae3259fa707ec73a743593",
       "artifact_size": 31683,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -400,7 +400,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/desktop-companion-0.1.0.zip",
       "sha256": "c9f2724f778a4b89ecd5ea9079d36cf56a253d617514b86d93a4815a60c5601c",
       "artifact_size": 4189215,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 10,
       "file_sha256": [
         {
@@ -495,7 +495,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/e-ink-skin-0.1.0.zip",
       "sha256": "b7f5d253c94bf649201d25b0eaabb481da83e2adccd47b710c90b98ffe7873c5",
       "artifact_size": 10910,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -583,7 +583,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/external-app-tab-0.1.0.zip",
       "sha256": "9ee559edfca15a323b5cce76a4132b23c6cc72cb525e27efe76a42f17da7fa10",
       "artifact_size": 28442,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -665,7 +665,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mcp-tool-shortcuts-0.1.0.zip",
       "sha256": "96b75f3c61855b51bed73dc8501f097fadd8eacf4abad422e61895922e61c770",
       "artifact_size": 21481,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -743,7 +743,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/message-pins-0.1.0.zip",
       "sha256": "c7ec3dbbe253b7f742e20eabc9e306720b102275ec043879bd4dd7e9928dfbea",
       "artifact_size": 39587,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -819,7 +819,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mobile-conversations-0.1.1.zip",
       "sha256": "6c9f73ba8043deb56ad6d536c6d837ef591bb2546e21c56c782384d67725bb16",
       "artifact_size": 27322,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -902,7 +902,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/mobile-haptics-0.1.0.zip",
       "sha256": "c1b9828de8c2e7eee3ba78c453e6918b97bb15bb4eb38f58f312936da75d7d8c",
       "artifact_size": 11383,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -976,7 +976,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/model-favorites-0.1.0.zip",
       "sha256": "4bb82d50bdbb94a18d7c9a163d68a3537bcaec9aea55aa84bce3e43eb0dec409",
       "artifact_size": 20068,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1074,10 +1074,10 @@
       "entry_path": "extensions/profile-avatars/extension.json",
       "runtime_manifest_path": "extensions/profile-avatars/manifest.json",
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/profile-avatars-0.1.1.zip",
-      "sha256": "3aafd256e477d7122117e1f5a67e0dcd9b28b5add655c8424a4245a6f5327030",
-      "artifact_size": 110621,
-      "published_at": "2026-08-17T22:29:25.976Z",
-      "file_count": 12,
+      "sha256": "a46fa3707ce136e430cee03bd500dabd16a82d60770c66dd5daeb0bd85c4c8d3",
+      "artifact_size": 88994,
+      "published_at": "2026-08-19T03:24:15.924Z",
+      "file_count": 11,
       "file_sha256": [
         {
           "path": "README.md",
@@ -1098,10 +1098,6 @@
         {
           "path": "manifest.json",
           "sha256": "7b5a70610a282b49f09a5f4fb057904debc11fe467a2fe057db9e75c4551f50f"
-        },
-        {
-          "path": "sidecar/__pycache__/avatars.cpython-312.pyc",
-          "sha256": "231b11c448f2e4407384be9d7861fc2fe9dac81011254086b26f8d23cef19f49"
         },
         {
           "path": "sidecar/avatars.py",
@@ -1225,7 +1221,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/rss-feeds-0.1.0.zip",
       "sha256": "d3ff30bbfadaba11e1c9cd6d6875d6663f5b536bf201f40c1b460a4277eaa2a4",
       "artifact_size": 872090,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 17,
       "file_sha256": [
         {
@@ -1351,7 +1347,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/session-export-pdf-0.1.0.zip",
       "sha256": "a363b5b04b01b5c5903a65785f8e3faba5717e78878cb10fbee7d2e8b79f7369",
       "artifact_size": 27287,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1426,7 +1422,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/skin-pack-0.1.0.zip",
       "sha256": "21519b5235a4c967e86f4624a8c6866d353ab4a8d1776efa13eaf955fac1a22d",
       "artifact_size": 14481,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -1507,7 +1503,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/theme-creator-0.3.6.zip",
       "sha256": "c0d99ce20eaa4d842e7c9776c90c171925ea9c67b30adb04bd38c99f0a971bfa",
       "artifact_size": 1934499,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 6,
       "file_sha256": [
         {
@@ -1588,7 +1584,7 @@
       "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/typography-0.1.0.zip",
       "sha256": "682ff90d60199090d8371bd5259ac3a1e18b1e57780ee627747c996f12f52769",
       "artifact_size": 76681,
-      "published_at": "2026-08-17T22:29:25.976Z",
+      "published_at": "2026-08-19T03:24:15.924Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1610,6 +1606,129 @@
         {
           "path": "manifest.json",
           "sha256": "0e8409cf435ed0416f94a0bc094e9db0f9e691ca017b10b6f2a8567819cc3a3b"
+        }
+      ]
+    },
+    {
+      "id": "whisper-model-installer",
+      "name": "Whisper Model Installer",
+      "description": "One-click installer for the faster-whisper-base speech-to-text model. Downloads Systran/faster-whisper-base from the hf-mirror.com mirror via a local loopback sidecar and installs it into your default Hugging Face cache directory in the standard models--Systran--faster-whisper-base layout, so faster-whisper and huggingface_hub find it offline. Live progress, cancel, and already-installed detection.",
+      "version": "0.1.0",
+      "author": "Randa168",
+      "assets": {
+        "scripts": [
+          "assets/whisper-installer.js"
+        ],
+        "stylesheets": [
+          "assets/whisper-installer.css"
+        ]
+      },
+      "capabilities": [
+        "manifest-bundle",
+        "loopback-sidecar"
+      ],
+      "sidecar": {
+        "type": "loopback",
+        "origin": "http://127.0.0.1:17799",
+        "health_path": "/health",
+        "proxy_auth": "token-v1",
+        "runtime": {
+          "kind": "vendored",
+          "path": "sidecar"
+        }
+      },
+      "lifecycle": {
+        "webui_restart_required": false,
+        "sidecar_start_required": true,
+        "native_host_start_required": false,
+        "native_host_autostart": "none"
+      },
+      "post_install": {
+        "requires_local_app": true,
+        "local_app_label": "Whisper Model Installer sidecar",
+        "summary": "Run the bundled sidecar (sidecar/sidecar.py) on 127.0.0.1:17799, then approve the sidecar proxy in Settings -> Extensions. Downloads go to your default Hugging Face cache (~/.cache/huggingface/hub)."
+      },
+      "screenshots": [],
+      "permissions": {
+        "webui_api": {
+          "read": [
+            "/api/extensions/status",
+            "/api/extensions/whisper-model-installer/sidecar/api/status",
+            "/api/extensions/whisper-model-installer/sidecar/api/install"
+          ],
+          "write": [
+            "/api/extensions/whisper-model-installer/sidecar/api/install",
+            "/api/extensions/whisper-model-installer/sidecar/api/install/cancel"
+          ]
+        },
+        "webui_navigation": false,
+        "dom": {
+          "owned": true,
+          "mutates_core_views": false
+        },
+        "storage": {
+          "owned": [],
+          "shared_webui_keys": []
+        },
+        "loopback_sidecar": true,
+        "native_host": false,
+        "filesystem": {
+          "arbitrary": false,
+          "serves_bundled_assets": true
+        },
+        "network_external": true
+      },
+      "entry_path": "extensions/whisper-model-installer/extension.json",
+      "runtime_manifest_path": "extensions/whisper-model-installer/manifest.json",
+      "download": "https://hermes-webui.github.io/hermes-webui-extensions/artifacts/whisper-model-installer-0.1.0.zip",
+      "sha256": "9c51f210721d96bd3b28e6a051c7ad6813328436a621cfe1756ce707738570fd",
+      "artifact_size": 55925,
+      "published_at": "2026-08-19T03:24:15.924Z",
+      "file_count": 11,
+      "file_sha256": [
+        {
+          "path": "README.md",
+          "sha256": "19461301101a0987bdf61c22ced78f696241a3b4866e623509cea8453fdf4189"
+        },
+        {
+          "path": "assets/whisper-installer.css",
+          "sha256": "ba120c714527d40a98c0f486487503af621a9c4a460e99fe19b10fa281e85de2"
+        },
+        {
+          "path": "assets/whisper-installer.js",
+          "sha256": "6cf5bd4929365a23880737a1c587525c3b2060ad89dfb0311e04bf4bf3303bab"
+        },
+        {
+          "path": "extension.json",
+          "sha256": "8155339bc3bc412e9edffd87526206211baa0f6a18f517c8a4dbcc85a01ae2ae"
+        },
+        {
+          "path": "manifest.json",
+          "sha256": "3ba72676befd355382b2ad774aa451b875ff78fba6e5f7284144bf2befc0288d"
+        },
+        {
+          "path": "sidecar/hf_cache.py",
+          "sha256": "f4096aebfd59e7233d63ecd658ee213d84706c0b9e8dc320393561f978439d33"
+        },
+        {
+          "path": "sidecar/routes_impl.py",
+          "sha256": "f2d695ea3760b96f998849aeca1fcee2d56d7414403eec7eea651abe938f8627"
+        },
+        {
+          "path": "sidecar/sidecar.json",
+          "sha256": "190da27e68c0209e74abf07b0b04ade60b130de1eede4ca758224ac8cdb6a1e4"
+        },
+        {
+          "path": "sidecar/sidecar.py",
+          "sha256": "2927b63251b967b6a8348c52fd98b35df3b2a17be926acea6e9868b1f42ec197"
+        },
+        {
+          "path": "sidecar/sidecar_base.py",
+          "sha256": "8ff63e0b7d3f4286f4d8b5dd56a8bce544e1b2fc5c8b74c86c74b2c3a70db7fd"
+        },
+        {
+          "path": "sidecar/whisper-model-installer-sidecar.service",
+          "sha256": "6d2b38285bc4be44875d4c3c9634ce2804f6d422c376a168af4b8b7596533dbb"
         }
       ]
     }
