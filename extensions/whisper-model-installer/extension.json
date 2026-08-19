@@ -1,0 +1,70 @@
+{
+  "id": "whisper-model-installer",
+  "name": "Whisper Model Installer",
+  "description": "One-click installer for the faster-whisper-base speech-to-text model. Downloads Systran/faster-whisper-base from the hf-mirror.com mirror via a local loopback sidecar and installs it into your default Hugging Face cache directory in the standard models--Systran--faster-whisper-base layout, so faster-whisper and huggingface_hub find it offline. Live progress, cancel, and already-installed detection.",
+  "version": "0.1.0",
+  "author": "Randa168",
+  "assets": {
+    "scripts": [
+      "assets/whisper-installer.js"
+    ],
+    "stylesheets": [
+      "assets/whisper-installer.css"
+    ]
+  },
+  "capabilities": [
+    "manifest-bundle",
+    "loopback-sidecar"
+  ],
+  "sidecar": {
+    "type": "loopback",
+    "origin": "http://127.0.0.1:17799",
+    "health_path": "/health",
+    "proxy_auth": "token-v1",
+    "runtime": {
+      "kind": "vendored",
+      "path": "sidecar"
+    }
+  },
+  "lifecycle": {
+    "webui_restart_required": false,
+    "sidecar_start_required": true,
+    "native_host_start_required": false,
+    "native_host_autostart": "none"
+  },
+  "post_install": {
+    "requires_local_app": true,
+    "local_app_label": "Whisper Model Installer sidecar",
+    "summary": "Run the bundled sidecar (sidecar/sidecar.py) on 127.0.0.1:17799, then approve the sidecar proxy in Settings -> Extensions. Downloads go to your default Hugging Face cache (~/.cache/huggingface/hub)."
+  },
+  "screenshots": [],
+  "permissions": {
+    "webui_api": {
+      "read": [
+        "/api/extensions/status",
+        "/api/extensions/whisper-model-installer/sidecar/api/status",
+        "/api/extensions/whisper-model-installer/sidecar/api/install"
+      ],
+      "write": [
+        "/api/extensions/whisper-model-installer/sidecar/api/install",
+        "/api/extensions/whisper-model-installer/sidecar/api/install/cancel"
+      ]
+    },
+    "webui_navigation": false,
+    "dom": {
+      "owned": true,
+      "mutates_core_views": false
+    },
+    "storage": {
+      "owned": [],
+      "shared_webui_keys": []
+    },
+    "loopback_sidecar": true,
+    "native_host": false,
+    "filesystem": {
+      "arbitrary": false,
+      "serves_bundled_assets": true
+    },
+    "network_external": true
+  }
+}
