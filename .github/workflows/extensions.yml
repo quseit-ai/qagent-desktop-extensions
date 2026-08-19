@@ -97,6 +97,8 @@ jobs:
         run: node scripts/validate-desktop-companion.mjs
 
       - name: Generate registry
+        env:
+          HERMES_EXTENSION_REGISTRY_BASE_URL: https://qde.quseit.com/
         run: node scripts/generate-registry.mjs --out dist/registry.json
 
       - name: Validate generated registry JSON
