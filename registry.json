@@ -646,7 +646,7 @@
         },
         "storage": {
           "owned": [
-[O            "hermes-ext-mcp-pinned-tools"
+            "hermes-ext-mcp-pinned-tools"
           ],
           "shared_webui_keys": []
         },
