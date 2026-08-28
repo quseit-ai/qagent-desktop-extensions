@@ -1,5 +1,0 @@
-{
-  "id": "whisper-model-installer",
-  "port": 17799,
-  "proxy_auth": "token-v1"
-}
