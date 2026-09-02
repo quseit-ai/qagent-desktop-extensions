@@ -18,6 +18,8 @@ on:
       - 'docs/rfcs/0001-extension-json-schema.md'
       - 'tests/compatibility/**'
       - '.github/workflows/extensions.yml'
+      - 'desktop/**'
+      - 'scripts/stage-desktop-update.mjs'
   push:
     branches:
       - main
@@ -33,9 +35,11 @@ on:
       - 'docs/rfcs/0001-extension-json-schema.md'
       - 'tests/compatibility/**'
       - '.github/workflows/extensions.yml'
+      - 'desktop/**'
+      - 'scripts/stage-desktop-update.mjs'
 
 concurrency:
-  group: extensions-${{ github.ref }}
+  group: qde-pages
   cancel-in-progress: true
 
 permissions:
@@ -100,10 +104,16 @@ jobs:
       - name: Validate Desktop Companion and loopback example
         run: node scripts/validate-desktop-companion.mjs
 
+      - name: Test multi-brand desktop update staging
+        run: node scripts/test-desktop-update-staging.mjs
+
       - name: Generate registry
         env:
           HERMES_EXTENSION_REGISTRY_BASE_URL: https://qde.quseit.com/
         run: node scripts/generate-registry.mjs --out dist/registry.json
+
+      - name: Stage desktop update
+        run: node scripts/stage-desktop-update.mjs --all dist
 
       - name: Validate generated registry JSON
         run: node -e "JSON.parse(require('node:fs').readFileSync('dist/registry.json','utf8'))"

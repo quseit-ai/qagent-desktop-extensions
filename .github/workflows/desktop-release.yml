@@ -1,0 +1,128 @@
+name: Desktop Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      brand_id:
+        description: Stable brand identity from brand.yaml (for example qagent or eduai)
+        required: true
+        type: string
+      release_tag:
+        description: Existing Release tag containing the manually uploaded QDU
+        required: true
+        type: string
+      asset_name:
+        description: Exact QDU asset filename in that Release
+        required: true
+        type: string
+      version_code:
+        description: Monotonically increasing desktop version code
+        required: true
+        type: string
+      version:
+        description: Human-readable version
+        required: false
+        type: string
+
+concurrency:
+  group: qde-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Validate inputs and download existing Release asset
+        env:
+          VERSION_CODE: ${{ inputs.version_code }}
+          VERSION_NAME: ${{ inputs.version }}
+          BRAND_ID: ${{ inputs.brand_id }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          ASSET_NAME: ${{ inputs.asset_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const versionCode = Number(process.env.VERSION_CODE);
+          const brandId = process.env.BRAND_ID;
+          if (!Number.isInteger(versionCode) || versionCode < 1) throw new Error('invalid version_code');
+          if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(brandId || '')) throw new Error('invalid brand_id');
+          if (!process.env.RELEASE_TAG || /[\r\n]/.test(process.env.RELEASE_TAG)) throw new Error('invalid release_tag');
+          if (!/^[^/\\]+\.qdu$/.test(process.env.ASSET_NAME || '')) throw new Error('invalid asset_name');
+          const dir = `desktop/${brandId}/stable/windows-x64`;
+          fs.mkdirSync(dir, { recursive: true });
+          const result = require('node:child_process').spawnSync('gh', ['release', 'download', process.env.RELEASE_TAG, '--repo', process.env.GITHUB_REPOSITORY, '--pattern', process.env.ASSET_NAME, '--dir', dir], { stdio: 'inherit' });
+          if (result.status !== 0) throw new Error('failed to download Release asset');
+          const qduPath = path.join(dir, process.env.ASSET_NAME);
+          const qdu = fs.readFileSync(qduPath);
+          const sourcePath = path.join(dir, 'source.json');
+          fs.writeFileSync(sourcePath, JSON.stringify({
+            versionCode,
+            version: process.env.VERSION_NAME || null,
+            brandId,
+            channel: 'stable',
+            platform: 'win32',
+            arch: 'x64',
+            fileName: process.env.ASSET_NAME,
+            releaseUrl: `https://github.com/${process.env.GITHUB_REPOSITORY}/releases/download/${encodeURIComponent(process.env.RELEASE_TAG)}/${encodeURIComponent(process.env.ASSET_NAME)}`,
+            size: qdu.length,
+            sha256: require('node:crypto').createHash('sha256').update(qdu).digest('hex'),
+          }, null, 2) + '\n');
+          fs.appendFileSync(process.env.GITHUB_ENV, `SOURCE_PATH=${sourcePath}\n`);
+          NODE
+
+      - name: Download and validate QDU
+        run: node scripts/stage-desktop-update.mjs "$SOURCE_PATH" release-stage
+
+      - name: Persist release source manifest
+        env:
+          VERSION_CODE: ${{ inputs.version_code }}
+          REPOSITORY: ${{ github.repository }}
+          BRAND_ID: ${{ inputs.brand_id }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const file = process.env.SOURCE_PATH;
+          const source = JSON.parse(fs.readFileSync(file, 'utf8'));
+          source.releaseUrl = `https://github.com/${process.env.REPOSITORY}/releases/download/${encodeURIComponent(process.env.RELEASE_TAG)}/${encodeURIComponent(source.fileName)}`;
+          fs.writeFileSync(file, JSON.stringify(source, null, 2) + '\n');
+          NODE
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$SOURCE_PATH"
+          git commit -m "release(${BRAND_ID}): publish desktop QDU v${VERSION_CODE}"
+          git push
+
+      - name: Generate extension registry
+        env:
+          HERMES_EXTENSION_REGISTRY_BASE_URL: https://qde.quseit.com/
+        run: node scripts/generate-registry.mjs --out dist/registry.json
+
+      - name: Stage desktop update for Pages
+        run: node scripts/stage-desktop-update.mjs --all dist
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+      - name: Deploy qde.quseit.com
+        id: deployment
+        uses: actions/deploy-pages@v5
