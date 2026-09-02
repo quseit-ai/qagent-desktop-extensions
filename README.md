@@ -138,12 +138,13 @@ Every sidecar entry must document its install and lifecycle requirements.
 QAgent Desktop payloads are published through the **Desktop Release** workflow.
 A completed `qagent-webui` Windows build produces
 `electron/dist/desktop-update/<brandId>-desktop-<versionCode>.qdu` and its
-`update.json`. Start the workflow with the public QDU URL, exact SHA-256, byte
-size, stable brand ID, version code, and optional display version.
+`update.json`. Upload the QDU manually to a Release in this repository, then
+start the workflow with its Release tag, asset name, stable brand ID, version
+code, and optional display version.
 
-The workflow validates the outer artifact and both embedded files, stores the
-QDU as a GitHub Release asset, records its immutable source metadata, and
-deploys the update feed at:
+The workflow downloads the existing Release asset from this repository,
+validates the outer artifact and both embedded files, records its immutable
+source metadata, and deploys the update feed at:
 
 ```text
 https://qde.quseit.com/desktop/<brandId>/stable/windows-x64/update.json
