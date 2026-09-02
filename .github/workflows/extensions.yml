@@ -104,14 +104,16 @@ jobs:
       - name: Validate Desktop Companion and loopback example
         run: node scripts/validate-desktop-companion.mjs
 
+      - name: Test multi-brand desktop update staging
+        run: node scripts/test-desktop-update-staging.mjs
+
       - name: Generate registry
         env:
           HERMES_EXTENSION_REGISTRY_BASE_URL: https://qde.quseit.com/
         run: node scripts/generate-registry.mjs --out dist/registry.json
 
       - name: Stage desktop update
-        if: hashFiles('desktop/stable/windows-x64/source.json') != ''
-        run: node scripts/stage-desktop-update.mjs
+        run: node scripts/stage-desktop-update.mjs --all dist
 
       - name: Validate generated registry JSON
         run: node -e "JSON.parse(require('node:fs').readFileSync('dist/registry.json','utf8'))"

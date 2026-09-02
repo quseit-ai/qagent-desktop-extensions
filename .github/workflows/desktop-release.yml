@@ -7,6 +7,10 @@ on:
         description: Public HTTPS URL of the QDU produced by qagent-webui
         required: true
         type: string
+      brand_id:
+        description: Stable brand identity from brand.yaml (for example qagent or eduai)
+        required: true
+        type: string
       sha256:
         description: SHA-256 of the complete QDU file
         required: true
@@ -55,56 +59,66 @@ jobs:
           QDU_SIZE: ${{ inputs.size }}
           VERSION_CODE: ${{ inputs.version_code }}
           VERSION_NAME: ${{ inputs.version }}
+          BRAND_ID: ${{ inputs.brand_id }}
         run: |
           node - <<'NODE'
           const fs = require('node:fs');
           const path = require('node:path');
           const versionCode = Number(process.env.VERSION_CODE);
           const size = Number(process.env.QDU_SIZE);
+          const brandId = process.env.BRAND_ID;
           if (!Number.isInteger(versionCode) || versionCode < 1) throw new Error('invalid version_code');
           if (!Number.isInteger(size) || size < 1) throw new Error('invalid size');
           if (!/^https:\/\//.test(process.env.QDU_URL || '')) throw new Error('qdu_url must use HTTPS');
           if (!/^[a-f0-9]{64}$/.test(process.env.QDU_SHA256 || '')) throw new Error('invalid sha256');
-          const dir = 'desktop/stable/windows-x64';
+          if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(brandId || '')) throw new Error('invalid brand_id');
+          const dir = `desktop/${brandId}/stable/windows-x64`;
           fs.mkdirSync(dir, { recursive: true });
           fs.writeFileSync(path.join(dir, 'source.json'), JSON.stringify({
             versionCode,
             version: process.env.VERSION_NAME || null,
-            fileName: `qagent-desktop-${versionCode}.qdu`,
+            brandId,
+            channel: 'stable',
+            platform: 'win32',
+            arch: 'x64',
+            fileName: `${brandId}-desktop-${versionCode}.qdu`,
             releaseUrl: process.env.QDU_URL,
             size,
             sha256: process.env.QDU_SHA256,
           }, null, 2) + '\n');
+          fs.appendFileSync(process.env.GITHUB_ENV, `SOURCE_PATH=${dir}/source.json\n`);
           NODE
 
       - name: Download and validate QDU
-        run: node scripts/stage-desktop-update.mjs desktop/stable/windows-x64/source.json release-stage
+        run: node scripts/stage-desktop-update.mjs "$SOURCE_PATH" release-stage
 
       - name: Publish persistent GitHub release asset
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION_CODE: ${{ inputs.version_code }}
+          BRAND_ID: ${{ inputs.brand_id }}
         run: |
-          tag="desktop-v${VERSION_CODE}"
-          file="release-stage/desktop/stable/windows-x64/releases/${VERSION_CODE}/qagent-desktop-${VERSION_CODE}.qdu"
-          gh release create "$tag" "$file" --title "QAgent Desktop v${VERSION_CODE}" --notes "QAgent Desktop QDU update payload." --latest=false
+          tag="${BRAND_ID}-desktop-v${VERSION_CODE}"
+          file="release-stage/desktop/${BRAND_ID}/stable/windows-x64/releases/${VERSION_CODE}/${BRAND_ID}-desktop-${VERSION_CODE}.qdu"
+          gh release create "$tag" "$file" --title "${BRAND_ID} Desktop v${VERSION_CODE}" --notes "${BRAND_ID} Desktop QDU update payload." --latest=false
 
       - name: Persist release source manifest
         env:
           VERSION_CODE: ${{ inputs.version_code }}
           REPOSITORY: ${{ github.repository }}
+          BRAND_ID: ${{ inputs.brand_id }}
         run: |
           node - <<'NODE'
           const fs = require('node:fs');
-          const file = 'desktop/stable/windows-x64/source.json';
+          const file = process.env.SOURCE_PATH;
           const source = JSON.parse(fs.readFileSync(file, 'utf8'));
-          source.releaseUrl = `https://github.com/${process.env.REPOSITORY}/releases/download/desktop-v${process.env.VERSION_CODE}/${source.fileName}`;
+          source.releaseUrl = `https://github.com/${process.env.REPOSITORY}/releases/download/${process.env.BRAND_ID}-desktop-v${process.env.VERSION_CODE}/${source.fileName}`;
           fs.writeFileSync(file, JSON.stringify(source, null, 2) + '\n');
           NODE
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add desktop/stable/windows-x64/source.json
-          git commit -m "release(desktop): publish QDU v${VERSION_CODE}"
+          git add "$SOURCE_PATH"
+          git commit -m "release(${BRAND_ID}): publish desktop QDU v${VERSION_CODE}"
           git push
 
       - name: Generate extension registry
@@ -113,7 +127,7 @@ jobs:
         run: node scripts/generate-registry.mjs --out dist/registry.json
 
       - name: Stage desktop update for Pages
-        run: node scripts/stage-desktop-update.mjs
+        run: node scripts/stage-desktop-update.mjs --all dist
 
       - uses: actions/upload-pages-artifact@v4
         with:
