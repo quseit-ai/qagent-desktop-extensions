@@ -132,3 +132,24 @@ The consent-gated per-extension loopback proxy is shipped. `token-v1` runtimes u
 that same-origin path and validate core's per-install token; explicitly legacy
 external adapters may still use direct loopback under the core CSP allowance.
 Every sidecar entry must document its install and lifecycle requirements.
+
+## Desktop Application Releases
+
+QAgent Desktop payloads are published through the **Desktop Release** workflow.
+A completed `qagent-webui` Windows build produces
+`electron/dist/desktop-update/qagent-desktop-<versionCode>.qdu` and its
+`update.json`. Start the workflow with the public QDU URL, exact SHA-256, byte
+size, version code, and optional display version.
+
+The workflow validates the outer artifact and both embedded files, stores the
+QDU as a GitHub Release asset, records its immutable source metadata, and
+deploys the update feed at:
+
+```text
+https://qde.quseit.com/desktop/stable/windows-x64/update.json
+```
+
+Every later Pages deployment downloads and verifies the persistent Release
+asset again, so publishing extension-registry changes cannot remove the current
+desktop update. Version codes are immutable and must increase for every desktop
+payload release.

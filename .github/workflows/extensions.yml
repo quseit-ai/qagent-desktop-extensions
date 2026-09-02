@@ -18,6 +18,8 @@ on:
       - 'docs/rfcs/0001-extension-json-schema.md'
       - 'tests/compatibility/**'
       - '.github/workflows/extensions.yml'
+      - 'desktop/**'
+      - 'scripts/stage-desktop-update.mjs'
   push:
     branches:
       - main
@@ -33,9 +35,11 @@ on:
       - 'docs/rfcs/0001-extension-json-schema.md'
       - 'tests/compatibility/**'
       - '.github/workflows/extensions.yml'
+      - 'desktop/**'
+      - 'scripts/stage-desktop-update.mjs'
 
 concurrency:
-  group: extensions-${{ github.ref }}
+  group: qde-pages
   cancel-in-progress: true
 
 permissions:
@@ -104,6 +108,10 @@ jobs:
         env:
           HERMES_EXTENSION_REGISTRY_BASE_URL: https://qde.quseit.com/
         run: node scripts/generate-registry.mjs --out dist/registry.json
+
+      - name: Stage desktop update
+        if: hashFiles('desktop/stable/windows-x64/source.json') != ''
+        run: node scripts/stage-desktop-update.mjs
 
       - name: Validate generated registry JSON
         run: node -e "JSON.parse(require('node:fs').readFileSync('dist/registry.json','utf8'))"
