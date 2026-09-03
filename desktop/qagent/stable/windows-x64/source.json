@@ -1,12 +1,12 @@
 {
-  "versionCode": 102,
-  "version": "1.0.2",
+  "versionCode": 103,
+  "version": "1.0.3",
   "brandId": "qagent",
   "channel": "stable",
   "platform": "win32",
   "arch": "x64",
-  "fileName": "qagent-desktop-102.qdu",
-  "releaseUrl": "https://github.com/quseit-ai/qagent-desktop-extensions/releases/download/qagent_1.0.2/qagent-desktop-102.qdu",
-  "size": 33631134,
-  "sha256": "aafd8cbb5596077109e58bb4d74b85347471810c5a33d3fda620f65662c137fa"
+  "fileName": "qagent-desktop-103.qdu",
+  "releaseUrl": "https://github.com/quseit-ai/qagent-desktop-extensions/releases/download/qagent_1.0.3/qagent-desktop-103.qdu",
+  "size": 33632922,
+  "sha256": "4a175dca4e83e21a2b9fe13f704ded66e46123cafe2a316c1ad13db74459fbff"
 }
