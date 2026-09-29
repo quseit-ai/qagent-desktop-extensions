@@ -679,7 +679,10 @@
     return t.getBoundingClientRect().height > 2;
   }
 
-  var GEAR_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+  // Smile face, NOT a gear: the rail's bottom Settings button already uses a
+  // gear, and an identical icon one slot above it is confusing. A face reads
+  // as "character/avatar" and no rail sibling uses one.
+  var SMILE_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>';
 
   function ensureTitlebarButton() {
     if (titlebarBtn) return titlebarBtn;
@@ -709,7 +712,7 @@
       // tooltips (#1775), so use its has-tooltip + data-tooltip convention.
       btn.className = 'rail-btn nav-tab has-tooltip';
       btn.setAttribute('data-tooltip', 'Avatar settings');
-      btn.innerHTML = GEAR_SVG;
+      btn.innerHTML = SMILE_SVG;
       // Sit with the content tabs, just above the rail spacer / settings.
       var spacer = rail.querySelector('.rail-spacer');
       if (spacer) rail.insertBefore(btn, spacer);
@@ -751,7 +754,7 @@
 
     // Expose public API
     window.HermesAssistantAvatar = {
-      version: '0.4.1',
+      version: '0.4.2',
       getExpression: function() { return { current: currentExpr, target: targetExpr, tween: tween }; },
       setExpression: function(e) { setExpression(e); },
       hide: function() { if (overlay) overlay.style.display = 'none'; },
