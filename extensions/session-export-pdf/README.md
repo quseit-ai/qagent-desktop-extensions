@@ -3,12 +3,14 @@
 Session Export to PDF is a trusted local Hermes WebUI extension that lets you
 export the current conversation to a clean **PDF** (via the browser's print
 dialog, with a print-styled layout) or **copy it as Markdown**. It adds an export
-button to the app titlebar.
+button to the app titlebar — or to the left rail on the redesigned banner-less
+homepage, where the titlebar is collapsed.
 
 ## What It Does
 
-- Adds an export button to the app titlebar (next to Reload); it shows only when
-  a conversation is open.
+- Adds an export button to the app titlebar (next to Reload) on classic builds,
+  or into the left rail on the redesigned banner-less homepage; it shows only
+  when a conversation is open.
 - Clicking it opens a small menu:
   - **Export to PDF** — clones the rendered transcript into a print-styled,
     off-screen container and calls `window.print()` with a scoped `@media print`
@@ -33,7 +35,7 @@ of that idea (routed to extensions to keep core lean).
 Hermes WebUI page
   -> manifest-bundled extension assets
   -> /extensions/assets/session-export-pdf.js + .css
-  -> titlebar button -> menu -> clone #messages rows into #hwxPrintRoot
+  -> titlebar/rail button -> menu -> clone #messages rows into #hwxPrintRoot
      + @media print { show only #hwxPrintRoot } -> window.print()
   -> (or) copy transcript as Markdown to the clipboard
 ```
@@ -53,8 +55,9 @@ cd /path/to/hermes-webui
 HERMES_WEBUI_EXTENSION_DIR=/path/to/hermes-webui-extensions/extensions/session-export-pdf HERMES_WEBUI_EXTENSION_MANIFEST=manifest.json ./start.sh
 ```
 
-Open a conversation, click the export button in the titlebar, and choose Export
-to PDF (then pick "Save as PDF" in the print dialog) or Copy as Markdown.
+Open a conversation, click the export button (titlebar, or the left rail on the
+banner-less homepage), and choose Export to PDF (then pick "Save as PDF" in the
+print dialog) or Copy as Markdown.
 
 ## Controls
 
@@ -74,8 +77,8 @@ directory. The extension stores nothing.
 
 This is trusted local code. Current disclosed behavior:
 
-- creates extension-owned DOM (a titlebar button, a small menu, and a temporary
-  off-screen print container that is removed after printing)
+- creates extension-owned DOM (a titlebar or rail button, a small menu, and a
+  temporary off-screen print container that is removed after printing)
 - reads the rendered transcript from `#messages` (`.msg-body` of each real
   message row; hidden anchor/worklog segments are skipped)
 - calls `window.print()` (`uses_print`) and writes to the clipboard
@@ -88,7 +91,10 @@ This is trusted local code. Current disclosed behavior:
 ## Compatibility
 
 - manifest-bundled extension assets + same-origin serving under `/extensions/`
-- the app titlebar (`.app-titlebar`, `#btnReload`) to host the button
+- the app titlebar (`.app-titlebar`, `#btnReload`) to host the button on
+  classic builds; on the redesigned banner-less homepage (titlebar collapsed to
+  `height:0`) the button mounts into the left rail (`.rail`, `.rail-spacer`)
+  instead
 - the transcript DOM (`#messages`, `[data-msg-idx]`, `.msg-body`) — the
   integration contract; a core rename would need an update
 
@@ -105,8 +111,8 @@ python3 -m json.tool extensions/session-export-pdf/manifest.json
 
 Manual verification:
 
-- with a conversation open, the titlebar export button appears; with no
-  conversation it is hidden
+- with a conversation open, the export button appears (titlebar, or the left
+  rail on the banner-less homepage); with no conversation it is hidden
 - Export to PDF opens the print dialog showing only the titled transcript (not
   the app chrome), with roles, code blocks, and links preserved
 - Copy as Markdown puts the conversation on the clipboard

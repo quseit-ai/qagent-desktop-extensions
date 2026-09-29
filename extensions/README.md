@@ -32,7 +32,8 @@ need it and maintainers agree on the shared contract.
 - `theme-creator`: build your own theme with a live color editor; custom themes
   register into the native Appearance picker (needs core theme-registration).
 - `session-export-pdf`: export the current conversation to PDF (print) or copy
-  it as Markdown, via a titlebar button.
+  it as Markdown, via a titlebar button (left-rail button on the banner-less
+  homepage).
 - `mcp-tool-shortcuts`: pin MCP tools and draft a ready-to-send request into
   the composer (never auto-executes); lives in Settings → MCP Tools.
 - `e-ink-skin`: maximum-contrast near-monochrome light skin for e-ink displays;

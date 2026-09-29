@@ -2,7 +2,11 @@
   'use strict';
 
   // ── Session Export to PDF extension for Hermes WebUI ─────────────────────
-  // Adds an "Export conversation" button to the app titlebar (next to Reload).
+  // Adds an "Export conversation" button to the app titlebar (next to Reload)
+  // on classic WebUI builds, or to the left rail on the redesigned banner-less
+  // homepage (that layout collapses the titlebar to height:0 with overflow
+  // visible, so a titlebar-appended button would float offset over the content
+  // and be unclickable — the rail is the persistent chrome there).
   // Clicking it opens a small menu: Export to PDF (print) or Copy as Markdown.
   // The PDF path clones the rendered transcript into a print-styled, off-screen
   // container and calls window.print() with a scoped @media print stylesheet, so
@@ -268,29 +272,51 @@
     setTimeout(() => { t.classList.remove('hwx-export-toast--in'); setTimeout(() => t.remove(), 250); }, 2200);
   }
 
-  // ── titlebar button ───────────────────────────────────────────────────────
-  function icon() {
-    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  // ── titlebar / rail button ────────────────────────────────────────────────
+  function icon(size, stroke) {
+    return '<svg width="' + (size || 16) + '" height="' + (size || 16) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="' + (stroke || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/>' +
       '<line x1="12" y1="15" x2="12" y2="3"/></svg>';
   }
+  // Classic WebUI renders the titlebar (banner) with real height. The
+  // redesigned banner-less homepage collapses .app-titlebar to height:0 with
+  // overflow:visible + pointer-events:none and hides #btnReload — a button
+  // appended there floats offset over the content and can't be clicked.
+  function titlebarUsable() {
+    const t = document.querySelector('.app-titlebar');
+    if (!t) return false;
+    if (getComputedStyle(t).display === 'none') return false;
+    return t.getBoundingClientRect().height > 2;
+  }
   function ensureButton() {
     if ($(BTN_ID)) return $(BTN_ID);
-    const reload = $('btnReload');
-    const titlebar = document.querySelector('.app-titlebar');
-    if (!titlebar) return null;
     const btn = document.createElement('button');
     btn.id = BTN_ID;
     btn.type = 'button';
-    btn.className = 'hwx-export-btn has-tooltip has-tooltip--bottom';
     btn.dataset.tooltip = 'Export conversation';
     btn.setAttribute('aria-label', 'Export conversation');
-    btn.innerHTML = icon();
     btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleMenu(btn); });
-    // Place just before Reload so it sits in the titlebar's right cluster.
-    if (reload && reload.parentNode) reload.parentNode.insertBefore(btn, reload);
-    else titlebar.appendChild(btn);
+    if (titlebarUsable()) {
+      const reload = $('btnReload');
+      const titlebar = document.querySelector('.app-titlebar');
+      btn.className = 'hwx-export-btn has-tooltip has-tooltip--bottom';
+      btn.innerHTML = icon(16, 2);
+      // Place just before Reload so it sits in the titlebar's right cluster.
+      if (reload && reload.parentNode) reload.parentNode.insertBefore(btn, reload);
+      else titlebar.appendChild(btn);
+    } else {
+      // Banner-less layout: mount into the left rail like external-app-tab —
+      // core's .rail-btn styles it and it stays visible on every panel.
+      const rail = document.querySelector('.rail');
+      if (!rail) return null;
+      btn.className = 'rail-btn nav-tab has-tooltip hwx-export-rail';
+      btn.innerHTML = icon(20, 1.5);
+      // Sit with the content tabs, just above the rail spacer / settings.
+      const spacer = rail.querySelector('.rail-spacer');
+      if (spacer) rail.insertBefore(btn, spacer);
+      else rail.appendChild(btn);
+    }
     return btn;
   }
 
@@ -309,7 +335,7 @@
 
   function install(attempt) {
     attempt = attempt || 0;
-    if (document.querySelector('.app-titlebar')) {
+    if (document.querySelector('.app-titlebar') || document.querySelector('.rail')) {
       ensureButton();
       refresh();
       const c = $('messages');
@@ -318,13 +344,13 @@
         obs.observe(c, { childList: true, subtree: true });
       }
       window.HermesSessionExportExtension = {
-        version: '0.1.0',
+        version: '0.1.1',
         exportPdf, exportMarkdown, refresh,
       };
       return true;
     }
     if (attempt < 80) { setTimeout(() => install(attempt + 1), 150); return false; }
-    console.warn('[' + EXT + '] app titlebar not found; not installed');
+    console.warn('[' + EXT + '] neither app titlebar nor rail found; not installed');
     return false;
   }
 

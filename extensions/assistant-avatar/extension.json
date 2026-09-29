@@ -2,7 +2,7 @@
   "id": "assistant-avatar",
   "name": "Assistant Avatar",
   "description": "2D animated companion character that reacts to AI state and follows your cursor. Pure Canvas 2D — zero dependencies, 100% MIT.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "chonsong",
   "assets": {
     "scripts": ["assets/avatar.js"],

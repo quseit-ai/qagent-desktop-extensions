@@ -665,27 +665,55 @@
   var S_label = 'font-weight:600;margin-bottom:6px;font-size:13px';
   var S_inp = 'width:36px;height:24px;border:1px solid var(--border2,#555);border-radius:4px;padding:0;cursor:pointer;background:none';
 
-  /* ── Titlebar button ───────────────────────────────────────────────────── */
+  /* ── Titlebar / rail button ────────────────────────────────────────────── */
+  // Classic WebUI renders the titlebar (banner) with real height. The
+  // redesigned banner-less homepage collapses .app-titlebar to height:0 with
+  // overflow:visible + pointer-events:none and hides #btnReload — a button
+  // appended there floats offset over the content and can't be clicked, so we
+  // mount into the left rail instead (core's .rail-btn styles it and it stays
+  // visible on every panel — same pattern as external-app-tab).
+  function titlebarUsable() {
+    var t = document.querySelector('.app-titlebar');
+    if (!t) return false;
+    if (window.getComputedStyle(t).display === 'none') return false;
+    return t.getBoundingClientRect().height > 2;
+  }
+
+  var GEAR_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+
   function ensureTitlebarButton() {
     if (titlebarBtn) return titlebarBtn;
-    var titlebar = document.querySelector('.app-titlebar');
-    if (!titlebar) return null;
-    var reload = document.getElementById('btnReload');
     var btn = document.createElement('button');
     btn.id = 'hwx-avatar-titlebar-btn';
     btn.type = 'button';
-    btn.title = 'Avatar settings';
     btn.setAttribute('aria-label', 'Avatar settings');
-    btn.textContent = '⚙';
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
       toggleSettings(btn);
     });
-    if (reload && reload.parentNode) {
-      reload.parentNode.insertBefore(btn, reload);
+    var titlebar = document.querySelector('.app-titlebar');
+    if (titlebar && titlebarUsable()) {
+      btn.title = 'Avatar settings';
+      btn.textContent = '⚙';
+      var reload = document.getElementById('btnReload');
+      if (reload && reload.parentNode) {
+        reload.parentNode.insertBefore(btn, reload);
+      } else {
+        titlebar.appendChild(btn);
+      }
     } else {
-      titlebar.appendChild(btn);
+      var rail = document.querySelector('.rail');
+      if (!rail) { if (titlebar) { titlebar.appendChild(btn); titlebarBtn = btn; return btn; } return null; }
+      // Banner-less layout: mount into the left rail; host replaced native
+      // tooltips (#1775), so use its has-tooltip + data-tooltip convention.
+      btn.className = 'rail-btn nav-tab has-tooltip';
+      btn.setAttribute('data-tooltip', 'Avatar settings');
+      btn.innerHTML = GEAR_SVG;
+      // Sit with the content tabs, just above the rail spacer / settings.
+      var spacer = rail.querySelector('.rail-spacer');
+      if (spacer) rail.insertBefore(btn, spacer);
+      else rail.appendChild(btn);
     }
     titlebarBtn = btn;
     return btn;
@@ -723,7 +751,7 @@
 
     // Expose public API
     window.HermesAssistantAvatar = {
-      version: '0.4.0',
+      version: '0.4.1',
       getExpression: function() { return { current: currentExpr, target: targetExpr, tween: tween }; },
       setExpression: function(e) { setExpression(e); },
       hide: function() { if (overlay) overlay.style.display = 'none'; },
