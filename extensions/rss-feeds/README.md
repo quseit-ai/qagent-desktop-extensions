@@ -26,7 +26,7 @@ read tracking, and optional AI summaries.
 
 ```text
 Hermes WebUI page
-  -> assets/feeds-inject.js   builds the overlay + titlebar launcher
+  -> assets/feeds-inject.js   builds the overlay + titlebar/rail launcher
   -> assets/feeds.js          all reader logic (fetch via the sidecar proxy)
   -> assets/feeds.css         self-contained styles (host CSS vars only)
 WebUI sidecar proxy (after consent)
@@ -90,7 +90,9 @@ channel, run an `exp-v0.52.129`+ build. Required surface:
 - `token-v1` sidecar proxy at `/api/extensions/<id>/sidecar/*` (core injects
   `X-Hermes-Sidecar-Token`; approve the sidecar in **Settings → Extensions**)
 - a titlebar/host element to append the launcher button to (falls back to
-  `document.body`)
+  `document.body`); on the redesigned banner-less homepage the titlebar is
+  collapsed to `height:0`, so the launcher mounts into the left rail
+  (`.rail`, before `.rail-spacer`) as a core-styled `.rail-btn` instead
 
 All UI is extension-owned DOM (a body-level overlay); no core views are
 modified beyond adding the launcher button.
@@ -159,7 +161,8 @@ where core and the sidecar share a network namespace and the state dir.
 
 ## Manual verification
 
-1. Click the Feeds titlebar button → the two-pane overlay opens; add a feed by
+1. Click the Feeds button (titlebar, or the left rail on the banner-less
+   homepage) → the two-pane overlay opens; add a feed by
    URL → entries appear after refresh.
 2. Settings gear → change entries-per-page / visible feeds → Save → the list
    re-renders accordingly.

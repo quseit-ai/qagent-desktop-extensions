@@ -2,7 +2,10 @@
    with safe fallbacks, scoped to #hxFeedsOverlay so it never collides with the
    host UI). The .mc-feed-* content rules below this block come from the fork. */
 
-/* Titlebar launcher */
+/* Titlebar launcher. On the redesigned banner-less homepage the titlebar is
+   collapsed to height:0, so the launcher mounts into the left rail instead as
+   .hx-feeds-rail (class rail-btn nav-tab) — fully styled by core's .rail-btn
+   rules, no plugin sizing needed there. */
 .hx-feeds-launcher {
   display: inline-flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; margin: 0 4px; padding: 0;

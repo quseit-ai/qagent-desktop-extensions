@@ -5,6 +5,11 @@
 #hwx-avatar-settings{position:fixed;background:var(--bg2,#1e1e2e);border:1px solid var(--border2,#555);border-radius:10px;padding:14px;z-index:1001;min-width:180px;box-shadow:0 4px 20px rgba(0,0,0,.4);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;pointer-events:auto}
 #hwx-avatar-titlebar-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:none;background:transparent;color:var(--text,#ddd);cursor:pointer;opacity:.7;transition:opacity .15s;border-radius:6px;font-size:16px}
 #hwx-avatar-titlebar-btn:hover{opacity:1;background:var(--bg3,#2a2a3e)}
+/* Banner-less homepage: the gear mounts into the left rail. Defer to core's
+   .rail-btn 36px box + hover styling instead of the titlebar 32px square (the
+   id rule above would otherwise out-specify .rail-btn). */
+.rail #hwx-avatar-titlebar-btn{width:36px;height:36px;color:var(--muted,#888)}
+.rail #hwx-avatar-titlebar-btn:hover{opacity:1;background:var(--hover-bg,rgba(127,127,127,.14));color:var(--text,#ddd)}
 @media(max-width:768px){
 #hwx-assistant-avatar-overlay{bottom:100px;right:8px}
 #hwx-assistant-avatar-canvas{width:72px;height:72px}

@@ -2,7 +2,10 @@
    Scoped to hwx-export-* / hwx-print-* classes. Uses core CSS variables. */
 
 /* ── titlebar button (flex child next to Reload — no absolute positioning,
-   so it can't collide with other titlebar controls) ── */
+   so it can't collide with other titlebar controls). On the redesigned
+   banner-less homepage the button mounts into the left rail instead as
+   .hwx-export-rail, fully styled by core's .rail-btn rules — no plugin
+   sizing needed there. ── */
 .hwx-export-btn {
   display: inline-flex;
   align-items: center;

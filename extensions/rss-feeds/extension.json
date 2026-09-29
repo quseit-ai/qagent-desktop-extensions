@@ -2,7 +2,7 @@
   "id": "rss-feeds",
   "name": "RSS Feeds",
   "description": "RSS/Atom reader for the WebUI \u2014 categorized subscriptions, keyword filters, search, read tracking, and optional AI summaries via a local loopback sidecar.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "asorourx",
   "assets": {
     "scripts": [

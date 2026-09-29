@@ -1,7 +1,9 @@
 /* RSS Feeds — frontend injector (self-contained WebUI extension).
    Builds a two-pane overlay with the exact DOM ids feeds.js needs, adds a
-   titlebar launcher, and grants sidecar-proxy consent so feeds.js's repointed
-   /api/extensions/rss-feeds/sidecar/* calls reach the loopback feeds backend.
+   titlebar launcher (left-rail launcher on the redesigned banner-less homepage,
+   where the titlebar is collapsed to height:0), and grants sidecar-proxy
+   consent so feeds.js's repointed /api/extensions/rss-feeds/sidecar/* calls
+   reach the loopback feeds backend.
    No index.html edits, no fork coupling — survives upstream updates. */
 (function () {
   'use strict';
@@ -162,22 +164,50 @@
   window.hxOpenFeeds = openOverlay;
   window.hxCloseFeeds = closeOverlay;
 
+  // Classic WebUI renders the titlebar (banner) with real height. The
+  // redesigned banner-less homepage collapses .app-titlebar to height:0 with
+  // overflow:visible + pointer-events:none and hides #btnReload — a button
+  // appended there floats offset over the content and can't be clicked, so we
+  // mount into the left rail instead (core's .rail-btn styles it and it stays
+  // visible on every panel — same pattern as external-app-tab).
+  function titlebarUsable() {
+    var t = document.querySelector('.app-titlebar');
+    if (!t) return false;
+    if (window.getComputedStyle(t).display === 'none') return false;
+    return t.getBoundingClientRect().height > 2;
+  }
+
   function addLauncher() {
     if (document.getElementById('hxFeedsLauncher')) return;
-    var host = document.querySelector('.app-titlebar')
-      || document.querySelector('header')
-      || document.body;
     var btn = document.createElement('button');
     btn.id = 'hxFeedsLauncher';
     btn.type = 'button';
     // Host replaced native tooltips (#1775) — use its has-tooltip convention,
     // not a native title=.
-    btn.className = 'hx-feeds-launcher has-tooltip has-tooltip--bottom';
     btn.setAttribute('data-tooltip', 'Feeds');
     btn.setAttribute('aria-label', 'Open Feeds');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>';
     btn.addEventListener('click', openOverlay);
-    host.appendChild(btn);
+    if (titlebarUsable()) {
+      btn.className = 'hx-feeds-launcher has-tooltip has-tooltip--bottom';
+      btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>';
+      document.querySelector('.app-titlebar').appendChild(btn);
+      return;
+    }
+    var rail = document.querySelector('.rail');
+    if (!rail) {
+      // Pre-redesign fallback chain for hosts without a titlebar element.
+      var host = document.querySelector('header') || document.body;
+      btn.className = 'hx-feeds-launcher has-tooltip has-tooltip--bottom';
+      btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>';
+      host.appendChild(btn);
+      return;
+    }
+    btn.className = 'rail-btn nav-tab has-tooltip hx-feeds-rail';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>';
+    // Sit with the content tabs, just above the rail spacer / settings.
+    var spacer = rail.querySelector('.rail-spacer');
+    if (spacer) rail.insertBefore(btn, spacer);
+    else rail.appendChild(btn);
   }
 
   function init() { buildOverlay(); addLauncher(); }
