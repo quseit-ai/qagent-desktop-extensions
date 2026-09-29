@@ -2,9 +2,13 @@
 #hwx-assistant-avatar-overlay canvas{pointer-events:auto;cursor:pointer}
 #hwx-assistant-avatar-canvas{width:96px;height:96px;display:block;image-rendering:auto;transition:transform .15s}
 #hwx-assistant-avatar-overlay:hover #hwx-assistant-avatar-canvas{transform:scale(1.08)}
-#hwx-avatar-settings{position:fixed;background:var(--bg2,#1e1e2e);border:1px solid var(--border2,#555);border-radius:10px;padding:14px;z-index:1001;min-width:180px;box-shadow:0 4px 20px rgba(0,0,0,.4);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;pointer-events:auto}
+/* --surface/--text/--hover-bg are defined by every current theme. The old
+   --bg2/--bg3 vars are NOT defined by the redesigned theme, whose light skins
+   fell through to the dark #1e1e2e/#2a2a3e fallbacks below — a black panel
+   with invisible (dark-on-dark) settings. */
+#hwx-avatar-settings{position:fixed;background:var(--surface,#fff);color:var(--text,#111);border:1px solid var(--border2,rgba(127,127,127,.35));border-radius:10px;padding:14px;z-index:1001;min-width:180px;box-shadow:0 4px 20px rgba(0,0,0,.18);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;pointer-events:auto}
 #hwx-avatar-titlebar-btn{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:none;background:transparent;color:var(--text,#ddd);cursor:pointer;opacity:.7;transition:opacity .15s;border-radius:6px;font-size:16px}
-#hwx-avatar-titlebar-btn:hover{opacity:1;background:var(--bg3,#2a2a3e)}
+#hwx-avatar-titlebar-btn:hover{opacity:1;background:var(--hover-bg,rgba(127,127,127,.14))}
 /* Banner-less homepage: the gear mounts into the left rail. Defer to core's
    .rail-btn 36px box + hover styling instead of the titlebar 32px square (the
    id rule above would otherwise out-specify .rail-btn). */
