@@ -75,7 +75,33 @@ async function stageSource(sourcePath) {
   await mkdir(path.join(outputRoot, relativeDir), { recursive: true });
   await writeFile(path.join(outputRoot, relativeDir, 'update.json'), JSON.stringify(update, null, 2) + '\n');
   console.log(`staged ${source.brandId} desktop update v${source.versionCode}`);
+  return { brandId: source.brandId, channel: source.channel || 'stable', versionCode: source.versionCode, version: source.version || null };
+}
+
+// The desktop client polls one small brand-level file to decide whether fetching
+// the full channel feed is worth it. It is derived from the same source manifests
+// that drive the release, so it cannot drift from what is actually published.
+async function writeBrandVersionIndex(staged) {
+  const latest = new Map();
+  for (const entry of staged) {
+    if (entry.channel !== 'stable') continue;
+    const current = latest.get(entry.brandId);
+    if (!current || entry.versionCode > current.versionCode) latest.set(entry.brandId, entry);
+  }
+  for (const entry of latest.values()) {
+    const brandDir = path.join(outputRoot, 'desktop', entry.brandId);
+    await mkdir(brandDir, { recursive: true });
+    await writeFile(path.join(brandDir, 'update.json'), JSON.stringify({
+      versionCode: entry.versionCode,
+      version: entry.version,
+      brandId: entry.brandId,
+      channel: entry.channel,
+    }, null, 2) + '\n');
+    console.log(`staged ${entry.brandId} desktop version check at v${entry.versionCode}`);
+  }
 }
 
 const sourcePaths = sourceArg === '--all' ? await findSources('desktop') : [sourceArg];
-for (const sourcePath of sourcePaths) await stageSource(sourcePath);
+const staged = [];
+for (const sourcePath of sourcePaths) staged.push(await stageSource(sourcePath));
+await writeBrandVersionIndex(staged);
