@@ -61,18 +61,19 @@ mode works entirely same-origin against WebUI's own file APIs.
 ## What It Does
 
 - Adds a rail button (with the content tabs, above Settings).
-- Clicking it opens a full-area overlay with a top bar: the app label, a
-  **Workspace** label + switcher next to it (workspace mode only), and a row
-  of icon buttons styled like the WebUI's own toolbar buttons — configure,
-  open in new tab, refresh, file-list toggle (immediately left of close), and
-  close. Hovering an icon shows its tooltip; the framed content sits below.
+- Clicking it opens a full-area overlay with a top bar: the app label
+  (external mode only), a **Workspace** label + switcher (workspace mode
+  only), and a row of icon buttons styled like the WebUI's own toolbar
+  buttons — configure, open in new tab, refresh, file-list toggle
+  (immediately left of close), and close. Hovering an icon shows its tooltip;
+  the framed content sits below.
 - **Configure** dialog: pick the mode (**External URL** / **Workspace
   files**); external mode sets a label + an `http(s)` URL. Everything is
   stored in the native Settings → Extensions → External App Tab settings store
   when available, with a legacy localStorage fallback on older core.
 - Workspace mode:
-  - the top-bar **Workspace** switcher (next to the app label) lists the
-    profile's workspaces (`GET /api/workspaces`, same list as
+  - the top-bar **Workspace** switcher (the only title in workspace mode)
+    lists the profile's workspaces (`GET /api/workspaces`, same list as
     Settings → Workspaces); the last-used workspace is remembered per
     extension settings
   - the file-list icon toggles the right-side list; directories expand lazily

@@ -514,6 +514,9 @@
     const isWs = cfg.mode === 'workspace';
     // Workspace-only controls are hidden in external mode.
     ov.querySelector('.hwx-extapp-wsgroup').hidden = !isWs;
+    // In workspace mode the workspace switcher is the only top-bar title, so
+    // the app label would only duplicate the tab name.
+    ov.querySelector('.hwx-extapp-title').hidden = isWs;
     ov.querySelector('.hwx-extapp-refresh').hidden = !isWs;
     ov.querySelector('.hwx-extapp-files-btn').hidden = !isWs;
     // Localized bar text is stamped per render so a locale switch applies
@@ -568,14 +571,12 @@
 
   // ── workspace mode: bar + file tree + preview ────────────────────────────
   function renderWorkspaceContent(ov) {
-    const cfg = loadCfg();
     const body = ov.querySelector('.hwx-extapp-body');
     body.innerHTML = '';
-    // Title stays the app label; the workspace name lives in the switcher.
-    ov.querySelector('.hwx-extapp-title').textContent = cfg.label || t('externalApp');
 
-    // The switcher lives in the top bar next to the label. Repopulate it per
-    // render; its change listener is attached once (marked via dataset).
+    // The switcher lives in the top bar (the app label is hidden in workspace
+    // mode). Repopulate it per render; its change listener is attached once
+    // (marked via dataset).
     const wsSel = ov.querySelector('.hwx-extapp-ws-select');
     if (!wsSel.dataset.bound) {
       wsSel.dataset.bound = '1';
@@ -668,10 +669,8 @@
     WS.currentFile = '';
     const cfg = loadCfg();
     saveCfg({ ...cfg, workspace: wsPath, lastFile: '' });
-    // Title stays the app label; the active workspace name is carried by the
-    // switcher (and its selected option) in the top bar.
-    const title = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-title');
-    if (title) title.textContent = cfg.label || t('externalApp');
+    // The active workspace name is carried by the switcher (and its selected
+    // option) in the top bar.
     setPreviewEmpty();
     await loadTreeRoot(gen);
     if (!overlayOpen || gen !== WS.gen) return;
