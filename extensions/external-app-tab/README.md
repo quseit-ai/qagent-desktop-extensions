@@ -213,12 +213,17 @@ any app you embed as trusted: you opt in per-origin by allow-listing it via
 `HERMES_WEBUI_CSP_FRAME_EXTRA`, and cross-origin targets remain bounded by the
 same-origin policy.
 
-Workspace-mode previews run in a stricter frame: `sandbox="allow-scripts
+Workspace-mode HTML previews run in a stricter frame: `sandbox="allow-scripts
 allow-popups allow-popups-to-escape-sandbox"` with **no**
 `allow-same-origin`, matching the server-side CSP sandbox core puts on
 `/api/file/raw?…&inline=1` responses. The previewed file executes scripts but
 lives in an opaque origin — it cannot read WebUI cookies/storage or touch the
-parent page. Dangerous MIME types (`text/html`, `image/svg+xml`,
+parent page. **PDF previews are the one exception**: Chromium renders PDFs
+with its built-in viewer, which is refused inside a sandboxed frame
+(`net::ERR_BLOCKED_BY_CLIENT`), so the PDF frame carries no sandbox attribute
+— exactly like core's native workspace PDF frame (`#previewPdfFrame`).
+Chromium's own viewer parses the file; no page script from our origin runs in
+that frame. Dangerous MIME types (`text/html`, `image/svg+xml`,
 `application/xhtml+xml`) are served inline only through this opt-in path;
 core injects `<base target="_blank">` so links escape to a new tab. All
 user-supplied strings (label, URL) are escaped where rendered; file names are

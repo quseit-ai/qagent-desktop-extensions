@@ -863,17 +863,27 @@
     return node;
   }
 
-  function setPreviewFrame(url, titleRel) {
+  function setPreviewFrame(url, titleRel, opts) {
+    opts = opts || {};
     const host = clearPreviewDom();
     if (!host) return;
     const frame = document.createElement('iframe');
     frame.className = 'hwx-extapp-iframe';
     frame.src = url;
     frame.setAttribute('title', titleRel || t('preview'));
-    // Same-origin /api/file/raw content. Core already serves &inline=1 HTML
-    // with CSP `sandbox allow-scripts ...`; mirror it on the element and keep
-    // allow-same-origin OFF so the previewed file stays in an opaque origin.
-    frame.setAttribute('sandbox', WS_IFRAME_SANDBOX);
+    // Same-origin /api/file/raw content. For HTML, core already serves
+    // &inline=1 with CSP `sandbox allow-scripts ...`; mirror it on the element
+    // and keep allow-same-origin OFF so the previewed file stays in an opaque
+    // origin.
+    //
+    // PDF deliberately opts out of the element sandbox (opts.sandbox === false):
+    // Chromium renders PDFs with its built-in viewer, and that viewer is
+    // refused inside a sandboxed frame — the request dies as
+    // net::ERR_BLOCKED_BY_CLIENT. Core's native PDF preview frame
+    // (#previewPdfFrame) has no sandbox attribute either. The PDF is parsed by
+    // Chromium's viewer (not page script), so this does not widen the HTML
+    // preview's isolation.
+    if (opts.sandbox !== false) frame.setAttribute('sandbox', WS_IFRAME_SANDBOX);
     frame.setAttribute('referrerpolicy', 'same-origin');
     host.appendChild(frame);
   }
@@ -1195,7 +1205,8 @@
       } else if (PDF_EXTS.has(ext)) {
         const sid = await ensurePreviewSession(WS.current);
         if (gen !== WS.previewGen) return;
-        setPreviewFrame(rawFileUrl(sid, rel, { bust: opts.bust }), rel);
+        // No element sandbox: Chromium's PDF viewer cannot run in one.
+        setPreviewFrame(rawFileUrl(sid, rel, { bust: opts.bust }), rel, { sandbox: false });
       } else if (AUDIO_EXTS.has(ext) || VIDEO_EXTS.has(ext)) {
         const sid = await ensurePreviewSession(WS.current);
         if (gen !== WS.previewGen) return;
