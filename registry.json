@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-29T02:07:59.117Z",
+  "generated_at": "2026-10-28T01:46:36.930Z",
   "extensions": [
     {
       "id": "assistant-avatar",
@@ -56,7 +56,7 @@
       "download": "https://qde.quseit.com/artifacts/assistant-avatar-0.4.2.zip",
       "sha256": "1b8a8fedbac3d144a0902b95cb7ed7ccd96c19708fd6c1c211d081398589f813",
       "artifact_size": 42060,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -130,7 +130,7 @@
       "download": "https://qde.quseit.com/artifacts/auto-list-0.1.0.zip",
       "sha256": "57157ce7b3317ba5011689198dae1fcec3eb4ef82737d65b5d5a7574da7b9fea",
       "artifact_size": 18347,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -204,7 +204,7 @@
       "download": "https://qde.quseit.com/artifacts/custom-avatar-0.1.0.zip",
       "sha256": "69500228fdc4c8b2a4b94d26ee4f6d29c604b3709fd2f342c2f03416e18ee76f",
       "artifact_size": 18511,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -283,7 +283,7 @@
       "download": "https://qde.quseit.com/artifacts/custom-branding-0.1.0.zip",
       "sha256": "dffb81cf868a143ad6e1855ba8da7edd85e3c7a890ae3259fa707ec73a743593",
       "artifact_size": 31683,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -400,7 +400,7 @@
       "download": "https://qde.quseit.com/artifacts/desktop-companion-0.1.0.zip",
       "sha256": "c9f2724f778a4b89ecd5ea9079d36cf56a253d617514b86d93a4815a60c5601c",
       "artifact_size": 4189215,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 10,
       "file_sha256": [
         {
@@ -495,7 +495,7 @@
       "download": "https://qde.quseit.com/artifacts/e-ink-skin-0.1.0.zip",
       "sha256": "b7f5d253c94bf649201d25b0eaabb481da83e2adccd47b710c90b98ffe7873c5",
       "artifact_size": 10910,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -519,8 +519,8 @@
     {
       "id": "external-app-tab",
       "name": "External App Tab",
-      "description": "Pin a compatible self-hosted web app (Grafana, a dashboard, or another framable tool) as a tab inside Hermes WebUI via an iframe. Adds a rail button that opens a full-area panel framing a configurable URL.",
-      "version": "0.1.0",
+      "description": "Pin a compatible self-hosted web app as a tab inside Hermes WebUI via an iframe, or browse the profile's trusted workspaces and preview local files (HTML first) in a sandboxed frame with a top-bar workspace switcher and a collapsible file list.",
+      "version": "0.2.0",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -542,8 +542,16 @@
       "screenshots": [],
       "permissions": {
         "webui_api": {
-          "read": [],
-          "write": []
+          "read": [
+            "session",
+            "/api/workspaces",
+            "/api/list",
+            "/api/file",
+            "/api/file/raw"
+          ],
+          "write": [
+            "/api/session/new"
+          ]
         },
         "webui_navigation": false,
         "dom": {
@@ -566,6 +574,12 @@
       },
       "settings_schema": [
         {
+          "key": "mode",
+          "type": "string",
+          "label": "Mode (external URL or workspace files)",
+          "default": "external"
+        },
+        {
           "key": "url",
           "type": "string",
           "label": "App URL",
@@ -576,35 +590,47 @@
           "type": "string",
           "label": "Rail label",
           "default": "App"
+        },
+        {
+          "key": "workspace",
+          "type": "string",
+          "label": "Workspace path",
+          "default": ""
+        },
+        {
+          "key": "lastFile",
+          "type": "string",
+          "label": "Last previewed file",
+          "default": ""
         }
       ],
       "entry_path": "extensions/external-app-tab/extension.json",
       "runtime_manifest_path": "extensions/external-app-tab/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/external-app-tab-0.1.0.zip",
-      "sha256": "9ee559edfca15a323b5cce76a4132b23c6cc72cb525e27efe76a42f17da7fa10",
-      "artifact_size": 28442,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "download": "https://qde.quseit.com/artifacts/external-app-tab-0.2.0.zip",
+      "sha256": "e3f70b25c58d95cc720b1af3ac8f252103003e125911041b55c666cc7c85f13e",
+      "artifact_size": 59780,
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "75662a1eb3a5732fd046c81a181bf909dd5526dd9535a340eca6f479b99141fd"
+          "sha256": "8bca64288a0f0a94e92bfb197f6e356477fc158395b66668bab7697917595d68"
         },
         {
           "path": "assets/external-app-tab.css",
-          "sha256": "c2e46db863409f79ba44867a2ace68e055facb2809eda7852500aee5dfb3064c"
+          "sha256": "0a8e63ffbb63f6b47e4e6828b76197d75dc2aa064ce090910434d04606893f6c"
         },
         {
           "path": "assets/external-app-tab.js",
-          "sha256": "a4235ffd909290af6c5e426288523751bf9e36c76ae642e6f56e41edbabd8cd3"
+          "sha256": "f1b9786f7d04f48e5bab83590e6af01913b35b80105157f1e0806d71d9942818"
         },
         {
           "path": "extension.json",
-          "sha256": "1e7af5d38789b128ee812c56a6ceef117f7f66e2b062667d1c6ad49f637b97d5"
+          "sha256": "82eeee4f538ea1af73944406fd3889bc093aaed1800039087327687a30e03565"
         },
         {
           "path": "manifest.json",
-          "sha256": "7a9f68cc21cd5b2f121579babcbc09a7789b2c60e5f2ea5c65fed65c8a7f83d1"
+          "sha256": "9f2348d5715c4d6d730bc416d4535285601d96ded5bad9d6945b932f420ba316"
         }
       ]
     },
@@ -665,7 +691,7 @@
       "download": "https://qde.quseit.com/artifacts/mcp-tool-shortcuts-0.1.0.zip",
       "sha256": "96b75f3c61855b51bed73dc8501f097fadd8eacf4abad422e61895922e61c770",
       "artifact_size": 21481,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -743,7 +769,7 @@
       "download": "https://qde.quseit.com/artifacts/message-pins-0.1.0.zip",
       "sha256": "c7ec3dbbe253b7f742e20eabc9e306720b102275ec043879bd4dd7e9928dfbea",
       "artifact_size": 39587,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -819,7 +845,7 @@
       "download": "https://qde.quseit.com/artifacts/mobile-conversations-0.1.1.zip",
       "sha256": "6c9f73ba8043deb56ad6d536c6d837ef591bb2546e21c56c782384d67725bb16",
       "artifact_size": 27322,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -902,7 +928,7 @@
       "download": "https://qde.quseit.com/artifacts/mobile-haptics-0.1.0.zip",
       "sha256": "c1b9828de8c2e7eee3ba78c453e6918b97bb15bb4eb38f58f312936da75d7d8c",
       "artifact_size": 11383,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -976,7 +1002,7 @@
       "download": "https://qde.quseit.com/artifacts/model-favorites-0.1.0.zip",
       "sha256": "4bb82d50bdbb94a18d7c9a163d68a3537bcaec9aea55aa84bce3e43eb0dec409",
       "artifact_size": 20068,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1076,7 +1102,7 @@
       "download": "https://qde.quseit.com/artifacts/profile-avatars-0.1.1.zip",
       "sha256": "a46fa3707ce136e430cee03bd500dabd16a82d60770c66dd5daeb0bd85c4c8d3",
       "artifact_size": 88994,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 11,
       "file_sha256": [
         {
@@ -1221,7 +1247,7 @@
       "download": "https://qde.quseit.com/artifacts/rss-feeds-0.1.1.zip",
       "sha256": "baabaaa84f13205b0854bbe5b4851be840e3bcef090931b149e82e6a27d727fb",
       "artifact_size": 874550,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 17,
       "file_sha256": [
         {
@@ -1347,7 +1373,7 @@
       "download": "https://qde.quseit.com/artifacts/session-export-pdf-0.1.1.zip",
       "sha256": "1516762c986f63652743051b9fbb4e150f02523e4416a3f09ed4ac83234c3cbe",
       "artifact_size": 29511,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
@@ -1422,7 +1448,7 @@
       "download": "https://qde.quseit.com/artifacts/skin-pack-0.1.0.zip",
       "sha256": "21519b5235a4c967e86f4624a8c6866d353ab4a8d1776efa13eaf955fac1a22d",
       "artifact_size": 14481,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 4,
       "file_sha256": [
         {
@@ -1503,7 +1529,7 @@
       "download": "https://qde.quseit.com/artifacts/theme-creator-0.3.6.zip",
       "sha256": "c0d99ce20eaa4d842e7c9776c90c171925ea9c67b30adb04bd38c99f0a971bfa",
       "artifact_size": 1934499,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 6,
       "file_sha256": [
         {
@@ -1584,7 +1610,7 @@
       "download": "https://qde.quseit.com/artifacts/typography-0.1.0.zip",
       "sha256": "682ff90d60199090d8371bd5259ac3a1e18b1e57780ee627747c996f12f52769",
       "artifact_size": 76681,
-      "published_at": "2026-09-29T02:07:59.117Z",
+      "published_at": "2026-10-28T01:46:36.930Z",
       "file_count": 5,
       "file_sha256": [
         {
