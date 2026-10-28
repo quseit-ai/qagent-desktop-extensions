@@ -156,28 +156,37 @@
 .hwx-extapp-wslabel {
   flex: 0 0 auto;
   align-self: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 24px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
+  letter-spacing: .02em;
   color: var(--muted, #888);
 }
+/* appearance:none is load-bearing: the native Windows select lays its text
+   out with its own metrics, which ignores line-height and leaves the label
+   and the control's text visibly off-baseline. With the native chrome gone,
+   the 22px content box + matching line-height centers the text exactly in
+   the label's 24px band; the chevron is drawn as a background SVG. */
 .hwx-extapp-ws-select {
+  appearance: none;
+  -webkit-appearance: none;
   box-sizing: border-box;
   align-self: center;
   height: 24px;
   min-width: 0;
   max-width: 220px;
-  padding: 0 6px;
+  margin: 0;
+  padding: 0 22px 0 8px;
   font-family: inherit;
   font-size: 12px;
   line-height: 22px;
   color: var(--text, #fff);
-  background: var(--code-bg, rgba(127,127,127,.1));
+  background-color: var(--code-bg, rgba(127,127,127,.1));
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238b8b8b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
   border: 1px solid var(--border2, rgba(127,127,127,.25));
   border-radius: 6px;
-  vertical-align: middle;
 }
 .hwx-extapp-ws-select:hover { border-color: var(--border, rgba(127,127,127,.4)); }
 .hwx-extapp-ws-select:focus { outline: none; border-color: var(--accent, #6366f1); }
