@@ -3,7 +3,7 @@
     {
       "id": "external-app-tab",
       "name": "External App Tab",
-      "description": "Pin a compatible self-hosted web app as a tab inside Hermes WebUI via an iframe.",
+      "description": "Pin a compatible self-hosted web app as a tab inside Hermes WebUI via an iframe, or preview local workspace files in a sandboxed frame.",
       "scripts": [
         "assets/external-app-tab.js"
       ],
@@ -17,6 +17,12 @@
       },
       "settings_schema": [
         {
+          "key": "mode",
+          "type": "string",
+          "label": "Mode (external URL or workspace files)",
+          "default": "external"
+        },
+        {
           "key": "url",
           "type": "string",
           "label": "App URL",
@@ -27,6 +33,18 @@
           "type": "string",
           "label": "Rail label",
           "default": "App"
+        },
+        {
+          "key": "workspace",
+          "type": "string",
+          "label": "Workspace path",
+          "default": ""
+        },
+        {
+          "key": "lastFile",
+          "type": "string",
+          "label": "Last previewed file",
+          "default": ""
         }
       ]
     }

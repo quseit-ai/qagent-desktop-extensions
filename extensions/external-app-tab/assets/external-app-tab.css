@@ -138,3 +138,129 @@
 @media (prefers-reduced-motion: reduce) {
   .hwx-extapp-btn { transition: none; }
 }
+
+/* ── Workspace mode ─────────────────────────────────────────────────────── */
+
+/* Top-bar workspace controls (switcher + Files + Refresh), after the spacer
+   so the switcher sits at the right end next to the action buttons. */
+.hwx-extapp-wsbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.hwx-extapp-ws-select {
+  max-width: 220px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Body: preview area (left) + collapsible file list (right). */
+.hwx-extapp-ws-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.hwx-extapp-preview {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.hwx-extapp-files {
+  flex: 0 0 auto;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border, rgba(127,127,127,.3));
+  background: var(--surface, #1a1d27);
+  overflow: hidden;
+}
+.hwx-extapp-files.collapsed { display: none; }
+.hwx-extapp-files-toggle.active {
+  border-color: var(--accent, #6366f1);
+  color: var(--accent, #6366f1);
+}
+.hwx-extapp-files-head {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted, #888);
+  border-bottom: 1px solid var(--border2, rgba(127,127,127,.2));
+}
+
+/* Flat tree rows; depth-based indentation keeps expand/collapse removal simple. */
+.hwx-extapp-tree {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 6px 6px 12px;
+}
+.hwx-extapp-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text, #fff);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hwx-extapp-tree-row:hover { background: var(--hover-bg, rgba(127,127,127,.16)); }
+.hwx-extapp-tree-row.active {
+  background: rgba(99,102,241,.18);
+  color: var(--accent, #a5b4fc);
+}
+.hwx-extapp-tree-row.loading .hwx-extapp-tree-chev { opacity: .4; }
+.hwx-extapp-tree-chev {
+  flex: 0 0 auto;
+  width: 10px;
+  font-size: 10px;
+  color: var(--muted, #888);
+  transition: transform .12s ease;
+}
+.hwx-extapp-tree-row[aria-expanded="true"] .hwx-extapp-tree-chev { transform: rotate(90deg); }
+/* File rows get a small dot marker where dir rows have the chevron. */
+.hwx-extapp-tree-row:not(.is-dir) .hwx-extapp-tree-chev {
+  font-size: 0;
+}
+.hwx-extapp-tree-row:not(.is-dir) .hwx-extapp-tree-chev::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin: 0 3px;
+  border-radius: 50%;
+  background: var(--muted, #888);
+}
+.hwx-extapp-tree-row.active:not(.is-dir) .hwx-extapp-tree-chev::before {
+  background: var(--accent, #6366f1);
+}
+.hwx-extapp-tree-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hwx-extapp-files-status {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted, #888);
+  border-top: 1px solid var(--border2, rgba(127,127,127,.2));
+}
+.hwx-extapp-files-status.is-error { color: var(--error, #e5534b); }
+
+/* Config dialog mode radios */
+.hwx-extapp-modes { display: flex; gap: 14px; font-size: 13px; color: var(--text, #fff); }
+.hwx-extapp-mode { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hwx-extapp-tree-chev { transition: none; }
+}
