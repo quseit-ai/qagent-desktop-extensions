@@ -1,15 +1,30 @@
 # External App Tab
 
 External App Tab is a trusted local Hermes WebUI extension with two modes,
-one rail tab:
+one rail tab. **Workspace files is the default mode**; External URL is the
+opt-in alternative (switch it in **Configure**):
 
-- **External URL** — pins a compatible self-hosted web app (Grafana,
-  Vaultwarden, Linkwarden, a personal dashboard) as a tab inside the WebUI via
-  an `<iframe>` framing a URL you configure.
 - **Workspace files** — browses the profile's trusted workspaces and previews
   local files, HTML first: a workspace switcher in the top-right corner, a
   collapsible file list on the right side, and a sandboxed preview area.
   Entering the panel auto-opens the first HTML file of the current workspace.
+  With no saved config it starts on the server's **last workspace**
+  (`/api/workspaces` → `last`).
+- **External URL** — pins a compatible self-hosted web app (Grafana,
+  Vaultwarden, Linkwarden, a personal dashboard) as a tab inside the WebUI via
+  an `<iframe>` framing a URL you configure.
+
+### Where the config lives (desktop restart caveat)
+
+Config is stored through `HermesExtensionSettings`, which (like the legacy
+fallback key) is **localStorage** — scoped to scheme + host + **port**. The
+Electron desktop app binds a random free port on every launch, so a restart
+is a new origin and the saved config is empty. That is why the extension
+defaults to workspace mode and falls back to the server-persisted last
+workspace: after a restart the panel opens ready to preview without a
+re-selection. A specific non-last workspace chosen in the panel lasts for the
+current app session only; persisting it across desktop restarts would need
+either a fixed port or server-side extension settings in core.
 
 The external mode works best for **framable dashboards, status pages, and
 local tools** that don't require a cross-origin cookie login; see **Known
@@ -18,7 +33,9 @@ mode works entirely same-origin against WebUI's own file APIs.
 
 ## 中文说明（Chinese） / 中文說明（繁體）
 
-本扩展在左侧导航栏添加一个按钮，点开后是一个全屏面板，提供两种模式：
+本扩展在左侧导航栏添加一个按钮，点开后是一个全屏面板，**默认使用「工作区文件」模式**，两种模式可通过 Configure 切换：
+
+> 桌面端每次启动使用随机端口，而扩展设置存于 localStorage（按协议+主机+端口隔离），因此重启后本地配置会清空。扩展已默认进入工作区模式，并回退到服务端持久化的「上次工作区」，所以重启后打开面板即可直接预览，无需重新选择。
 
 - **外部 URL 模式**：把一个兼容的自托管 Web 应用（Grafana、个人看板等）
   通过 `<iframe>` 内嵌为标签页。内嵌**外部来源**需要运维通过

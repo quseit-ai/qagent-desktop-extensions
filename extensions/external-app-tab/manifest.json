@@ -19,8 +19,8 @@
         {
           "key": "mode",
           "type": "string",
-          "label": "Mode / 模式",
-          "default": "external"
+          "label": "Mode / 模式 (default: workspace)",
+          "default": "workspace"
         },
         {
           "key": "url",

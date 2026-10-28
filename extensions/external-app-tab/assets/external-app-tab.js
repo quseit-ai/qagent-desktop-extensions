@@ -62,19 +62,34 @@
   let overlayOpen = false;
 
   // ── config ───────────────────────────────────────────────────────────────
+  // Workspace mode is the default: the panel exists to preview workspace
+  // files, and the plain external-URL mode is the opt-in side.
+  //
+  // Persistence caveat: core's extension settings (and the legacy key) live in
+  // localStorage, which is scoped to scheme+host+PORT. The Electron desktop app
+  // binds a random free port on every launch (electron/main.js findFreePort),
+  // so a restart means a new origin and an empty store. That is why the panel
+  // must open in a sensible state with no saved config: workspace mode by
+  // default, plus the server-persisted "last workspace" from /api/workspaces.
+  const DEFAULT_MODE = 'workspace';
+
+  function normalizeMode(v) {
+    return v === 'external' ? 'external' : DEFAULT_MODE;
+  }
+
   function legacyLoadCfg() {
     try {
       const raw = localStorage.getItem(CFG_KEY);
-      if (!raw) return { url: '', label: 'App', mode: 'external', workspace: '', lastFile: '' };
+      if (!raw) return { url: '', label: 'App', mode: DEFAULT_MODE, workspace: '', lastFile: '' };
       const c = JSON.parse(raw) || {};
       return {
         url: typeof c.url === 'string' ? c.url : '',
         label: c.label || 'App',
-        mode: c.mode === 'workspace' ? 'workspace' : 'external',
+        mode: normalizeMode(c.mode),
         workspace: typeof c.workspace === 'string' ? c.workspace : '',
         lastFile: typeof c.lastFile === 'string' ? c.lastFile : '',
       };
-    } catch (_) { return { url: '', label: 'App', mode: 'external', workspace: '', lastFile: '' }; }
+    } catch (_) { return { url: '', label: 'App', mode: DEFAULT_MODE, workspace: '', lastFile: '' }; }
   }
 
   function extSettings() {
@@ -108,10 +123,26 @@
         try { s.set('label', legacy.label); } catch (_) {}
         label = legacy.label;
       }
+      // A store without a saved mode (fresh profile / schema added later)
+      // falls back to the legacy value, then to the workspace default. Same
+      // for workspace/lastFile, which the mirrored legacy key may still hold
+      // when the settings store was not primed at save time.
+      if (!mode) {
+        mode = legacy.mode;
+        try { s.set('mode', mode); } catch (_) {}
+      }
+      if (!workspace && legacy.workspace) {
+        workspace = legacy.workspace;
+        try { s.set('workspace', workspace); } catch (_) {}
+      }
+      if (!lastFile && legacy.lastFile) {
+        lastFile = legacy.lastFile;
+        try { s.set('lastFile', lastFile); } catch (_) {}
+      }
       return {
         url: typeof url === 'string' ? url : '',
         label: (typeof label === 'string' && label) || 'App',
-        mode: mode === 'workspace' ? 'workspace' : 'external',
+        mode: normalizeMode(mode),
         workspace: typeof workspace === 'string' ? workspace : '',
         lastFile: typeof lastFile === 'string' ? lastFile : '',
       };
@@ -123,7 +154,7 @@
     const next = {
       url: cfg.url || '',
       label: cfg.label || 'App',
-      mode: cfg.mode === 'workspace' ? 'workspace' : 'external',
+      mode: normalizeMode(cfg.mode),
       workspace: cfg.workspace || '',
       lastFile: cfg.lastFile || '',
     };
@@ -132,9 +163,11 @@
       try {
         s.set('url', next.url); s.set('label', next.label); s.set('mode', next.mode);
         s.set('workspace', next.workspace); s.set('lastFile', next.lastFile);
-        return;
       } catch (_) {}
     }
+    // Always mirror to the legacy key too: the sanctioned settings store is
+    // primed asynchronously from /api/extensions/status, so a save that lands
+    // before it is ready would otherwise be dropped silently.
     try { localStorage.setItem(CFG_KEY, JSON.stringify(next)); } catch (_) {}
   }
 
