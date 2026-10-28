@@ -240,6 +240,150 @@
   overflow: hidden;
 }
 .hwx-extapp-files.collapsed { display: none; }
+
+/* ── Rich preview types (mirrors core's workspace preview matrix) ───────── */
+.hwx-extapp-preview-view {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+/* Images / audio / video: centered on a plain backdrop. Absolute fill (the
+   preview host is position:relative) avoids percentage-height collapse. */
+.hwx-extapp-media-view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  background: var(--bg, #11131a);
+}
+.hwx-extapp-media-view img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.hwx-extapp-media-view audio { width: min(560px, 100%); }
+.hwx-extapp-media-view video { max-width: 100%; max-height: 100%; }
+
+/* Code / plain text. */
+.hwx-extapp-code {
+  margin: 0;
+  padding: 12px 14px;
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre;
+  tab-size: 2;
+  color: var(--text, #fff);
+}
+.hwx-extapp-code code { font: inherit; }
+
+/* Rendered markdown (core's renderMd output). */
+.hwx-extapp-md {
+  padding: 16px 20px;
+  color: var(--text, #fff);
+  font-size: 13px;
+  line-height: 1.65;
+  max-width: 900px;
+}
+.hwx-extapp-md h1, .hwx-extapp-md h2, .hwx-extapp-md h3 { line-height: 1.3; }
+.hwx-extapp-md img { max-width: 100%; }
+.hwx-extapp-md pre {
+  background: var(--code-bg, rgba(127,127,127,.1));
+  padding: 10px 12px;
+  border-radius: 8px;
+  overflow: auto;
+}
+.hwx-extapp-md code { font-family: var(--mono, ui-monospace, Menlo, Consolas, monospace); }
+.hwx-extapp-md table { border-collapse: collapse; }
+.hwx-extapp-md th, .hwx-extapp-md td {
+  border: 1px solid var(--border2, rgba(127,127,127,.25));
+  padding: 4px 8px;
+}
+.hwx-extapp-md blockquote {
+  margin: 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--border, rgba(127,127,127,.4));
+  color: var(--muted, #888);
+}
+
+/* CSV / TSV table. */
+.hwx-extapp-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  color: var(--text, #fff);
+}
+.hwx-extapp-table th, .hwx-extapp-table td {
+  border: 1px solid var(--border2, rgba(127,127,127,.25));
+  padding: 4px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.hwx-extapp-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface, #1a1d27);
+  z-index: 1;
+}
+
+/* docx-preview renders its own light-paper styles; give it a readable page. */
+.hwx-extapp-docx { background: #e9e9ea; padding: 12px; }
+.hwx-extapp-docx .docx-wrapper { background: transparent; padding: 0; }
+
+/* SheetJS sheet tabs + table. */
+.hwx-extapp-sheet { padding: 10px 12px; }
+.hwx-extapp-sheet-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 8px; }
+.hwx-extapp-sheet-tab {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border2, rgba(127,127,127,.25));
+  background: none;
+  color: var(--text, #fff);
+  cursor: pointer;
+}
+.hwx-extapp-sheet-tab:hover { background: var(--hover-bg, rgba(127,127,127,.16)); }
+.hwx-extapp-sheet-tab.active {
+  background: var(--accent-bg, rgba(99,102,241,.18));
+  color: var(--accent-text, #a5b4fc);
+  border-color: transparent;
+}
+.hwx-extapp-sheet table {
+  border-collapse: collapse;
+  font-size: 12px;
+  color: var(--text, #fff);
+}
+.hwx-extapp-sheet td, .hwx-extapp-sheet th {
+  border: 1px solid var(--border2, rgba(127,127,127,.25));
+  padding: 3px 6px;
+}
+.hwx-extapp-sheet-empty { padding: 12px 0; color: var(--muted, #888); font-size: 12px; }
+
+/* PptxViewJS canvas + slide navigation (absolute fill for exact sizing). */
+.hwx-extapp-pptx {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.hwx-extapp-pptx canvas {
+  max-width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, .35);
+}
+.hwx-extapp-pptx-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted, #888);
+}
+.hwx-extapp-pptx-nav .hwx-extapp-iconbtn:disabled { opacity: .35; cursor: not-allowed; }
+.hwx-extapp-pptx-nav .hwx-extapp-iconbtn:disabled:hover { background: none; color: var(--muted, #888); }
 .hwx-extapp-files-head {
   flex: 0 0 auto;
   padding: 7px 12px;

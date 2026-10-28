@@ -27,7 +27,11 @@ mode works entirely same-origin against WebUI's own file APIs.
 - **工作区文件模式**：顶栏左侧显示应用名称、`工作区` 标签和切换下拉框；
   右侧是可折叠的文件列表；点击文件即可预览。进入面板时会自动打开当前
   工作区的第一个 HTML 文件（优先 `index.html`），并记住上次预览的文件。
-  HTML 在沙箱 iframe 中渲染，图片 / PDF / 文本内联显示。
+  支持的预览格式与 WebUI 原生工作区预览一致：HTML（沙箱 iframe）、图片、
+  PDF、音频、视频、Markdown、CSV/TSV 表格、代码/文本（语法高亮）、
+  Word（.docx）、Excel（.xlsx/.xls，支持多工作表切换）、
+  PowerPoint（.pptx，上一页/下一页翻页）。压缩包、安装包、字体、
+  旧版 Office 二进制（.doc/.ppt）等会提示改用「在新标签页中打开」下载。
 
 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）；
 设置项名称使用中英双语。工作区列表来自 WebUI 的「设置 → 工作区」，
@@ -58,10 +62,20 @@ mode works entirely same-origin against WebUI's own file APIs.
     (`GET /api/list`), the refresh icon reloads the list and the preview
   - hovering a file or directory row shows its full name (rows truncate long
     names with an ellipsis)
-  - clicking a file previews it: `.html`/`.htm` render in a sandboxed iframe
-    via `GET /api/file/raw?…&inline=1` (the same endpoint and server-side CSP
-    sandbox the native workspace preview uses); images, PDFs, and text show
-    inline; other binaries download
+  - clicking a file previews it, matching the native workspace preview's
+    format matrix:
+    - `.html`/`.htm` render in a sandboxed iframe via
+      `GET /api/file/raw?…&inline=1` (same endpoint and server-side CSP sandbox
+      as the native preview)
+    - images (`png/jpg/jpeg/gif/svg/webp/ico/bmp`) in an `<img>`; PDFs in a
+      framed viewer; audio and video with native controls
+    - Markdown rendered with core's own `renderMd` (plain-text fallback)
+    - CSV/TSV parsed into a scrollable table
+    - code/text with Prism syntax highlighting when the page has Prism loaded
+    - `.docx` via docx-preview, `.xlsx`/`.xls` via SheetJS (sheet tabs),
+      `.pptx` via PptxViewJS on a canvas with previous/next slide controls
+    - archives, installers, fonts, databases and legacy Office binaries
+      (`.doc`/`.ppt`) show an "open in new tab to download" prompt
   - entering the panel auto-opens the first HTML file of the workspace
     (root-level files first, then a bounded shallow search where `index.html`
     wins); the last-previewed file is remembered and revalidated on reopen
@@ -164,7 +178,12 @@ server process.
 This is trusted local code. Current disclosed behavior:
 
 - creates extension-owned DOM (a rail button, a full-area overlay, a config
-  dialog, a workspace switcher, a file list)
+  dialog, a workspace switcher, a file list, and preview surfaces for the
+  supported formats)
+- lazy-loads core's vendored preview parsers from the **same origin**
+  (`static/vendor/{docx-preview,xlsx,jszip,chart.js,pptxviewjs}/…`) the first
+  time a matching file is previewed — same bundles, versions, and paths core
+  uses, so no new external origin and no additional network permission
 - external mode embeds a **user-configured external URL** in an `<iframe>`
   (`permissions.network_external: true`) — the URL is whatever the operator
   sets and is subject to the page CSP
@@ -278,6 +297,16 @@ Manual verification:
   `<img src="img/logo.png">`) do not resolve and will 404. Self-contained HTML
   (inline CSS/JS) and absolute/CDN URLs render fully. Multi-file site preview
   would need core-side relative-URL rewriting — deliberately out of scope here.
+- Rich previews reuse the WebUI's **vendored parser bundles** under
+  `static/vendor/` (`docx-preview`, `SheetJS`, `PptxViewJS` + `JSZip`/
+  `Chart.js`) and are lazy-loaded on first use, exactly like core. On a core
+  build that does not ship those bundles, the corresponding preview fails with
+  a "could not render" message; use open-in-new-tab to download instead. No
+  new network origin is introduced — the scripts are same-origin.
+- Office previews are capped at 20 MB (same as core). `.pptx` navigation is
+  slide-by-slide (previous/next); there is no zoom or thumbnails.
+- Markdown is rendered with core's `renderMd` when available (it is on
+  standard builds); otherwise the extension falls back to plain text.
 - The first-HTML auto-open search is bounded (root level + up to 3 levels
   deep, max 24 directory listings); in sprawling workspaces it may not find
   an HTML file that exists deeper.

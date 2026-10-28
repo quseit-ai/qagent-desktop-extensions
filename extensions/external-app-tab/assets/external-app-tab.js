@@ -183,6 +183,12 @@
       selectFileHint: 'HTML files render in a sandboxed frame; images, PDFs and text show inline.',
       noHtml: 'No HTML files found in this workspace.',
       previewFailed: 'Preview failed: {0}',
+      previewFailedPlain: 'Could not render this preview.',
+      unsupportedFile: 'This file type has no in-app preview. Use the open-in-new-tab button to view or download it.',
+      tooLargeFile: 'File is too large to preview (max 20 MB).',
+      emptySheet: 'Empty sheet',
+      prevSlide: 'Previous slide',
+      nextSlide: 'Next slide',
       dirOpenFailed: 'Could not open {0}: {1}',
       preview: 'Preview',
       configTitle: 'External app tab',
@@ -226,6 +232,12 @@
       selectFileHint: 'HTML 文件会渲染在沙箱 iframe 中；图片、PDF 和文本会内联显示。',
       noHtml: '该工作区中没有找到 HTML 文件。',
       previewFailed: '预览失败：{0}',
+      previewFailedPlain: '无法渲染该预览。',
+      unsupportedFile: '该文件类型暂不支持应用内预览，请用「在新标签页中打开」查看或下载。',
+      tooLargeFile: '文件过大，无法预览（上限 20 MB）。',
+      emptySheet: '空工作表',
+      prevSlide: '上一页',
+      nextSlide: '下一页',
       dirOpenFailed: '无法打开 {0}：{1}',
       preview: '预览',
       configTitle: '外部应用标签页',
@@ -303,6 +315,7 @@
     treeVisible: true,
     gen: 0,                // increments on every workspace switch / tree reload;
                            // stale async continuations bail when their gen is old
+    previewGen: 0,         // same guard for preview requests (rapid file clicks)
   };
 
   async function ensurePreviewSession(wsPath) {
@@ -447,7 +460,11 @@
       if (cfg.mode === 'workspace') {
         if (WS.current && WS.currentFile) {
           ensurePreviewSession(WS.current).then((sid) => {
-            window.open(rawFileUrl(sid, WS.currentFile), '_blank', 'noopener');
+            // inline=1 keeps HTML renderable in the new tab instead of
+            // force-downloading it (core serves dangerous MIME types inline
+            // only behind this opt-in, under a CSP sandbox).
+            window.open(rawFileUrl(sid, WS.currentFile, { inline: isHtmlFile(WS.currentFile) }),
+              '_blank', 'noopener');
           }).catch(() => {});
           return;
         }
@@ -612,6 +629,7 @@
   async function switchWorkspace(wsPath, opts) {
     opts = opts || {};
     const gen = ++WS.gen;
+    WS.previewGen++; // invalidate any in-flight preview from the old workspace
     WS.current = wsPath;
     WS.expanded = new Set();
     WS.currentFile = '';
@@ -660,10 +678,7 @@
     WS.expanded = new Set();
     await loadTreeRoot(gen);
     if (opts.bustPreview && WS.currentFile && gen === WS.gen) {
-      try {
-        const sid = await ensurePreviewSession(WS.current);
-        setPreviewFrame(rawFileUrl(sid, WS.currentFile, { inline: isHtmlFile(WS.currentFile), bust: true }));
-      } catch (_) {}
+      await previewFile(WS.currentFile, { bust: true });
     }
   }
 
@@ -735,21 +750,122 @@
     return HTML_FILE_RE.test(String(rel || ''));
   }
 
+  // ── preview routing (mirrors core's static/workspace.js format matrix) ───
+  // HTML      -> sandboxed iframe of /api/file/raw?inline=1
+  // images    -> <img>          PDF      -> iframe of /api/file/raw
+  // audio     -> <audio>        video    -> <video>
+  // markdown  -> core's renderMd (fallback: plain text)
+  // csv/tsv   -> parsed table   code/text-> <pre><code> + Prism when loaded
+  // docx      -> docx-preview   xlsx/xls -> SheetJS
+  // pptx      -> PptxViewJS canvas (prev/next)
+  // Everything else: download prompt (no in-app renderer).
+  // Rich parsers are the same vendored bundles core lazy-loads from
+  // static/vendor/ (same-origin), so no new network origin is introduced.
+  const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico', '.bmp']);
+  const MD_EXTS = new Set(['.md', '.markdown', '.mdown']);
+  const PDF_EXTS = new Set(['.pdf']);
+  const AUDIO_EXTS = new Set(['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.oga', '.opus', '.flac']);
+  const VIDEO_EXTS = new Set(['.mp4', '.mov', '.m4v', '.webm', '.ogv', '.avi', '.mkv']);
+  const CSV_EXTS = new Set(['.csv', '.tsv']);
+  const DOCX_EXTS = new Set(['.docx']);
+  const SHEET_EXTS = new Set(['.xlsx', '.xls']);
+  const PPTX_EXTS = new Set(['.pptx']);
+  const DOWNLOAD_EXTS = new Set([
+    '.doc', '.ppt', '.odt', '.ods', '.odp',
+    '.zip', '.tar', '.gz', '.bz2', '.7z', '.rar',
+    '.exe', '.dmg', '.pkg', '.deb', '.rpm',
+    '.woff', '.woff2', '.ttf', '.otf', '.eot',
+    '.bin', '.db', '.sqlite', '.pyc', '.class', '.so', '.dylib', '.dll',
+  ]);
+  const OFFICE_PREVIEW_MAX_BYTES = 20 * 1024 * 1024;
+  const CSV_MAX_ROWS = 2000;
+  const CSV_MAX_COLS = 100;
+
+  // Vendored parser bundles, byte-for-byte the paths core uses.
+  const VENDOR_LIBS = {
+    jszip: ['static/vendor/jszip/3.10.2/jszip.min.js', 'JSZip'],
+    docxpreview: ['static/vendor/docx-preview/0.4.1/docx-preview.min.js', 'docx'],
+    xlsx: ['static/vendor/xlsx/0.18.5/xlsx.full.min.js', 'XLSX'],
+    chart: ['static/vendor/chart.js/4.5.1/chart.umd.js', 'Chart'],
+    pptxviewer: ['static/vendor/pptxviewjs/1.3.0/PptxViewJS.min.js', 'PptxViewJS'],
+  };
+  const vendorLoads = {};
+  const PPTX = { viewer: null, canvas: null, wrap: null, pageEl: null, prevBtn: null, nextBtn: null, slide: 0 };
+
+  function extOf(rel) {
+    const s = String(rel || '');
+    const i = s.lastIndexOf('.');
+    return i >= 0 ? s.slice(i).toLowerCase() : '';
+  }
+
+  function loadVendorLib(key) {
+    const spec = VENDOR_LIBS[key];
+    if (!spec) return Promise.reject(new Error('unknown lib ' + key));
+    if (window[spec[1]]) return Promise.resolve();
+    if (vendorLoads[key]) return vendorLoads[key];
+    vendorLoads[key] = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = new URL(spec[0], document.baseURI || location.href).href;
+      s.async = true;
+      s.onload = () => {
+        if (window[spec[1]]) resolve();
+        else { delete vendorLoads[key]; reject(new Error(spec[1] + ' missing after load')); }
+      };
+      s.onerror = () => { delete vendorLoads[key]; reject(new Error('failed to load ' + spec[0])); };
+      document.head.appendChild(s);
+    });
+    return vendorLoads[key];
+  }
+
+  function previewHost() {
+    return document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-preview');
+  }
+
+  function destroyPptx() {
+    if (PPTX.viewer) { try { PPTX.viewer.destroy(); } catch (_) {} }
+    PPTX.viewer = null; PPTX.canvas = null; PPTX.wrap = null;
+    PPTX.pageEl = null; PPTX.prevBtn = null; PPTX.nextBtn = null; PPTX.slide = 0;
+  }
+
+  function clearPreviewDom() {
+    destroyPptx();
+    const host = previewHost();
+    if (host) host.innerHTML = '';
+    return host;
+  }
+
   function setPreviewEmpty() {
-    const preview = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-preview');
-    if (!preview) return;
-    preview.innerHTML = '';
+    const host = previewHost();
+    if (!host) return;
+    host.innerHTML = '';
+    destroyPptx();
     const empty = document.createElement('div');
     empty.className = 'hwx-extapp-empty hwx-extapp-preview-empty';
     empty.innerHTML = '<p>' + escapeHtml(t('selectFile')) + '</p>' +
       '<p class="hwx-extapp-muted">' + escapeHtml(t('selectFileHint')) + '</p>';
-    preview.appendChild(empty);
+    host.appendChild(empty);
+  }
+
+  function setPreviewMessage(text) {
+    const host = clearPreviewDom();
+    if (!host) return;
+    const msg = document.createElement('div');
+    msg.className = 'hwx-extapp-empty hwx-extapp-preview-empty';
+    msg.textContent = text;
+    host.appendChild(msg);
+  }
+
+  function setPreviewNode(node) {
+    const host = clearPreviewDom();
+    if (!host) return null;
+    node.classList.add('hwx-extapp-preview-view');
+    host.appendChild(node);
+    return node;
   }
 
   function setPreviewFrame(url, titleRel) {
-    const preview = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-preview');
-    if (!preview) return;
-    preview.innerHTML = '';
+    const host = clearPreviewDom();
+    if (!host) return;
     const frame = document.createElement('iframe');
     frame.className = 'hwx-extapp-iframe';
     frame.src = url;
@@ -759,22 +875,352 @@
     // allow-same-origin OFF so the previewed file stays in an opaque origin.
     frame.setAttribute('sandbox', WS_IFRAME_SANDBOX);
     frame.setAttribute('referrerpolicy', 'same-origin');
-    preview.appendChild(frame);
+    host.appendChild(frame);
   }
 
-  async function previewFile(rel) {
-    if (!rel) return;
+  function setPreviewMedia(kind, url, titleRel) {
+    const wrap = document.createElement('div');
+    wrap.className = 'hwx-extapp-media-view';
+    let el;
+    if (kind === 'image') {
+      el = document.createElement('img');
+      el.alt = titleRel || '';
+      el.src = url;
+    } else if (kind === 'audio') {
+      el = document.createElement('audio');
+      el.controls = true;
+      el.src = url;
+    } else {
+      el = document.createElement('video');
+      el.controls = true;
+      el.src = url;
+      el.setAttribute('playsinline', '');
+    }
+    wrap.appendChild(el);
+    setPreviewNode(wrap);
+  }
+
+  async function readTextFile(rel) {
+    return callSessionApi(WS.current, (sid) =>
+      'api/file?session_id=' + encodeURIComponent(sid) + '&path=' + encodeURIComponent(rel));
+  }
+
+  async function readFileBytes(rel) {
+    const sid = await ensurePreviewSession(WS.current);
+    const res = await fetch(rawFileUrl(sid, rel), { credentials: 'include' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.arrayBuffer();
+  }
+
+  function prismLangFor(rel) {
     try {
-      const sid = await ensurePreviewSession(WS.current);
-      WS.currentFile = rel;
-      setPreviewFrame(rawFileUrl(sid, rel, { inline: isHtmlFile(rel) }), rel);
-      document.querySelectorAll('#' + OVERLAY_ID + ' .hwx-extapp-tree-row.active')
-        .forEach((r) => r.classList.remove('active'));
-      document.querySelectorAll('#' + OVERLAY_ID + ' .hwx-extapp-tree-row')
-        .forEach((r) => { if (r.dataset.rel === rel) r.classList.add('active'); });
-      const cfg = loadCfg();
-      if (cfg.lastFile !== rel || cfg.workspace !== WS.current) saveCfg({ ...cfg, workspace: WS.current, lastFile: rel });
+      if (typeof window._prismLanguageForPath === 'function') return window._prismLanguageForPath(rel);
+    } catch (_) {}
+    return '';
+  }
+
+  function renderTextPreview(rel, text) {
+    const pre = document.createElement('pre');
+    pre.className = 'hwx-extapp-code';
+    const code = document.createElement('code');
+    code.textContent = String(text == null ? '' : text);
+    const lang = prismLangFor(rel);
+    if (lang) code.className = 'language-' + lang;
+    pre.appendChild(code);
+    setPreviewNode(pre);
+    if (lang && window.Prism && typeof window.Prism.highlightElement === 'function') {
+      try { window.Prism.highlightElement(code); } catch (_) {}
+    }
+  }
+
+  async function previewMarkdown(rel, gen) {
+    const data = await readTextFile(rel);
+    if (gen !== WS.previewGen) return;
+    const md = document.createElement('div');
+    md.className = 'hwx-extapp-md';
+    if (typeof window.renderMd === 'function') {
+      md.innerHTML = window.renderMd(String(data.content || ''));
+    } else {
+      const pre = document.createElement('pre');
+      pre.textContent = String(data.content || '');
+      md.appendChild(pre);
+    }
+    setPreviewNode(md);
+  }
+
+  // Minimal RFC4180-ish parser: quotes, doubled quotes, CRLF. Caps the row and
+  // column counts so a huge CSV cannot freeze the frame.
+  function parseDelimited(text, delim) {
+    const rows = [];
+    let row = [];
+    let cur = '';
+    let quoted = false;
+    const s = String(text || '');
+    for (let i = 0; i < s.length; i++) {
+      const ch = s[i];
+      if (quoted) {
+        if (ch === '"') {
+          if (s[i + 1] === '"') { cur += '"'; i++; }
+          else quoted = false;
+        } else cur += ch;
+      } else if (ch === '"') quoted = true;
+      else if (ch === delim) { row.push(cur); cur = ''; }
+      else if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+      else if (ch !== '\r') cur += ch;
+      if (rows.length >= CSV_MAX_ROWS) break;
+    }
+    if ((cur !== '' || row.length) && rows.length < CSV_MAX_ROWS) { row.push(cur); rows.push(row); }
+    return rows.map((r) => r.slice(0, CSV_MAX_COLS));
+  }
+
+  async function previewTable(rel, gen) {
+    const data = await readTextFile(rel);
+    if (gen !== WS.previewGen) return;
+    const delim = extOf(rel) === '.tsv' ? '\t' : ',';
+    const rows = parseDelimited(data.content, delim);
+    const table = document.createElement('table');
+    table.className = 'hwx-extapp-table';
+    if (rows.length) {
+      const thead = document.createElement('thead');
+      const hr = document.createElement('tr');
+      rows[0].forEach((cell) => {
+        const th = document.createElement('th');
+        th.textContent = cell;
+        hr.appendChild(th);
+      });
+      thead.appendChild(hr);
+      table.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      for (let i = 1; i < rows.length; i++) {
+        const tr = document.createElement('tr');
+        rows[i].forEach((cell) => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+    }
+    setPreviewNode(table);
+  }
+
+  async function previewDocx(rel, gen) {
+    const buf = await readFileBytes(rel);
+    if (gen !== WS.previewGen) return;
+    assertOfficeSize(buf);
+    await loadVendorLib('jszip');
+    await loadVendorLib('docxpreview');
+    if (gen !== WS.previewGen) return;
+    const body = document.createElement('div');
+    body.className = 'hwx-extapp-docx docx';
+    setPreviewNode(body);
+    // Same options as core: base64 for embedded assets (CSP has no blob: in
+    // font-src) and page breaks honoured from Word's saved hints.
+    await window.docx.renderAsync(buf, body, body, {
+      className: 'docx',
+      inWrapper: true,
+      breakPages: true,
+      ignoreLastRenderedPageBreak: false,
+      useBase64URL: true,
+    });
+  }
+
+  function assertOfficeSize(buf) {
+    if (buf.byteLength > OFFICE_PREVIEW_MAX_BYTES) throw new Error(t('tooLargeFile'));
+  }
+
+  async function previewSheet(rel, gen) {
+    const buf = await readFileBytes(rel);
+    if (gen !== WS.previewGen) return;
+    assertOfficeSize(buf);
+    await loadVendorLib('xlsx');
+    if (gen !== WS.previewGen) return;
+    const wb = window.XLSX.read(buf, { type: 'array' });
+    const names = wb.SheetNames || [];
+    if (!names.length) throw new Error(t('emptySheet'));
+    const root = document.createElement('div');
+    root.className = 'hwx-extapp-sheet';
+    const tabs = document.createElement('div');
+    tabs.className = 'hwx-extapp-sheet-tabs';
+    const bodyEl = document.createElement('div');
+    bodyEl.className = 'hwx-extapp-sheet-body';
+
+    function sheetNode(name) {
+      const ws = wb.Sheets[name];
+      if (!ws || !ws['!ref']) {
+        const empty = document.createElement('div');
+        empty.className = 'hwx-extapp-sheet-empty';
+        empty.textContent = t('emptySheet');
+        return empty;
+      }
+      const tmp = document.createElement('div');
+      tmp.innerHTML = window.XLSX.utils.sheet_to_html(ws, { editable: false });
+      return tmp.querySelector('table') || tmp;
+    }
+
+    function show(i) {
+      bodyEl.innerHTML = '';
+      bodyEl.appendChild(sheetNode(names[i]));
+      Array.prototype.forEach.call(tabs.children, (b, bi) => b.classList.toggle('active', bi === i));
+    }
+
+    names.forEach((name, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hwx-extapp-sheet-tab' + (i === 0 ? ' active' : '');
+      b.textContent = name;
+      b.addEventListener('click', () => show(i));
+      tabs.appendChild(b);
+    });
+    if (names.length > 1) root.appendChild(tabs);
+    root.appendChild(bodyEl);
+    setPreviewNode(root);
+    show(0);
+  }
+
+  async function previewPptx(rel, gen) {
+    const buf = await readFileBytes(rel);
+    if (gen !== WS.previewGen) return;
+    assertOfficeSize(buf);
+    await loadVendorLib('jszip');
+    await loadVendorLib('chart');
+    await loadVendorLib('pptxviewer');
+    if (typeof window.PptxViewJS?.PPTXViewer !== 'function') {
+      throw new Error('PptxViewJS failed to initialise');
+    }
+    if (gen !== WS.previewGen) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'hwx-extapp-pptx';
+    const canvas = document.createElement('canvas');
+    const nav = document.createElement('div');
+    nav.className = 'hwx-extapp-pptx-nav';
+    const prev = document.createElement('button');
+    prev.type = 'button';
+    prev.className = 'hwx-extapp-iconbtn';
+    prev.textContent = '‹';
+    prev.setAttribute('aria-label', t('prevSlide'));
+    const page = document.createElement('span');
+    page.className = 'hwx-extapp-pptx-page';
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'hwx-extapp-iconbtn';
+    next.textContent = '›';
+    next.setAttribute('aria-label', t('nextSlide'));
+    nav.appendChild(prev);
+    nav.appendChild(page);
+    nav.appendChild(next);
+    wrap.appendChild(canvas);
+    wrap.appendChild(nav);
+    setPreviewNode(wrap);
+
+    const viewer = new window.PptxViewJS.PPTXViewer({
+      canvas,
+      substituteCalibri: true,
+      fontBaseUrl: new URL('static/vendor/pptxviewjs/1.3.0/fonts/', document.baseURI || location.href).href,
+      autoRenderFirstSlide: false,
+      logger: {
+        debug() {}, info() {},
+        warn: (...a) => { try { console.warn(...a); } catch (_) {} },
+        error: (...a) => { try { console.error(...a); } catch (_) {} },
+      },
+    });
+    await viewer.loadFile(buf);
+    if (gen !== WS.previewGen) { try { viewer.destroy(); } catch (_) {} return; }
+    PPTX.viewer = viewer;
+    PPTX.canvas = canvas;
+    PPTX.wrap = wrap;
+    PPTX.pageEl = page;
+    PPTX.prevBtn = prev;
+    PPTX.nextBtn = next;
+    prev.addEventListener('click', () => renderPptxSlide(PPTX.slide - 1).catch(() => {}));
+    next.addEventListener('click', () => renderPptxSlide(PPTX.slide + 1).catch(() => {}));
+    await renderPptxSlide(0);
+  }
+
+  function fitPptxCanvas() {
+    if (!PPTX.canvas || !PPTX.wrap) return;
+    const availW = Math.max(160, PPTX.wrap.clientWidth - 16);
+    const availH = Math.max(90, PPTX.wrap.clientHeight - 52);
+    const ratio = 16 / 9;
+    let w = availW;
+    let h = w / ratio;
+    if (h > availH) { h = availH; w = h * ratio; }
+    PPTX.canvas.style.width = Math.round(w) + 'px';
+    PPTX.canvas.style.height = Math.round(h) + 'px';
+  }
+
+  async function renderPptxSlide(idx) {
+    const viewer = PPTX.viewer;
+    if (!viewer) return;
+    const count = typeof viewer.getSlideCount === 'function' ? viewer.getSlideCount() : 0;
+    if (!count) return;
+    const target = Math.max(0, Math.min(count - 1, idx));
+    fitPptxCanvas();
+    await viewer.render(PPTX.canvas, { slideIndex: target });
+    if (PPTX.viewer !== viewer) return;
+    PPTX.slide = target;
+    if (PPTX.pageEl) PPTX.pageEl.textContent = (target + 1) + ' / ' + count;
+    if (PPTX.prevBtn) PPTX.prevBtn.disabled = target <= 0;
+    if (PPTX.nextBtn) PPTX.nextBtn.disabled = target >= count - 1;
+  }
+
+  function markActiveRow(rel) {
+    document.querySelectorAll('#' + OVERLAY_ID + ' .hwx-extapp-tree-row.active')
+      .forEach((r) => r.classList.remove('active'));
+    document.querySelectorAll('#' + OVERLAY_ID + ' .hwx-extapp-tree-row')
+      .forEach((r) => { if (r.dataset.rel === rel) r.classList.add('active'); });
+  }
+
+  async function previewFile(rel, opts) {
+    opts = opts || {};
+    if (!rel) return;
+    const gen = ++WS.previewGen;
+    WS.currentFile = rel;
+    markActiveRow(rel);
+    const cfg = loadCfg();
+    if (cfg.lastFile !== rel || cfg.workspace !== WS.current) {
+      saveCfg({ ...cfg, workspace: WS.current, lastFile: rel });
+    }
+    const ext = extOf(rel);
+    try {
+      if (HTML_FILE_RE.test(rel)) {
+        const sid = await ensurePreviewSession(WS.current);
+        if (gen !== WS.previewGen) return;
+        setPreviewFrame(rawFileUrl(sid, rel, { inline: true, bust: opts.bust }), rel);
+      } else if (IMAGE_EXTS.has(ext)) {
+        const sid = await ensurePreviewSession(WS.current);
+        if (gen !== WS.previewGen) return;
+        setPreviewMedia('image', rawFileUrl(sid, rel, { bust: opts.bust }), rel);
+      } else if (PDF_EXTS.has(ext)) {
+        const sid = await ensurePreviewSession(WS.current);
+        if (gen !== WS.previewGen) return;
+        setPreviewFrame(rawFileUrl(sid, rel, { bust: opts.bust }), rel);
+      } else if (AUDIO_EXTS.has(ext) || VIDEO_EXTS.has(ext)) {
+        const sid = await ensurePreviewSession(WS.current);
+        if (gen !== WS.previewGen) return;
+        setPreviewMedia(AUDIO_EXTS.has(ext) ? 'audio' : 'video',
+          rawFileUrl(sid, rel, { bust: opts.bust }), rel);
+      } else if (MD_EXTS.has(ext)) {
+        await previewMarkdown(rel, gen);
+      } else if (CSV_EXTS.has(ext)) {
+        await previewTable(rel, gen);
+      } else if (DOCX_EXTS.has(ext)) {
+        await previewDocx(rel, gen);
+      } else if (SHEET_EXTS.has(ext)) {
+        await previewSheet(rel, gen);
+      } else if (PPTX_EXTS.has(ext)) {
+        await previewPptx(rel, gen);
+      } else if (DOWNLOAD_EXTS.has(ext)) {
+        setPreviewMessage(t('unsupportedFile'));
+      } else {
+        const data = await readTextFile(rel);
+        if (gen !== WS.previewGen) return;
+        renderTextPreview(rel, data.content);
+      }
     } catch (e) {
+      if (gen !== WS.previewGen) return;
+      setPreviewMessage(t('previewFailedPlain'));
       wsStatus(tf('previewFailed', e.message), true);
     }
   }
@@ -832,6 +1278,7 @@
     document.addEventListener('keydown', escClose, true);
   }
   function closeOverlay() {
+    destroyPptx(); // release the canvas + parsed deck while the panel is closed
     const ov = document.getElementById(OVERLAY_ID);
     if (ov) ov.style.display = 'none';
     overlayOpen = false;
