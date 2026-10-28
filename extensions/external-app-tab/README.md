@@ -19,18 +19,24 @@ mode works entirely same-origin against WebUI's own file APIs.
 ## What It Does
 
 - Adds a rail button (with the content tabs, above Settings).
-- Clicking it opens a full-area overlay with a top bar (title, mode controls,
-  **Configure**, **Open ↗**, **Close**) and the framed content below.
+- Clicking it opens a full-area overlay with a top bar: the app label, a
+  **Workspace** label + switcher next to it (workspace mode only), and a row
+  of icon buttons styled like the WebUI's own toolbar buttons — configure,
+  open in new tab, refresh, file-list toggle (immediately left of close), and
+  close. Hovering an icon shows its tooltip; the framed content sits below.
 - **Configure** dialog: pick the mode (**External URL** / **Workspace
   files**); external mode sets a label + an `http(s)` URL. Everything is
   stored in the native Settings → Extensions → External App Tab settings store
   when available, with a legacy localStorage fallback on older core.
 - Workspace mode:
-  - the top-bar switcher lists the profile's workspaces (`GET /api/workspaces`,
-    same list as Settings → Workspaces); the last-used workspace is remembered
-    per extension settings
-  - the **Files** button toggles the right-side file list; directories expand
-    lazily (`GET /api/list`), **Refresh** reloads the list and the preview
+  - the top-bar **Workspace** switcher (next to the app label) lists the
+    profile's workspaces (`GET /api/workspaces`, same list as
+    Settings → Workspaces); the last-used workspace is remembered per
+    extension settings
+  - the file-list icon toggles the right-side list; directories expand lazily
+    (`GET /api/list`), the refresh icon reloads the list and the preview
+  - hovering a file or directory row shows its full name (rows truncate long
+    names with an ellipsis)
   - clicking a file previews it: `.html`/`.htm` render in a sandboxed iframe
     via `GET /api/file/raw?…&inline=1` (the same endpoint and server-side CSP
     sandbox the native workspace preview uses); images, PDFs, and text show

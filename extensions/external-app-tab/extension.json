@@ -2,7 +2,7 @@
   "id": "external-app-tab",
   "name": "External App Tab",
   "description": "Pin a compatible self-hosted web app as a tab inside Hermes WebUI via an iframe, or browse the profile's trusted workspaces and preview local files (HTML first) in a sandboxed frame with a top-bar workspace switcher and a collapsible file list.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [

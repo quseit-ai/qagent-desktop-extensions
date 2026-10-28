@@ -276,6 +276,24 @@
   }
 
   // ── overlay panel ────────────────────────────────────────────────────────
+  // Icon set mirrors WebUI's own panel-icon-btn glyphs (14px, stroke 2, no
+  // fill) so the extension bar reads like core toolbar buttons.
+  const ICONS = {
+    config: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>',
+    open: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
+    refresh: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
+    files: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>',
+    close: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  };
+
+  // cssName is separate from the icon key so the files toggle (files-btn)
+  // never collides with the file panel's .hwx-extapp-files rule.
+  function iconBtn(cssName, label, iconName) {
+    return '<button type="button" class="hwx-extapp-iconbtn hwx-extapp-' + cssName + '"' +
+      ' title="' + escapeHtml(label) + '" aria-label="' + escapeHtml(label) + '">' +
+      ICONS[iconName || cssName] + '</button>';
+  }
+
   function buildOverlay() {
     let ov = document.getElementById(OVERLAY_ID);
     if (ov) return ov;
@@ -283,19 +301,32 @@
     ov.id = OVERLAY_ID;
     ov.className = 'hwx-extapp-overlay';
     ov.style.display = 'none';
+    // Bar layout: [app label][workspace label + switcher] …… [icon buttons].
+    // Files sits immediately left of Close; every action is an icon button
+    // matching core's .panel-icon-btn look.
     ov.innerHTML =
       '<div class="hwx-extapp-bar">' +
         '<span class="hwx-extapp-title"></span>' +
+        '<label class="hwx-extapp-wsgroup">' +
+          '<span class="hwx-extapp-wslabel">Workspace</span>' +
+          '<select class="hwx-extapp-ws-select" aria-label="Workspace"></select>' +
+        '</label>' +
         '<span class="hwx-extapp-spacer"></span>' +
-        '<span class="hwx-extapp-wsbar"></span>' +
-        '<button type="button" class="hwx-extapp-btn hwx-extapp-config" title="Configure">Configure</button>' +
-        '<button type="button" class="hwx-extapp-btn hwx-extapp-open" title="Open in new tab">Open ↗</button>' +
-        '<button type="button" class="hwx-extapp-btn hwx-extapp-close" title="Close" aria-label="Close">✕</button>' +
+        iconBtn('config', 'Configure') +
+        iconBtn('open', 'Open in new tab') +
+        iconBtn('refresh', 'Refresh') +
+        iconBtn('files-btn', 'Toggle file list', 'files') +
+        iconBtn('close', 'Close') +
       '</div>' +
       '<div class="hwx-extapp-body"></div>';
     document.body.appendChild(ov);
     ov.querySelector('.hwx-extapp-close').addEventListener('click', () => closeOverlay());
     ov.querySelector('.hwx-extapp-config').addEventListener('click', () => openConfig());
+    ov.querySelector('.hwx-extapp-refresh').addEventListener('click', () => reloadTree({ bustPreview: true }));
+    ov.querySelector('.hwx-extapp-files-btn').addEventListener('click', () => {
+      WS.treeVisible = !WS.treeVisible;
+      syncTreeVisible();
+    });
     ov.querySelector('.hwx-extapp-open').addEventListener('click', () => {
       const cfg = loadCfg();
       if (cfg.mode === 'workspace') {
@@ -315,8 +346,12 @@
   function renderOverlayContent() {
     const ov = buildOverlay();
     const cfg = loadCfg();
-    ov.querySelector('.hwx-extapp-wsbar').innerHTML = '';
-    if (cfg.mode === 'workspace') {
+    const isWs = cfg.mode === 'workspace';
+    // Workspace-only controls are hidden in external mode.
+    ov.querySelector('.hwx-extapp-wsgroup').hidden = !isWs;
+    ov.querySelector('.hwx-extapp-refresh').hidden = !isWs;
+    ov.querySelector('.hwx-extapp-files-btn').hidden = !isWs;
+    if (isWs) {
       renderWorkspaceContent(ov);
       return;
     }
@@ -362,38 +397,23 @@
 
   // ── workspace mode: bar + file tree + preview ────────────────────────────
   function renderWorkspaceContent(ov) {
+    const cfg = loadCfg();
     const body = ov.querySelector('.hwx-extapp-body');
     body.innerHTML = '';
-    ov.querySelector('.hwx-extapp-title').textContent = 'Workspace';
+    // Title stays the app label; the workspace name lives in the switcher.
+    ov.querySelector('.hwx-extapp-title').textContent = cfg.label || 'App';
 
-    // Top bar controls (right of the title): workspace switcher, files toggle,
-    // refresh. Rebuilt per render; listeners attach once per render.
-    const bar = ov.querySelector('.hwx-extapp-wsbar');
-    const wsSel = document.createElement('select');
-    wsSel.className = 'hwx-extapp-input hwx-extapp-ws-select';
-    wsSel.setAttribute('aria-label', 'Workspace');
+    // The switcher lives in the top bar next to the label. Repopulate it per
+    // render; its change listener is attached once (marked via dataset).
+    const wsSel = ov.querySelector('.hwx-extapp-ws-select');
+    if (!wsSel.dataset.bound) {
+      wsSel.dataset.bound = '1';
+      wsSel.addEventListener('change', () => {
+        if (wsSel.value && wsSel.value !== WS.current) switchWorkspace(wsSel.value, { restore: false });
+      });
+    }
+    wsSel.innerHTML = '';
     wsSel.appendChild(new Option('Loading…', ''));
-    wsSel.addEventListener('change', () => {
-      if (wsSel.value && wsSel.value !== WS.current) switchWorkspace(wsSel.value, { restore: false });
-    });
-    const filesBtn = document.createElement('button');
-    filesBtn.type = 'button';
-    filesBtn.className = 'hwx-extapp-btn hwx-extapp-files-toggle';
-    filesBtn.textContent = 'Files';
-    filesBtn.title = 'Toggle the workspace file list';
-    filesBtn.addEventListener('click', () => {
-      WS.treeVisible = !WS.treeVisible;
-      syncTreeVisible();
-    });
-    const refreshBtn = document.createElement('button');
-    refreshBtn.type = 'button';
-    refreshBtn.className = 'hwx-extapp-btn hwx-extapp-refresh';
-    refreshBtn.textContent = 'Refresh';
-    refreshBtn.title = 'Reload the file list and the preview';
-    refreshBtn.addEventListener('click', () => reloadTree({ bustPreview: true }));
-    bar.appendChild(wsSel);
-    bar.appendChild(filesBtn);
-    bar.appendChild(refreshBtn);
 
     // Body: preview area (left) + collapsible file tree (right).
     const wrap = document.createElement('div');
@@ -428,8 +448,8 @@
   }
 
   function syncTreeVisible() {
-    const aside = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-files');
-    const btn = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-files-toggle');
+    const aside = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-ws-body .hwx-extapp-files');
+    const btn = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-files-btn');
     if (aside) aside.classList.toggle('collapsed', !WS.treeVisible);
     if (btn) btn.classList.toggle('active', WS.treeVisible);
   }
@@ -476,9 +496,10 @@
     WS.currentFile = '';
     const cfg = loadCfg();
     saveCfg({ ...cfg, workspace: wsPath, lastFile: '' });
+    // Title stays the app label; the active workspace name is carried by the
+    // switcher (and its selected option) in the top bar.
     const title = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-title');
-    const w = WS.workspaces.find((x) => x.path === wsPath);
-    if (title) title.textContent = (w && w.name) || wsPath || 'Workspace';
+    if (title) title.textContent = cfg.label || 'App';
     setPreviewEmpty();
     await loadTreeRoot(gen);
     if (!overlayOpen || gen !== WS.gen) return;

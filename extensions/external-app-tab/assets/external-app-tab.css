@@ -141,19 +141,61 @@
 
 /* ── Workspace mode ─────────────────────────────────────────────────────── */
 
-/* Top-bar workspace controls (switcher + Files + Refresh), after the spacer
-   so the switcher sits at the right end next to the action buttons. */
-.hwx-extapp-wsbar {
+/* Workspace label + switcher, sitting directly right of the app label. */
+.hwx-extapp-wsgroup {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
+  max-width: 320px;
+}
+.hwx-extapp-wsgroup[hidden] { display: none; }
+.hwx-extapp-wslabel {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted, #888);
 }
 .hwx-extapp-ws-select {
+  min-width: 0;
   max-width: 220px;
-  padding: 4px 8px;
+  padding: 3px 6px;
   font-size: 12px;
+  color: var(--text, #fff);
+  background: var(--code-bg, rgba(127,127,127,.1));
+  border: 1px solid var(--border2, rgba(127,127,127,.25));
+  border-radius: 6px;
 }
+.hwx-extapp-ws-select:hover { border-color: var(--border, rgba(127,127,127,.4)); }
+.hwx-extapp-ws-select:focus { outline: none; border-color: var(--accent, #6366f1); }
+
+/* Icon buttons in the top bar — mirror core's .panel-icon-btn (transparent,
+   muted glyph that lights up on hover, accent tint when active). */
+.hwx-extapp-iconbtn {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--muted, #888);
+  cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.hwx-extapp-iconbtn:hover {
+  background: var(--hover-bg, rgba(127,127,127,.16));
+  color: var(--text, #fff);
+}
+.hwx-extapp-iconbtn.active {
+  background: var(--accent-bg, rgba(99,102,241,.18));
+  color: var(--accent-text, #a5b4fc);
+}
+.hwx-extapp-iconbtn[hidden] { display: none; }
 
 /* Body: preview area (left) + collapsible file list (right). */
 .hwx-extapp-ws-body {
@@ -178,10 +220,6 @@
   overflow: hidden;
 }
 .hwx-extapp-files.collapsed { display: none; }
-.hwx-extapp-files-toggle.active {
-  border-color: var(--accent, #6366f1);
-  color: var(--accent, #6366f1);
-}
 .hwx-extapp-files-head {
   flex: 0 0 auto;
   padding: 7px 12px;
@@ -261,6 +299,15 @@
 .hwx-extapp-modes { display: flex; gap: 14px; font-size: 13px; color: var(--text, #fff); }
 .hwx-extapp-mode { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
+/* Narrow viewports: drop the "Workspace" word (the switcher stays) so the
+   app label and the icon buttons never collide. */
+@media (max-width: 720px) {
+  .hwx-extapp-wslabel { display: none; }
+  .hwx-extapp-wsgroup { max-width: 190px; }
+  .hwx-extapp-ws-select { max-width: 160px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hwx-extapp-tree-chev { transition: none; }
+  .hwx-extapp-iconbtn { transition: none; }
 }
