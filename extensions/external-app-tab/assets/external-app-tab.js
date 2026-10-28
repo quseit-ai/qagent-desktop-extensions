@@ -153,6 +153,121 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      externalApp: 'External app',
+      workspace: 'Workspace',
+      configure: 'Configure',
+      openNewTab: 'Open in new tab',
+      refresh: 'Refresh',
+      toggleFiles: 'Toggle file list',
+      close: 'Close',
+      files: 'Files',
+      loading: 'Loading…',
+      loadingFiles: 'Loading files…',
+      noApp: 'No app configured yet.',
+      noAppHint: 'Set a URL to embed a compatible self-hosted web app as a tab.',
+      configureEllipsis: 'Configure…',
+      noWorkspaces: 'No workspaces',
+      noWorkspacesHint: 'No workspaces are configured for this profile yet.',
+      wsListFailed: 'Workspace list unavailable: {0}',
+      listFailed: 'Could not list workspace: {0}',
+      emptyWorkspace: 'This workspace is empty.',
+      selectFile: 'Select a file to preview.',
+      selectFileHint: 'HTML files render in a sandboxed frame; images, PDFs and text show inline.',
+      noHtml: 'No HTML files found in this workspace.',
+      previewFailed: 'Preview failed: {0}',
+      dirOpenFailed: 'Could not open {0}: {1}',
+      preview: 'Preview',
+      configTitle: 'External app tab',
+      mode: 'Mode',
+      modeExternal: 'External URL',
+      modeWorkspace: 'Workspace files',
+      labelField: 'Label',
+      urlField: 'URL (http/https)',
+      labelPlaceholder: 'App',
+      cspNote: 'To frame an external origin, the operator must allow it via ' +
+        '<code>HERMES_WEBUI_CSP_FRAME_EXTRA</code>. Same-origin / loopback URLs work without it.',
+      wsNote: 'Workspace mode browses the profile\'s trusted workspaces ' +
+        '(Settings → Workspaces) and previews local files in a sandboxed frame — same-origin, no CSP change needed. ' +
+        'Pick the workspace from the switcher inside the panel.',
+      invalidUrl: 'Enter a valid http(s) URL (or leave blank to clear).',
+      cancel: 'Cancel',
+      save: 'Save',
+      cspHint: 'If this stays blank, the page may be blocked by the WebUI ' +
+        'Content-Security-Policy. Allow it (operator) with ',
+    },
+    zh: {
+      externalApp: '外部应用',
+      workspace: '工作区',
+      configure: '配置',
+      openNewTab: '在新标签页中打开',
+      refresh: '刷新',
+      toggleFiles: '显示/隐藏文件列表',
+      close: '关闭',
+      files: '文件',
+      loading: '加载中…',
+      loadingFiles: '正在加载文件…',
+      noApp: '尚未配置应用。',
+      noAppHint: '设置一个 URL，把兼容的自托管 Web 应用作为标签页内嵌进来。',
+      configureEllipsis: '去配置…',
+      noWorkspaces: '暂无工作区',
+      noWorkspacesHint: '当前配置文件还没有配置任何工作区。',
+      wsListFailed: '无法获取工作区列表：{0}',
+      listFailed: '无法列出工作区：{0}',
+      emptyWorkspace: '该工作区为空。',
+      selectFile: '选择一个文件进行预览。',
+      selectFileHint: 'HTML 文件会渲染在沙箱 iframe 中；图片、PDF 和文本会内联显示。',
+      noHtml: '该工作区中没有找到 HTML 文件。',
+      previewFailed: '预览失败：{0}',
+      dirOpenFailed: '无法打开 {0}：{1}',
+      preview: '预览',
+      configTitle: '外部应用标签页',
+      mode: '模式',
+      modeExternal: '外部 URL',
+      modeWorkspace: '工作区文件',
+      labelField: '标签名称',
+      urlField: 'URL（http/https）',
+      labelPlaceholder: '应用',
+      cspNote: '如需内嵌外部来源，运维需通过 ' +
+        '<code>HERMES_WEBUI_CSP_FRAME_EXTRA</code> 放行该来源。同源 / 回环地址无需额外配置。',
+      wsNote: '工作区模式会浏览当前配置文件的可信工作区（设置 → 工作区），并在沙箱 iframe 中预览本地文件——' +
+        '同源访问，无需修改 CSP。在工作区面板内顶部的下拉框切换工作区。',
+      invalidUrl: '请输入有效的 http(s) URL（或留空以清除）。',
+      cancel: '取消',
+      save: '保存',
+      cspHint: '如果此处一直空白，页面可能被 WebUI 的内容安全策略（CSP）拦截。' +
+        '请运维配置 ',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
   // ── same-origin WebUI API helper (subpath-mount safe, like core's api()) ──
   async function apiFetch(relPath, opts) {
     opts = opts || {};
@@ -264,7 +379,7 @@
     btn.className = 'rail-btn nav-tab has-tooltip hwx-extapp-rail';
     const cfg = loadCfg();
     btn.dataset.tooltip = cfg.label || 'App';
-    btn.setAttribute('aria-label', cfg.label || 'External app');
+    btn.setAttribute('aria-label', cfg.label || t('externalApp'));
     btn.innerHTML = railIcon();
     btn.addEventListener('click', (ev) => { ev.preventDefault(); toggleOverlay(); });
     // Insert just before the rail spacer (so it sits with the content tabs,
@@ -308,15 +423,15 @@
       '<div class="hwx-extapp-bar">' +
         '<span class="hwx-extapp-title"></span>' +
         '<label class="hwx-extapp-wsgroup">' +
-          '<span class="hwx-extapp-wslabel">Workspace</span>' +
-          '<select class="hwx-extapp-ws-select" aria-label="Workspace"></select>' +
+          '<span class="hwx-extapp-wslabel"></span>' +
+          '<select class="hwx-extapp-ws-select"></select>' +
         '</label>' +
         '<span class="hwx-extapp-spacer"></span>' +
-        iconBtn('config', 'Configure') +
-        iconBtn('open', 'Open in new tab') +
-        iconBtn('refresh', 'Refresh') +
-        iconBtn('files-btn', 'Toggle file list', 'files') +
-        iconBtn('close', 'Close') +
+        iconBtn('config', t('configure')) +
+        iconBtn('open', t('openNewTab')) +
+        iconBtn('refresh', t('refresh')) +
+        iconBtn('files-btn', t('toggleFiles'), 'files') +
+        iconBtn('close', t('close')) +
       '</div>' +
       '<div class="hwx-extapp-body"></div>';
     document.body.appendChild(ov);
@@ -351,20 +466,27 @@
     ov.querySelector('.hwx-extapp-wsgroup').hidden = !isWs;
     ov.querySelector('.hwx-extapp-refresh').hidden = !isWs;
     ov.querySelector('.hwx-extapp-files-btn').hidden = !isWs;
+    // Localized bar text is stamped per render so a locale switch applies
+    // without rebuilding the overlay.
+    const wsLabel = ov.querySelector('.hwx-extapp-wslabel');
+    if (wsLabel) wsLabel.textContent = t('workspace');
+    const wsSelEl = ov.querySelector('.hwx-extapp-ws-select');
+    if (wsSelEl) wsSelEl.setAttribute('aria-label', t('workspace'));
     if (isWs) {
       renderWorkspaceContent(ov);
       return;
     }
-    ov.querySelector('.hwx-extapp-title').textContent = cfg.label || 'External app';
+    ov.querySelector('.hwx-extapp-title').textContent = cfg.label || t('externalApp');
     const body = ov.querySelector('.hwx-extapp-body');
     body.innerHTML = '';
     if (!validUrl(cfg.url)) {
       const empty = document.createElement('div');
       empty.className = 'hwx-extapp-empty';
       empty.innerHTML =
-        '<p>No app configured yet.</p>' +
-        '<p class="hwx-extapp-muted">Set a URL to embed a compatible self-hosted web app as a tab.</p>' +
-        '<button type="button" class="hwx-extapp-btn hwx-extapp-config-cta">Configure…</button>';
+        '<p>' + escapeHtml(t('noApp')) + '</p>' +
+        '<p class="hwx-extapp-muted">' + escapeHtml(t('noAppHint')) + '</p>' +
+        '<button type="button" class="hwx-extapp-btn hwx-extapp-config-cta">' +
+          escapeHtml(t('configureEllipsis')) + '</button>';
       empty.querySelector('.hwx-extapp-config-cta').addEventListener('click', () => openConfig());
       body.appendChild(empty);
       return;
@@ -372,7 +494,7 @@
     const frame = document.createElement('iframe');
     frame.className = 'hwx-extapp-iframe';
     frame.src = cfg.url;
-    frame.setAttribute('title', cfg.label || 'External app');
+    frame.setAttribute('title', cfg.label || t('externalApp'));
     // Sandbox the embedded app with an explicit, documented allow-list so it can
     // function (scripts/forms/popups) while staying constrained (Frank, PR #25:
     // the previous comment claimed "sandboxed" but never set a sandbox attr).
@@ -386,8 +508,7 @@
     // that the operator may need HERMES_WEBUI_CSP_FRAME_EXTRA.
     const hint = document.createElement('div');
     hint.className = 'hwx-extapp-cspnote';
-    hint.innerHTML = 'If this stays blank, the page may be blocked by the WebUI ' +
-      'Content-Security-Policy. Allow it (operator) with ' +
+    hint.innerHTML = escapeHtml(t('cspHint')) +
       '<code>HERMES_WEBUI_CSP_FRAME_EXTRA="' + escapeHtml(originOf(cfg.url)) + '"</code>.';
     body.appendChild(frame);
     body.appendChild(hint);
@@ -401,7 +522,7 @@
     const body = ov.querySelector('.hwx-extapp-body');
     body.innerHTML = '';
     // Title stays the app label; the workspace name lives in the switcher.
-    ov.querySelector('.hwx-extapp-title').textContent = cfg.label || 'App';
+    ov.querySelector('.hwx-extapp-title').textContent = cfg.label || t('externalApp');
 
     // The switcher lives in the top bar next to the label. Repopulate it per
     // render; its change listener is attached once (marked via dataset).
@@ -413,7 +534,7 @@
       });
     }
     wsSel.innerHTML = '';
-    wsSel.appendChild(new Option('Loading…', ''));
+    wsSel.appendChild(new Option(t('loading'), ''));
 
     // Body: preview area (left) + collapsible file tree (right).
     const wrap = document.createElement('div');
@@ -422,13 +543,13 @@
     preview.className = 'hwx-extapp-preview';
     const empty = document.createElement('div');
     empty.className = 'hwx-extapp-empty hwx-extapp-preview-empty';
-    empty.innerHTML = '<p>Select a file to preview.</p>' +
-      '<p class="hwx-extapp-muted">HTML files render in a sandboxed frame; images, PDFs and text show inline.</p>';
+    empty.innerHTML = '<p>' + escapeHtml(t('selectFile')) + '</p>' +
+      '<p class="hwx-extapp-muted">' + escapeHtml(t('selectFileHint')) + '</p>';
     preview.appendChild(empty);
     const aside = document.createElement('aside');
     aside.className = 'hwx-extapp-files';
     aside.innerHTML =
-      '<div class="hwx-extapp-files-head">Files</div>' +
+      '<div class="hwx-extapp-files-head">' + escapeHtml(t('files')) + '</div>' +
       '<div class="hwx-extapp-tree" role="tree"></div>' +
       '<div class="hwx-extapp-files-status" hidden></div>';
     wrap.appendChild(preview);
@@ -444,7 +565,7 @@
     });
 
     loadWorkspacesIntoSelect(wsSel)
-      .catch((e) => wsStatus('Workspace list unavailable: ' + e.message, true));
+      .catch((e) => wsStatus(tf('wsListFailed', e.message), true));
   }
 
   function syncTreeVisible() {
@@ -469,9 +590,9 @@
     WS.workspaces = list;
     wsSel.innerHTML = '';
     if (!list.length) {
-      wsSel.appendChild(new Option('No workspaces', ''));
+      wsSel.appendChild(new Option(t('noWorkspaces'), ''));
       wsSel.disabled = true;
-      wsStatus('No workspaces are configured for this profile yet.', true);
+      wsStatus(t('noWorkspacesHint'), true);
       return;
     }
     wsSel.disabled = false;
@@ -499,7 +620,7 @@
     // Title stays the app label; the active workspace name is carried by the
     // switcher (and its selected option) in the top bar.
     const title = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-title');
-    if (title) title.textContent = cfg.label || 'App';
+    if (title) title.textContent = cfg.label || t('externalApp');
     setPreviewEmpty();
     await loadTreeRoot(gen);
     if (!overlayOpen || gen !== WS.gen) return;
@@ -518,19 +639,19 @@
     const tree = document.querySelector('#' + OVERLAY_ID + ' .hwx-extapp-tree');
     if (!tree) return;
     tree.innerHTML = '';
-    wsStatus('Loading files…', false);
+    wsStatus(t('loadingFiles'), false);
     let entries;
     try {
       entries = (await listDir(WS.current, '.')).entries || [];
     } catch (e) {
       if (gen !== WS.gen) return;
-      wsStatus('Could not list workspace: ' + e.message, true);
+      wsStatus(tf('listFailed', e.message), true);
       return;
     }
     if (gen !== WS.gen) return;
     wsStatus('', false);
     appendTreeEntries(tree, entries, 0);
-    if (!entries.length) wsStatus('This workspace is empty.', false);
+    if (!entries.length) wsStatus(t('emptyWorkspace'), false);
   }
 
   async function reloadTree(opts) {
@@ -597,7 +718,7 @@
     } catch (e) {
       row.classList.remove('loading');
       row.setAttribute('aria-expanded', 'false');
-      wsStatus('Could not open ' + rel + ': ' + e.message, true);
+      wsStatus(tf('dirOpenFailed', rel, e.message), true);
       return;
     }
     row.classList.remove('loading');
@@ -620,8 +741,8 @@
     preview.innerHTML = '';
     const empty = document.createElement('div');
     empty.className = 'hwx-extapp-empty hwx-extapp-preview-empty';
-    empty.innerHTML = '<p>Select a file to preview.</p>' +
-      '<p class="hwx-extapp-muted">HTML files render in a sandboxed frame; images, PDFs and text show inline.</p>';
+    empty.innerHTML = '<p>' + escapeHtml(t('selectFile')) + '</p>' +
+      '<p class="hwx-extapp-muted">' + escapeHtml(t('selectFileHint')) + '</p>';
     preview.appendChild(empty);
   }
 
@@ -632,7 +753,7 @@
     const frame = document.createElement('iframe');
     frame.className = 'hwx-extapp-iframe';
     frame.src = url;
-    frame.setAttribute('title', titleRel || 'Preview');
+    frame.setAttribute('title', titleRel || t('preview'));
     // Same-origin /api/file/raw content. Core already serves &inline=1 HTML
     // with CSP `sandbox allow-scripts ...`; mirror it on the element and keep
     // allow-same-origin OFF so the previewed file stays in an opaque origin.
@@ -654,7 +775,7 @@
       const cfg = loadCfg();
       if (cfg.lastFile !== rel || cfg.workspace !== WS.current) saveCfg({ ...cfg, workspace: WS.current, lastFile: rel });
     } catch (e) {
-      wsStatus('Preview failed: ' + e.message, true);
+      wsStatus(tf('previewFailed', e.message), true);
     }
   }
 
@@ -691,7 +812,7 @@
     const pick = indexHtml || firstHtml;
     if (!pick) {
       setPreviewEmpty();
-      wsStatus('No HTML files found in this workspace.', false);
+      wsStatus(t('noHtml'), false);
       return;
     }
     if (!overlayOpen || gen !== WS.gen) return;
@@ -729,26 +850,26 @@
     dlg.id = 'hwxExtAppConfig';
     dlg.className = 'hwx-extapp-config-dlg';
     dlg.innerHTML =
-      '<div class="hwx-extapp-config-card" role="dialog" aria-label="Configure external app">' +
-        '<div class="hwx-extapp-config-title">External app tab</div>' +
-        '<div class="hwx-extapp-field"><span>Mode</span>' +
+      '<div class="hwx-extapp-config-card" role="dialog" aria-label="' + escapeHtml(t('configure')) + '">' +
+        '<div class="hwx-extapp-config-title">' + escapeHtml(t('configTitle')) + '</div>' +
+        '<div class="hwx-extapp-field"><span>' + escapeHtml(t('mode')) + '</span>' +
           '<div class="hwx-extapp-modes" role="radiogroup">' +
-            '<label class="hwx-extapp-mode"><input type="radio" name="hwxExtAppMode" value="external"> External URL</label>' +
-            '<label class="hwx-extapp-mode"><input type="radio" name="hwxExtAppMode" value="workspace"> Workspace files</label>' +
+            '<label class="hwx-extapp-mode"><input type="radio" name="hwxExtAppMode" value="external"> ' +
+              escapeHtml(t('modeExternal')) + '</label>' +
+            '<label class="hwx-extapp-mode"><input type="radio" name="hwxExtAppMode" value="workspace"> ' +
+              escapeHtml(t('modeWorkspace')) + '</label>' +
           '</div></div>' +
-        '<label class="hwx-extapp-field hwx-extapp-f-url"><span>Label</span>' +
-          '<input type="text" class="hwx-extapp-input hwx-extapp-label-in" maxlength="24" placeholder="App"></label>' +
-        '<label class="hwx-extapp-field hwx-extapp-f-url"><span>URL (http/https)</span>' +
+        '<label class="hwx-extapp-field hwx-extapp-f-url"><span>' + escapeHtml(t('labelField')) + '</span>' +
+          '<input type="text" class="hwx-extapp-input hwx-extapp-label-in" maxlength="24" placeholder="' +
+            escapeHtml(t('labelPlaceholder')) + '"></label>' +
+        '<label class="hwx-extapp-field hwx-extapp-f-url"><span>' + escapeHtml(t('urlField')) + '</span>' +
           '<input type="url" class="hwx-extapp-input hwx-extapp-url-in" placeholder="https://app.example.com"></label>' +
-        '<div class="hwx-extapp-config-note hwx-extapp-f-url">To frame an external origin, the operator must allow it via ' +
-          '<code>HERMES_WEBUI_CSP_FRAME_EXTRA</code>. Same-origin / loopback URLs work without it.</div>' +
-        '<div class="hwx-extapp-config-note hwx-extapp-f-ws" hidden>Workspace mode browses the profile\'s trusted workspaces ' +
-          '(Settings → Workspaces) and previews local files in a sandboxed frame — same-origin, no CSP change needed. ' +
-          'Pick the workspace from the switcher inside the panel.</div>' +
+        '<div class="hwx-extapp-config-note hwx-extapp-f-url">' + t('cspNote') + '</div>' +
+        '<div class="hwx-extapp-config-note hwx-extapp-f-ws" hidden>' + escapeHtml(t('wsNote')) + '</div>' +
         '<div class="hwx-extapp-config-err" hidden></div>' +
         '<div class="hwx-extapp-config-actions">' +
-          '<button type="button" class="hwx-extapp-btn hwx-extapp-cancel">Cancel</button>' +
-          '<button type="button" class="hwx-extapp-btn hwx-extapp-save">Save</button>' +
+          '<button type="button" class="hwx-extapp-btn hwx-extapp-cancel">' + escapeHtml(t('cancel')) + '</button>' +
+          '<button type="button" class="hwx-extapp-btn hwx-extapp-save">' + escapeHtml(t('save')) + '</button>' +
         '</div>' +
       '</div>';
     document.body.appendChild(dlg);
@@ -777,7 +898,7 @@
       const label = (labelIn.value.trim() || 'App').slice(0, 24);
       if (mode === 'external' && url && !validUrl(url)) {
         err.hidden = false;
-        err.textContent = 'Enter a valid http(s) URL (or leave blank to clear).';
+        err.textContent = t('invalidUrl');
         return;
       }
       saveCfg({ ...loadCfg(), url: mode === 'external' ? url : '', label, mode });

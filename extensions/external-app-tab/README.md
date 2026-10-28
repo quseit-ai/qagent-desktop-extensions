@@ -16,6 +16,27 @@ local tools** that don't require a cross-origin cookie login; see **Known
 Limitations** for the third-party-iframe auth/cookie caveats. The workspace
 mode works entirely same-origin against WebUI's own file APIs.
 
+## 中文说明（Chinese） / 中文說明（繁體）
+
+本扩展在左侧导航栏添加一个按钮，点开后是一个全屏面板，提供两种模式：
+
+- **外部 URL 模式**：把一个兼容的自托管 Web 应用（Grafana、个人看板等）
+  通过 `<iframe>` 内嵌为标签页。内嵌**外部来源**需要运维通过
+  `HERMES_WEBUI_CSP_FRAME_EXTRA="https://你的应用域名"` 放行；同源 / 回环
+  地址无需额外配置。
+- **工作区文件模式**：顶栏左侧显示应用名称、`工作区` 标签和切换下拉框；
+  右侧是可折叠的文件列表；点击文件即可预览。进入面板时会自动打开当前
+  工作区的第一个 HTML 文件（优先 `index.html`），并记住上次预览的文件。
+  HTML 在沙箱 iframe 中渲染，图片 / PDF / 文本内联显示。
+
+界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）；
+设置项名称使用中英双语。工作区列表来自 WebUI 的「设置 → 工作区」，
+文件读取完全复用核心的同源 API，扩展自身不新增后端。
+
+已知限制：预览的 HTML 中的**相对路径资源**（如 `<link href="style.css">`）
+不会加载，这一点与 WebUI 原生工作区预览一致；自包含 HTML 与 CDN 绝对
+地址正常。
+
 ## What It Does
 
 - Adds a rail button (with the content tabs, above Settings).
@@ -47,6 +68,11 @@ mode works entirely same-origin against WebUI's own file APIs.
 - External mode falls back to a "no app configured" prompt until you set a
   URL.
 - Escape or the ✕ closes the overlay; the rail stays accessible.
+- **Language**: in-panel text follows the WebUI interface language
+  (`<html lang>` / `localStorage['hermes-lang']`) and switches live between
+  English and Simplified/Traditional Chinese; settings labels are bilingual.
+  Extension bundles cannot register into core's i18n dictionary, so the
+  extension ships a small local en/zh table.
 
 ## ⚠️ CSP dependency (external mode only — read this)
 
@@ -217,8 +243,11 @@ Manual verification:
 - clicking an HTML file renders it in the sandboxed frame; images/PDF/text
   show inline; other files download; Open ↗ opens the current file raw in a
   new tab; Close / Escape closes the overlay
-- the Files button toggles the right-side list; Refresh reloads it
+- the file-list icon toggles the right-side list; the refresh icon reloads it
 - config (mode + workspace + last file) persists across a reload
+- switching the WebUI interface language to 中文 makes the panel, tooltips,
+  empty states and config dialog render in Chinese; switching back restores
+  English (no reload needed — reopen or re-render the panel)
 
 ## Known Limitations
 
