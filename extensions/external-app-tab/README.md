@@ -219,12 +219,17 @@ allow-popups allow-popups-to-escape-sandbox"` with **no**
 `/api/file/raw?…&inline=1` responses. The previewed file executes scripts but
 lives in an opaque origin — it cannot read WebUI cookies/storage or touch the
 parent page. **PDF previews are the one exception**: Chromium renders PDFs
-with its built-in viewer, which is refused inside a sandboxed frame
-(`net::ERR_BLOCKED_BY_CLIENT`), so the PDF frame carries no sandbox attribute
-— exactly like core's native workspace PDF frame (`#previewPdfFrame`).
-Chromium's own viewer parses the file; no page script from our origin runs in
-that frame. Dangerous MIME types (`text/html`, `image/svg+xml`,
-`application/xhtml+xml`) are served inline only through this opt-in path;
+with its built-in viewer, which is refused inside an element-sandboxed frame
+(`net::ERR_BLOCKED_BY_CLIENT`), so the PDF frame carries no `sandbox`
+attribute — exactly like core's native workspace PDF frame
+(`#previewPdfFrame`). PDFs are also requested with `&inline=1`, because
+without it `/api/file/raw` falls back to the global security headers whose
+`X-Frame-Options: DENY` blocks framing (`net::ERR_BLOCKED_BY_RESPONSE`);
+`inline=1` makes the server send its CSP `sandbox` policy instead, which
+keeps the document isolated but frameable. Chromium's own viewer parses the
+file; no page script from our origin runs in that frame. Dangerous MIME
+types (`text/html`, `image/svg+xml`, `application/xhtml+xml`) are served
+inline only through this opt-in path;
 core injects `<base target="_blank">` so links escape to a new tab. All
 user-supplied strings (label, URL) are escaped where rendered; file names are
 rendered via `textContent`, never as HTML.

@@ -1205,8 +1205,14 @@
       } else if (PDF_EXTS.has(ext)) {
         const sid = await ensurePreviewSession(WS.current);
         if (gen !== WS.previewGen) return;
-        // No element sandbox: Chromium's PDF viewer cannot run in one.
-        setPreviewFrame(rawFileUrl(sid, rel, { bust: opts.bust }), rel, { sandbox: false });
+        // inline=1 is required: without it /api/file/raw falls back to the
+        // global security headers, which send X-Frame-Options: DENY and the
+        // browser refuses to frame the response (ERR_BLOCKED_BY_RESPONSE).
+        // With inline=1 the server sends a CSP `sandbox` policy instead, which
+        // keeps the document isolated while remaining frameable — exactly what
+        // core's native PDF preview does. No element sandbox: Chromium's PDF
+        // viewer cannot run inside one.
+        setPreviewFrame(rawFileUrl(sid, rel, { inline: true, bust: opts.bust }), rel, { sandbox: false });
       } else if (AUDIO_EXTS.has(ext) || VIDEO_EXTS.has(ext)) {
         const sid = await ensurePreviewSession(WS.current);
         if (gen !== WS.previewGen) return;
