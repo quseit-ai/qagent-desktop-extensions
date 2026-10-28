@@ -1,6 +1,6 @@
 # Session Export to PDF
 
-Session Export to PDF is a trusted local Hermes WebUI extension that lets you
+Session Export to PDF is a trusted local Desktop extension that lets you
 export the current conversation to a clean **PDF** (via the browser's print
 dialog, with a print-styled layout) or **copy it as Markdown**. It adds an export
 button to the app titlebar — or to the left rail on the redesigned banner-less
@@ -8,7 +8,7 @@ homepage, where the titlebar is collapsed.
 
 ## 中文说明
 
-本扩展为 Hermes WebUI 增加一个导出按钮（经典布局在标题栏，无横幅首页在左侧栏），
+本扩展为 Desktop 增加一个导出按钮（经典布局在标题栏，无横幅首页在左侧栏），
 仅在打开对话时显示。点击后可选择：
 
 - **导出为 PDF**：把已渲染的对话克隆到一个离屏打印容器，并用作用域限定的
@@ -16,7 +16,7 @@ homepage, where the titlebar is collapsed.
 - **复制为 Markdown**：把对话复制为 `# 标题` 加 `## 你` / `## 助手` 分节。
 
 全程在浏览器内完成，不需要后端、不内置 PDF 库、不访问网络。按钮提示、菜单、
-导出提示与导出文档中的角色文案都会跟随 WebUI 的中英文语言设置切换。
+导出提示与导出文档中的角色文案都会跟随 Desktop 的中英文语言设置切换。
 
 ## What It Does
 
@@ -44,7 +44,7 @@ of that idea (routed to extensions to keep core lean).
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/session-export-pdf.js + .css
   -> titlebar/rail button -> menu -> clone #messages rows into #hwxPrintRoot
@@ -81,7 +81,7 @@ Also on `window.HermesSessionExportExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/session-export-pdf/`
 directory. The extension stores nothing.
 
@@ -95,7 +95,7 @@ This is trusted local code. Current disclosed behavior:
   message row; hidden anchor/worklog segments are skipped)
 - calls `window.print()` (`uses_print`) and writes to the clipboard
   (`uses_clipboard`) for the Markdown copy
-- does NOT call WebUI HTTP APIs, read/write localStorage, access cookies, contact
+- does NOT call Desktop HTTP APIs, read/write localStorage, access cookies, contact
   any network, or use the filesystem / native hosts
 - the print body reuses the already-sanitized rendered HTML from core's renderer
   (it is cloned, not re-parsed from raw input)
@@ -136,7 +136,7 @@ Manual verification:
   no silent server-side PDF render (deliberate: no bundled library, no backend).
 - Exports the currently-open conversation (not a bulk/all-sessions export).
 - **Scope = the loaded/rendered transcript, not guaranteed to be the full
-  session.** It reads `#messages` from the DOM and adds no WebUI API dependency.
+  session.** It reads `#messages` from the DOM and adds no Desktop API dependency.
   For long conversations the transcript can be windowed/virtualized (the core
   "virtualize transcript" setting, or large sessions), so earlier messages may
   not be in the DOM at export time. The extension **detects this** (a virtual

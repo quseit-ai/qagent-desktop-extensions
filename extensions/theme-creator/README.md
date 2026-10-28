@@ -1,6 +1,6 @@
 # Theme Creator
 
-Theme Creator is a trusted local Hermes WebUI extension that lets you **build your
+Theme Creator is a trusted local Desktop extension that lets you **build your
 own theme**. Pick colors for the key design tokens, watch a live preview, name
 it, and save — your custom theme registers into the **native Settings →
 Appearance** skin picker, selectable and persisted like a built-in skin. Create,
@@ -78,7 +78,7 @@ extension does nothing destructive).
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/theme-creator.js + .css
   -> rail button -> editor panel (color pickers + optional image upload + live preview)
@@ -115,7 +115,7 @@ Also on `window.HermesThemeCreatorExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/theme-creator/`
 directory. Your themes live under `hermes-ext-custom-themes`. If a custom theme
 was the active skin, switch to another skin in Appearance (a removed skin falls
@@ -165,7 +165,7 @@ python3 -m json.tool extensions/theme-creator/extension.json
 python3 -m json.tool extensions/theme-creator/manifest.json
 ```
 
-Manual verification (on a WebUI build with PR #5100):
+Manual verification (on a Desktop build with PR #5100):
 
 - the rail button opens the editor; color pickers + hex fields stay in sync
 - Live preview applies the theme app-wide; Stop preview reverts
@@ -186,8 +186,8 @@ Manual verification (on a WebUI build with PR #5100):
 - Glassmorphism transparency (controlled by the **Glass opacity** slider) works best with
   bright or vibrant images. Very dark images may still look nearly opaque
   through the frosted-glass layer. Adjust opacity in the source if needed.
-- The glassmorphism overrides target known WebUI panel class names
-  (`.rail`, `.sidebar`, `.rightpanel`, `.main-view`). If the core WebUI
+- The glassmorphism overrides target known Desktop panel class names
+  (`.rail`, `.sidebar`, `.rightpanel`, `.main-view`). If the core Desktop
   changes these class names, the effect will break until the extension is
   updated. The `nav`/`main`/`aside` backdrop-filter and CSS variable
   overrides are version-independent.

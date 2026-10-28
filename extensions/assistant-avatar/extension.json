@@ -2,7 +2,7 @@
   "id": "assistant-avatar",
   "name": "Assistant Avatar",
   "description": "2D animated companion character that reacts to AI state and follows your cursor. Pure Canvas 2D — zero dependencies, 100% MIT. 一个会响应 AI 状态并跟随鼠标光标的 2D 动画伙伴角色；纯 Canvas 2D 实现，零依赖，MIT 许可。",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "chonsong",
   "assets": {
     "scripts": ["assets/avatar.js"],

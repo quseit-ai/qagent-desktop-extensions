@@ -1,20 +1,20 @@
 # RSS Feeds
 
-RSS Feeds is a Hermes WebUI extension that adds a full RSS/Atom reader to the
-WebUI: a two-pane overlay with categorized subscriptions in the sidebar and
+RSS Feeds is a Desktop extension that adds a full RSS/Atom reader to the
+Desktop: a two-pane overlay with categorized subscriptions in the sidebar and
 entries on the right — plus keyword filtering, full-text search, cross-device
 read tracking, and optional AI summaries.
 
 ## 中文说明
 
-RSS Feeds 是一个 Hermes WebUI 扩展，为界面加入完整的 RSS/Atom 阅读器：
+RSS Feeds 是一个 Desktop 扩展，为界面加入完整的 RSS/Atom 阅读器：
 侧边栏按分类管理订阅源，右侧显示文章条目。主要功能：
 
 - **订阅管理**：添加、编辑、删除订阅源，并按分类分组。
 - **阅读体验**：分页卡片、已读标记，阅读状态可跨设备同步。
 - **过滤与搜索**：按关键词过滤，支持全文搜索。
 - **AI 摘要（可选）**：使用本地 Ollama、OpenRouter 免费模型或 Gemini 免费额度。
-- **界面语言**：界面文案支持英文与简体中文，随 WebUI 语言设置自动切换。
+- **界面语言**：界面文案支持英文与简体中文，随 Desktop 语言设置自动切换。
 
 安装与 sidecar 配置请参阅下方英文文档。
 
@@ -38,11 +38,11 @@ RSS Feeds 是一个 Hermes WebUI 扩展，为界面加入完整的 RSS/Atom 阅�
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> assets/feeds-inject.js   builds the overlay + titlebar/rail launcher
   -> assets/feeds.js          all reader logic (fetch via the sidecar proxy)
   -> assets/feeds.css         self-contained styles (host CSS vars only)
-WebUI sidecar proxy (after consent)
+Desktop sidecar proxy (after consent)
   -> /api/extensions/rss-feeds/sidecar/api/feeds/*
   -> loopback sidecar on 127.0.0.1:17797 (sidecar/sidecar.py)
      -> SQLite at $HERMES_FEEDS_STATE_DIR/feeds.db
@@ -50,7 +50,7 @@ WebUI sidecar proxy (after consent)
 
 ## Network destinations (why `network_external: true`)
 
-The **browser** only ever talks to the WebUI's same-origin sidecar proxy — it
+The **browser** only ever talks to the Desktop's same-origin sidecar proxy — it
 makes no direct external requests. All outbound network access happens in the
 **sidecar** (127.0.0.1), and it is fully enumerated here:
 
@@ -92,9 +92,9 @@ read `~/.hermes/.env` or any other credential file.
 - `manifest-bundle`
 - `loopback-sidecar`
 
-## Supported WebUI version / API surface
+## Supported Desktop version / API surface
 
-Requires a WebUI build containing the `token-v1` sidecar-proxy authentication
+Requires a Desktop build containing the `token-v1` sidecar-proxy authentication
 boundary (core [#6331](https://github.com/nesquena/hermes-webui/pull/6331), first
 in `exp-v0.52.129`) — not any `≥ 0.16` release. Until #6331 reaches the stable
 channel, run an `exp-v0.52.129`+ build. Required surface:
@@ -123,15 +123,15 @@ stdlib `xml.etree`, no third-party deps, so it runs cleanly under `python3 -S`)
 tokenless route.
 
 **Proxy auth — `token-v1`.** The loopback port is reachable by any local process
-and the WebUI proxy strips inbound credentials, so the sidecar can't tell a
+and the Desktop proxy strips inbound credentials, so the sidecar can't tell a
 proxied request from a direct one. Core mints a per-extension secret and injects
 `X-Hermes-Sidecar-Token`; the scaffold validates it **deny-by-default** at one
 dispatch chokepoint (every route but `/health`). Missing token file → `503`,
 wrong token → `401`. **Honest scope:** this protects against callers that can't
 read the user's state dir (other-UID users, host containers, sandboxed
-processes) — the same level as WebUI's own auth. It does **not** defend against
+processes) — the same level as Desktop's own auth. It does **not** defend against
 arbitrary same-UID code, which can read the token file directly. Auth is
-fail-closed while WebUI auth is off — enable it in **Settings → Password**, then
+fail-closed while Desktop auth is off — enable it in **Settings → Password**, then
 approve the sidecar in **Settings → Extensions**.
 
 | Setting | Source | Default |
@@ -151,17 +151,17 @@ systemctl --user enable --now rss-feeds-sidecar
 A starter subscription list ships in `sidecar/feeds_seed.txt`.
 
 **Health:** `GET http://127.0.0.1:17797/health` returns
-`{"ok": true, "sidecar_base_version": N}`. The WebUI diagnostics card probes this
+`{"ok": true, "sidecar_base_version": N}`. The Desktop diagnostics card probes this
 cross-origin (credentials omitted); the token-bearing proxy path serves real
 traffic.
 
-**Docker limitation:** a bridge-networked WebUI container cannot reach a host-run
+**Docker limitation:** a bridge-networked Desktop container cannot reach a host-run
 sidecar's `127.0.0.1:17797` (loopback is namespace-local). Sidecars work only
 where core and the sidecar share a network namespace and the state dir.
 
 ## Install, disable, uninstall
 
-- **Install**: copy the extension into the WebUI's gallery extension dir
+- **Install**: copy the extension into the Desktop's gallery extension dir
   (`$HERMES_WEBUI_STATE_DIR/extensions/`, default `~/.hermes/webui/extensions/`),
   enable it in **Settings → Extensions**, start the sidecar, reload.
 - **Disable**: toggle off in **Settings → Extensions** — the launcher and

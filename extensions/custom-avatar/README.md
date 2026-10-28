@@ -1,6 +1,6 @@
 # Custom Assistant Avatar
 
-Custom Assistant Avatar is a trusted local Hermes WebUI extension that lets you
+Custom Assistant Avatar is a trusted local Desktop extension that lets you
 give the assistant a custom avatar image in the chat transcript. The assistant's
 role badge is normally a single-letter glyph; this swaps in an image of your
 choice.
@@ -15,7 +15,7 @@ choice.
 - **本地保存**：图片会压缩为 64×64 正方形并以 data-URL 存入 `localStorage`，
   不上传到任何服务器；消息重新渲染后会自动恢复。
 - 用户消息本身没有头像位置，因此仅支持自定义助手头像。
-- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+- 界面文案跟随 Desktop 的界面语言（简体 / 繁体中文时自动显示中文）。
 
 ## What It Does
 
@@ -29,7 +29,7 @@ choice.
 
 ## Scope note (why assistant-only)
 
-The Hermes WebUI deliberately renders **no avatar on user messages** — user
+The Desktop app deliberately renders **no avatar on user messages** — user
 turns are right-aligned bubbles where position identifies the sender, so there is
 no user-side avatar slot in the DOM to customize. This extension customizes the
 **assistant** avatar badge, which is the avatar element that actually exists.
@@ -42,7 +42,7 @@ the personalization layer rather than fixing a non-present bug.)
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/custom-avatar.js + .css
   -> swaps .role-icon.assistant glyph for an <img> when an avatar is set
@@ -79,7 +79,7 @@ Also exposed on `window.HermesCustomAvatarExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/custom-avatar/`
 directory. Your avatar lives under the `hermes-ext-assistant-avatar` localStorage
 key.
@@ -94,7 +94,7 @@ This is trusted local code. Current disclosed behavior:
   `<canvas>`; the result is a small data-URL
 - reads and writes `localStorage` under the single key
   `hermes-ext-assistant-avatar`
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services (the image never leaves
   the browser)
@@ -131,7 +131,7 @@ Manual verification:
 
 ## Known Limitations
 
-- Assistant-only (the user role has no avatar slot in the WebUI by design).
+- Assistant-only (the user role has no avatar slot in the Desktop by design).
 - Avatars are per-browser (`localStorage`), not synced across devices.
 - Relies on the `.role-icon.assistant` badge; a core rename would need an update.
 - Images are downscaled to 64×64 to keep localStorage small.

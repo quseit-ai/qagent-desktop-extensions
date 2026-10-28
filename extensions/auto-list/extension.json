@@ -2,7 +2,7 @@
   "id": "auto-list",
   "name": "Auto List",
   "description": "Smart list typing in the message composer: pressing the newline key inside an ordered (1., 1)) or unordered (-, *, +) list item auto-inserts the next marker (preserving indent); an empty item + newline breaks out of the list; Tab indents the item by 2 spaces and Shift+Tab outdents — like modern editors. Send-key aware (acts only on the newline combo, never the send combo). Pure JS, no sidecar. 在消息输入框中智能续写列表：在有序（1.、1)）或无序（-、*、+）列表中换行会自动插入下一个标记并保留缩进；空项换行退出列表；Tab 按两空格缩进，Shift+Tab 反缩进。可感知发送键，只作用于换行组合，绝不拦截发送组合。纯 JS，无需 sidecar。",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "asorourx",
   "assets": {
     "scripts": [

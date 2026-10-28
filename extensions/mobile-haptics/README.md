@@ -1,6 +1,6 @@
 # Mobile Haptics
 
-Mobile Haptics is a trusted local Hermes WebUI extension that gives your phone a
+Mobile Haptics is a trusted local Desktop extension that gives your phone a
 short vibration when an assistant turn finishes. If you start a long task and
 set the device down, the buzz is a physical "it's done" cue.
 
@@ -53,7 +53,7 @@ closed without subscribing or vibrating.
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/mobile-haptics.js
   -> scoped E0 handle (hermesExt.register)
@@ -76,7 +76,7 @@ cd /path/to/hermes-webui
 HERMES_WEBUI_EXTENSION_DIR=/path/to/hermes-webui-extensions/extensions/mobile-haptics HERMES_WEBUI_EXTENSION_MANIFEST=manifest.json ./start.sh
 ```
 
-Open the WebUI on an Android device (or Android-PWA), send a message, and feel
+Open the Desktop app on an Android device (or Android-PWA), send a message, and feel
 a short buzz when the reply completes.
 
 ## Controls
@@ -97,7 +97,7 @@ A small JS control surface is also exposed on
 ## Disable And Uninstall
 
 Set `HermesMobileHapticsExtension.setEnabled(false)` to turn off buzzing while
-keeping the extension installed, or restart Hermes WebUI without
+keeping the extension installed, or restart Desktop without
 `HERMES_WEBUI_EXTENSION_DIR` / `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the
 `extensions/mobile-haptics/` directory.
 
@@ -111,7 +111,7 @@ This is trusted local code. Current disclosed behavior:
   and subscribes to the B1 `turn:complete` event
 - reads/writes the `enabled` setting through the returned `ext.settings` handle
 - creates NO DOM and does not inspect Core-owned DOM views
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies, unscoped browser storage, loopback, or external
   network services
 - does not use arbitrary filesystem or native host APIs

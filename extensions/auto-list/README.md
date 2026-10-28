@@ -1,6 +1,6 @@
 # Auto List
 
-Auto List is a trusted local Hermes WebUI extension that makes list typing in the
+Auto List is a trusted local Desktop extension that makes list typing in the
 message composer behave like a modern editor: the continuation key continues the
 list, an empty item exits it, and Tab indents by two spaces. Continuation binds to
 whichever Enter chord is **not** your configured send key, so sending is never
@@ -46,7 +46,7 @@ hijacked (see "What It Does").
 ## How It Works
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension asset
   -> /extensions/assets/auto-list.js
   -> a capture-phase keydown listener on document, scoped to the composer
@@ -77,7 +77,7 @@ your send key is Enter, otherwise plain Enter) → the next line becomes `2. `.
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/auto-list/` directory.
 It stores nothing, so there is no state to clean up.
 
@@ -99,7 +99,7 @@ This is trusted local code. Current disclosed behavior:
 - on **Tab** / **Shift+Tab** inside the composer, inserts / removes two spaces
 - edits only the composer textarea's own value via `setRangeText(...)` and
   dispatches a synthetic `input` event; it creates no DOM of its own
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services
 - does not read or write any storage (localStorage / cookies / files)

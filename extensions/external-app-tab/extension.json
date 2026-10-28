@@ -1,8 +1,8 @@
 {
   "id": "external-app-tab",
   "name": "External App Tab",
-  "description": "Pin a compatible self-hosted web app as a tab inside Hermes WebUI via an iframe, or browse the profile's trusted workspaces and preview local files (HTML first) in a sandboxed frame with a top-bar workspace switcher and a collapsible file list. 将兼容的自托管 Web 应用内嵌为标签页；也可浏览可信工作区并在沙箱中预览本地文件（优先 HTML），支持顶栏工作区切换与可折叠文件列表。",
-  "version": "0.5.0",
+  "description": "Pin a compatible self-hosted web app as a tab inside Desktop via an iframe, or browse the profile's trusted workspaces and preview local files (HTML first) in a sandboxed frame with a top-bar workspace switcher and a collapsible file list. 将兼容的自托管 Web 应用内嵌为标签页；也可浏览可信工作区并在沙箱中预览本地文件（优先 HTML），支持顶栏工作区切换与可折叠文件列表。",
+  "version": "0.5.2",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [

@@ -1,6 +1,6 @@
 # Message Pins
 
-Message Pins is a trusted local Hermes WebUI extension that lets you pin
+Message Pins is a trusted local Desktop extension that lets you pin
 individual messages in a conversation. It adds a pin button to each message, a
 header popover that lists your pinned messages with click-to-jump, and a small
 badge showing the pin count. Pins are saved locally in your browser, per
@@ -12,7 +12,7 @@ session.
 右上角有带计数的入口，点开后可查看已固定消息列表并点击跳转。每个会话
 最多固定 3 条，超出时会提示先取消一条。固定记录按会话保存在浏览器的
 `localStorage` 中（键：`hermes-ext-message-pins`），不会跨设备同步。
-界面文案会跟随 WebUI 的语言设置，简体中文环境下自动显示中文。
+界面文案会跟随 Desktop 的语言设置，简体中文环境下自动显示中文。
 
 ## What It Does
 
@@ -33,11 +33,11 @@ session.
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/message-pins.js
   -> /extensions/assets/message-pins.css
-  -> existing WebUI message rows ([data-msg-idx]) + .messages-shell
+  -> existing Desktop message rows ([data-msg-idx]) + .messages-shell
   -> localStorage (key: hermes-ext-message-pins)
 ```
 
@@ -56,7 +56,7 @@ It does not require `loopback-sidecar` or the sidecar proxy.
 
 ## Install For Local Testing
 
-Start Hermes WebUI with this extension directory:
+Start Desktop with this extension directory:
 
 ```bash
 cd /path/to/hermes-webui
@@ -83,7 +83,7 @@ This entry can be browsed and installed from Settings -> Extensions.
 
 ## Disable And Uninstall
 
-To disable the WebUI extension, restart Hermes WebUI without:
+To disable the Desktop extension, restart Desktop without:
 
 ```text
 HERMES_WEBUI_EXTENSION_DIR
@@ -101,7 +101,7 @@ localStorage. Clearing that key (or your site data) removes all saved pins.
 
 ## Trust And Permissions
 
-This is trusted local code. The injected JavaScript runs in the Hermes WebUI
+This is trusted local code. The injected JavaScript runs in the Desktop app's
 browser origin and can use the logged-in browser session.
 
 Current disclosed behavior:
@@ -118,7 +118,7 @@ Current disclosed behavior:
 - uses a `MutationObserver` on the messages container to re-apply pin
   decorations after the transcript re-renders
 - reads and writes `localStorage` under the single key `hermes-ext-message-pins`
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services
 - does not use arbitrary filesystem or native host APIs
@@ -128,14 +128,14 @@ All message text rendered into the popover and previews is inserted via
 
 ## Compatibility
 
-Required WebUI surface:
+Required Desktop surface:
 
 - manifest-bundled extension assets
 - same-origin extension asset serving under `/extensions/`
 - message rows carrying `data-msg-idx` (and, where available, `data-raw-text`
   and `data-session-id`), inside `#messages` / `.messages-shell`
 
-This entry targets Hermes WebUI builds that render message rows with
+This entry targets Desktop builds that render message rows with
 `data-msg-idx` and the `.msg-actions` hover bar. The compatibility requirement is
 better described as the manifest bundle plus the message-row DOM surface above.
 

@@ -1,6 +1,6 @@
 # Skin Pack
 
-Skin Pack is a trusted local Hermes WebUI extension that adds a set of popular
+Skin Pack is a trusted local Desktop extension that adds a set of popular
 editor-inspired color themes to the **native Settings → Appearance** skin
 picker. Core keeps its built-in skin list deliberately curated; this extension
 covers the long tail of "I want my editor's theme."
@@ -10,7 +10,7 @@ covers the long tail of "I want my editor's theme."
 - 为系统“设置 → 外观”的皮肤选择器添加一组受主流编辑器启发的深色配色主题。
 - 包含 Dracula、Gruvbox、One Dark、Tokyo Night、Rosé Pine 和 Solarized Dark。
 - 每个主题都是一套完整的深色调色板，而非仅修改强调色。
-- 通过核心的主题注册能力注册；较旧版本的 WebUI 不支持时会静默停用。
+- 通过核心的主题注册能力注册；较旧版本的 Desktop 不支持时会静默停用。
 
 ## Themes
 
@@ -37,13 +37,13 @@ sidebar, bubbles), not just an accent tint.
 
 This extension requires the core **theme-registration capability**
 (`window.registerHermesSkin`) with the **`scheme` option** — base capability in `nesquena/hermes-webui` **PR #5100**, `scheme` in **PR #5271**. On
-an older WebUI without it, the extension **no-ops gracefully** (the themes are
+an older Desktop without it, the extension **no-ops gracefully** (the themes are
 simply unavailable; nothing errors).
 
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/skin-pack.js
   -> window.registerHermesSkin({...}) x6
@@ -70,7 +70,7 @@ picker.
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/skin-pack/`
 directory. If one of these themes was selected, switch to another skin in
 Appearance first (a removed skin falls back to the default).
@@ -82,7 +82,7 @@ This is trusted local code. Current disclosed behavior:
 - calls `window.registerHermesSkin(...)` once per bundled theme with static
   color-token sets
 - creates NO DOM (no buttons, panels, or message-row mutations)
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not read or write localStorage / sessionStorage / cookies
 - does not contact loopback or external network services
 - does not use arbitrary filesystem or native host APIs
@@ -120,7 +120,7 @@ python3 -m json.tool extensions/skin-pack/extension.json
 python3 -m json.tool extensions/skin-pack/manifest.json
 ```
 
-Manual verification (on a WebUI build with PR #5100 + #5271):
+Manual verification (on a Desktop build with PR #5100 + #5271):
 
 - Settings → Appearance shows all six themes in the skin picker
 - selecting each applies its full palette across the app

@@ -1,12 +1,12 @@
 # Assistant Avatar — Cute companion character
 
-A small Canvas 2D character face that floats in the bottom-right corner of the Hermes WebUI and scurries away from your cursor.
+A small Canvas 2D character face that floats in the bottom-right corner of the Desktop app and scurries away from your cursor.
 
 **v0.4.0** — SVG path-based characters, mouse tracking, and avoid/flee behavior.
 
 ## 中文说明
 
-本扩展在 Hermes WebUI 右下角显示一个 Canvas 2D 动画伙伴角色，会根据 AI 状态
+本扩展在 Desktop 右下角显示一个 Canvas 2D 动画伙伴角色，会根据 AI 状态
 切换表情（空闲、思考、说话、惊喜等），瞳孔跟随鼠标移动，并在光标靠近时躲开；
 点击角色会随机弹开。
 
@@ -14,7 +14,7 @@ A small Canvas 2D character face that floats in the bottom-right corner of the H
 - **角色**：Pixel、Neko、Yuki、Robot、Monster 可选（名称保留英文）。
 - **颜色**：可为当前角色调整皮肤、头发、虹膜等颜色；点击「恢复默认颜色」复位。
 - **跟随鼠标**：用「👀 跟随 ✓ / 👀 静止」按钮切换瞳孔跟随。
-- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+- 界面文案跟随 Desktop 的界面语言（简体 / 繁体中文时自动显示中文）。
 
 ## What's new in v0.4.0
 
@@ -51,7 +51,7 @@ The extension lives at `~/.hermes/webui-dev/extensions/assistant-avatar/` and is
 
 ## Verify it loaded
 
-1. Open the Hermes WebUI
+1. Open the Desktop app
 2. Open DevTools → Console
 3. Type: `window.HermesAssistantAvatar.getExpression()`
 4. You should see `{current: "idle", target: "idle", tween: 1}`

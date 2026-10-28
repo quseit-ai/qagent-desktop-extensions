@@ -1,6 +1,6 @@
 # Model Favorites
 
-Model Favorites is a trusted local Hermes WebUI extension that lets you star the
+Model Favorites is a trusted local Desktop extension that lets you star the
 models you use most in the composer model picker. Favorited models are promoted
 to a **★ Favorites** group at the top of the dropdown for one-click switching.
 
@@ -10,7 +10,7 @@ to a **★ Favorites** group at the top of the dropdown for one-click switching.
 按钮，收藏的模型会提升到下拉列表顶部的「★ 收藏」分组，点击即可切换。
 同一个模型 ID 在不同提供商下视为不同的收藏项；收藏保存在浏览器本地
 （`localStorage`，键：`hermes-ext-model-favorites`）。界面文案会跟随
-WebUI 的语言设置，简体中文环境下自动显示中文。
+Desktop 的语言设置，简体中文环境下自动显示中文。
 
 ## What It Does
 
@@ -27,7 +27,7 @@ WebUI 的语言设置，简体中文环境下自动显示中文。
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/model-favorites.js + .css
   -> decorates #composerModelDropdown .model-opt rows with a star
@@ -55,7 +55,7 @@ the Favorites group at the top.
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/model-favorites/`
 directory. Your favorites live under the `hermes-ext-model-favorites` localStorage
 key.
@@ -71,7 +71,7 @@ This is trusted local code. Current disclosed behavior:
 - selects a favorite by calling the existing `window.selectModelFromDropdown(...)`
 - reads and writes `localStorage` under the single key
   `hermes-ext-model-favorites`
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services
 - does not use arbitrary filesystem or native host APIs

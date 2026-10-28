@@ -29,7 +29,7 @@
     en: {
       creatorTitle: 'Theme Creator',
       close: 'Close',
-      capabilityWarn: 'The theme-registration capability isn’t available in this WebUI build (needs core PR #5100). You can still design a theme, but it can’t be applied yet.',
+      capabilityWarn: 'The theme-registration capability isn’t available in this Desktop build (needs core PR #5100). You can still design a theme, but it can’t be applied yet.',
       imageProcessFailed: 'Failed to process image.',
       editTheme: 'Edit theme',
       newTheme: 'New theme',
@@ -71,7 +71,7 @@
     zh: {
       creatorTitle: '主题创建器',
       close: '关闭',
-      capabilityWarn: '当前 WebUI 版本不支持主题注册能力（需要核心 PR #5100）。你仍然可以设计主题，但暂时无法应用。',
+      capabilityWarn: '当前 Desktop 版本不支持主题注册能力（需要核心 PR #5100）。你仍然可以设计主题，但暂时无法应用。',
       imageProcessFailed: '图片处理失败。',
       editTheme: '编辑主题',
       newTheme: '新建主题',

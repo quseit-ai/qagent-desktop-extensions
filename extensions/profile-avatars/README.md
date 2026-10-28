@@ -1,6 +1,6 @@
 # Profile Avatars
 
-Profile Avatars is a Hermes WebUI extension that gives every profile its own
+Profile Avatars is a Desktop extension that gives every profile its own
 avatar image and renders it everywhere the profile appears. Avatars are stored
 **server-side** (a loopback sidecar with SQLite), so one upload syncs across
 all your devices and browsers — and each image is downloaded **once per page
@@ -44,20 +44,20 @@ load** into a shared in-memory object URL. Nothing is written to
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> assets/avatars.js     render + observers (chips, badges, session rows)
   -> assets/avatars.css    avatar primitive + manager styles
-WebUI sidecar proxy (after consent)
+Desktop sidecar proxy (after consent)
   -> /api/extensions/profile-avatars/sidecar/api/avatars[...]
   -> loopback sidecar on 127.0.0.1:17798 (sidecar/sidecar.py)
      -> SQLite at $HERMES_WEBUI_STATE_DIR/avatars.db
-Reads (same-origin WebUI API): /api/profiles (roster + active),
+Reads (same-origin Desktop API): /api/profiles (roster + active),
   /api/sessions?all_profiles=1 (session → profile map, throttled, in-memory)
 ```
 
-## Supported WebUI version / API surface
+## Supported Desktop version / API surface
 
-Requires a Hermes WebUI build that contains the `token-v1` sidecar-proxy
+Requires a Desktop build that contains the `token-v1` sidecar-proxy
 contract (core [nesquena/hermes-webui#6331](https://github.com/nesquena/hermes-webui/pull/6331),
 first shipped in `exp-v0.52.129`). An older build has no per-extension sidecar
 token, so every protected sidecar call fails closed. A stable-channel minimum
@@ -89,15 +89,15 @@ extension's own code is `sidecar/routes_impl.py` (routes) + `sidecar/avatars.py`
 (liveness only — the sole tokenless route).
 
 **Proxy auth — `token-v1`.** The loopback port is reachable by any local process
-and the WebUI proxy strips inbound credentials, so the sidecar can't tell a
+and the Desktop proxy strips inbound credentials, so the sidecar can't tell a
 proxied request from a direct one. Core mints a per-extension secret and injects
 `X-Hermes-Sidecar-Token`; the scaffold validates it **deny-by-default** at one
 dispatch chokepoint (every route but `/health`). Missing token file → `503`,
 wrong token → `401`. **Honest scope:** this protects against callers that can't
 read the user's state dir (other-UID users, host containers, sandboxed
-processes) — the same level as WebUI's own auth. It does **not** defend against
+processes) — the same level as Desktop's own auth. It does **not** defend against
 arbitrary same-UID code, which can read the token file directly. Auth is
-fail-closed while WebUI auth is off — enable it in **Settings → Password**, then
+fail-closed while Desktop auth is off — enable it in **Settings → Password**, then
 approve the sidecar in **Settings → Extensions**.
 
 | Setting | Source | Default |
@@ -114,17 +114,17 @@ systemctl --user enable --now profile-avatars-sidecar
 ```
 
 **Health:** `GET http://127.0.0.1:17798/health` returns
-`{"ok": true, "sidecar_base_version": N}`. The WebUI diagnostics card probes this
+`{"ok": true, "sidecar_base_version": N}`. The Desktop diagnostics card probes this
 cross-origin (credentials omitted); the token-bearing proxy path is what serves
 real traffic.
 
-**Docker limitation:** a bridge-networked WebUI container cannot reach a host-run
+**Docker limitation:** a bridge-networked Desktop container cannot reach a host-run
 sidecar's `127.0.0.1:17798` (loopback is namespace-local). Sidecars work only
 where core and the sidecar share a network namespace and the state dir.
 
 ## Install, disable, uninstall
 
-- **Install**: copy the extension into the WebUI's gallery extension dir
+- **Install**: copy the extension into the Desktop's gallery extension dir
   (`$HERMES_WEBUI_STATE_DIR/extensions/`, default `~/.hermes/webui/extensions/`),
   enable it in **Settings → Extensions**, start the sidecar, reload. The
   extension requests sidecar-proxy consent on first load; consent can be
@@ -142,7 +142,7 @@ where core and the sidecar share a network namespace and the state dir.
   slots, a manager modal, a launcher banner in the Profiles tab).
 - Reads `GET /api/profiles` and `GET /api/sessions?all_profiles=1` (same-origin,
   session-authenticated) to know the roster and which profile owns each session.
-- Talks to its loopback sidecar only through the WebUI's consented proxy path.
+- Talks to its loopback sidecar only through the Desktop's consented proxy path.
 - Uploads go to the sidecar; images never leave the machine. The browser first
   decodes each file, then the sidecar validates the raster structure, dimensions,
   type, and 512 KiB limit (matching the core sidecar-proxy response cap).

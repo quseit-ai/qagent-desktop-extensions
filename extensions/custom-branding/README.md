@@ -1,13 +1,13 @@
 # Custom Branding
 
-Custom Branding is a trusted local Hermes WebUI extension that lets you
+Custom Branding is a trusted local Desktop extension that lets you
 white-label the app chrome with **your own logo and favicon**. The Hermes
 titlebar mark, the empty-state hero logo, and the browser-tab favicon are all
 swapped for images of your choice.
 
 ## 中文说明
 
-本扩展用你自己的标志和网站图标替换 Hermes WebUI 的品牌标识：标题栏标志、
+本扩展用你自己的标志和网站图标替换 Desktop 的品牌标识：标题栏标志、
 空状态页大图标，以及浏览器标签页图标都会换成你上传的图片。
 
 - **使用方法**：点击标题栏左侧的标志打开选择器。
@@ -16,7 +16,7 @@ swapped for images of your choice.
 - **按钮**：「上传… / 更换…」「移除」；仅支持 PNG / JPEG / WebP 图片。
 - 图片在浏览器内压缩后存入 `localStorage`，不会上传到任何服务器；点击「移除」
   即可恢复 Hermes 默认图标。
-- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+- 界面文案跟随 Desktop 的界面语言（简体 / 繁体中文时自动显示中文）。
 
 ## What It Does
 
@@ -48,7 +48,7 @@ validation/downscale approach preserves @gavinssr's original design intent
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/custom-branding.js + .css
   -> swaps .app-titlebar-icon SVG + .empty-logo SVG for an <img> when a logo is set
@@ -87,7 +87,7 @@ Also exposed on `window.HermesCustomBrandingExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/custom-branding/`
 directory. Your images live under the `hermes-ext-custom-branding-logo` and
 `hermes-ext-custom-branding-favicon` localStorage keys.
@@ -103,8 +103,8 @@ This is trusted local code. Current disclosed behavior:
   `<canvas>`; the result is a small data-URL
 - reads and writes `localStorage` under exactly two keys:
   `hermes-ext-custom-branding-logo` and `hermes-ext-custom-branding-favicon`
-- does not call WebUI HTTP APIs (`webui_api.read/write` are empty)
-- does not navigate the WebUI (`webui_navigation: false`)
+- does not call Desktop HTTP APIs (`webui_api.read/write` are empty)
+- does not navigate the Desktop (`webui_navigation: false`)
 - does not access cookies
 - does not contact loopback or external network services (`network_external:
   false` — the image never leaves the browser)

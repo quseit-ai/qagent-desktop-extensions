@@ -1,13 +1,13 @@
 # Desktop Companion
 
-Desktop Companion is a trusted local companion extension for Hermes WebUI. It
+Desktop Companion is a trusted local companion extension for Desktop. It
 watches session attention state, forwards lightweight snapshots to a local
 loopback sidecar, and executes trusted local desktop-pet commands in the
-authenticated WebUI browser session. It does not render a browser pet or WebUI
+authenticated Desktop browser session. It does not render a browser pet or Desktop
 overlay.
 
-This entry is the first sidecar-class extension candidate for the Hermes WebUI
-extension library. It keeps the WebUI-facing assets in this repository and keeps
+This entry is the first sidecar-class extension candidate for the Desktop
+extension library. It keeps the Desktop-facing assets in this repository and keeps
 the sidecar/native host source in:
 
 ```text
@@ -17,35 +17,35 @@ https://github.com/franksong2702/hermes-webui-desktop-companion
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/companion-adapter.js
   -> http://127.0.0.1:17787 loopback sidecar
   -> native desktop pet host
 ```
 
-The extension can run in WebUI without the sidecar. In that mode it stays
+The extension can run in Desktop without the sidecar. In that mode it stays
 invisible and quietly fails closed. When the sidecar is running, the extension
 posts snapshots to `POST /api/webui/snapshot` so the desktop pet can react.
 The sidecar and native desktop pet host are required for the user-visible
-desktop pet experience; the WebUI adapter alone is only the browser bridge.
+desktop pet experience; the Desktop adapter alone is only the browser bridge.
 
 This bridge is bidirectional. The browser adapter sends attention snapshots to
 the sidecar, and it also polls the local sidecar for commands that the adapter
-executes inside the authenticated WebUI origin.
+executes inside the authenticated Desktop origin.
 
 The bundled `assets/pets/` resources are consumed by the native desktop pet
 host through the sidecar/source project. They are not a browser overlay and do
-not mean Hermes WebUI core renders a pet inside the page.
+not mean Desktop core renders a pet inside the page.
 
 ## 中文说明
 
-本扩展为 Hermes WebUI 提供可信的本地桌面伴侣桥接：它监听会话的关注状态，
+本扩展为 Desktop 提供可信的本地桌面伴侣桥接：它监听会话的关注状态，
 把轻量快照转发给本机回环 sidecar（`http://127.0.0.1:17787`），并在已认证的
-WebUI 浏览器会话中执行受信任的桌面宠物命令。它不会在网页内渲染宠物或覆盖层；
-单独的 WebUI 适配器只是浏览器桥接，桌面宠物需要 sidecar 与原生宿主程序。
+Desktop 浏览器会话中执行受信任的桌面宠物命令。它不会在网页内渲染宠物或覆盖层；
+单独的 Desktop 适配器只是浏览器桥接，桌面宠物需要 sidecar 与原生宿主程序。
 桌面宠物上显示的会话状态文案（如「Hermes 正在工作」「可以查看了」）会跟随
-WebUI 的中英文语言设置切换。
+Desktop 的中英文语言设置切换。
 
 ## Capabilities
 
@@ -63,10 +63,10 @@ same-origin proxy requires the external runtime to implement the language-neutra
 
 ## Install From Gallery
 
-In Hermes WebUI, open Settings -> Extensions -> Gallery and install
+In the Desktop app, open Settings -> Extensions -> Gallery and install
 Desktop Companion.
 
-Gallery install enables the WebUI bridge only. To show and use the desktop pet,
+Gallery install enables the Desktop bridge only. To show and use the desktop pet,
 open the Desktop Companion source repo and run the local start command:
 
 ```bash
@@ -81,7 +81,7 @@ which starts with the same command for an existing local clone.
 
 ## Install For Local Testing
 
-Start Hermes WebUI with this extension directory:
+Start Desktop with this extension directory:
 
 ```bash
 cd /path/to/hermes-webui
@@ -110,7 +110,7 @@ npm run desktop:dev
 
 ## Disable And Uninstall
 
-To disable the WebUI extension, restart Hermes WebUI without:
+To disable the Desktop extension, restart Desktop without:
 
 ```text
 HERMES_WEBUI_EXTENSION_DIR
@@ -125,21 +125,21 @@ processes are stopped.
 
 ## Trust And Permissions
 
-This is trusted local code. The injected adapter runs in the Hermes WebUI
+This is trusted local code. The injected adapter runs in the Desktop app's
 browser origin and can use the logged-in browser session.
 
 Current disclosed behavior:
 
-- reads the authenticated WebUI sessions API via `/api/sessions`
+- reads the authenticated Desktop sessions API via `/api/sessions`
 - reads authenticated session detail via `/api/session`
 - reads authenticated pending approval and clarification details via
   `/api/approval/pending` and `/api/clarify/pending`
-- writes authenticated WebUI APIs for desktop-pet commands:
+- writes authenticated Desktop APIs for desktop-pet commands:
   `/api/session/draft`, `/api/approval/respond`, and `/api/clarify/respond`
-- reads guarded Hermes WebUI browser globals for live session state while no
+- reads guarded Desktop browser globals for live session state while no
   formal extension runtime API exists (`S`, `_allSessions`, `INFLIGHT`,
   `_currentPanel`, `switchPanel`, `_saveComposerDraftNow`, and `send`)
-- reads existing WebUI localStorage keys for viewed/unread session state
+- reads existing Desktop localStorage keys for viewed/unread session state
 - writes extension-owned localStorage markers for consumed desktop-pet commands:
   `hermes-pet-navigation-last-id` and `hermes-pet-action-last-id`
 - talks to a loopback sidecar at `http://127.0.0.1:17787`
@@ -147,7 +147,7 @@ Current disclosed behavior:
   attention summaries, including session titles and status text
 - polls the local sidecar for trusted commands and can switch sessions, inject
   composer drafts, optionally autosend a draft, and respond to approval or
-  clarification prompts in the logged-in WebUI session
+  clarification prompts in the logged-in Desktop session
 - uses a native host for transparent windows, menus, drag behavior, and restart
   behavior when the desktop pet is launched
 - serves bundled pet assets
@@ -157,7 +157,7 @@ Current disclosed behavior:
 The adapter endpoint can be overridden with trusted local configuration via
 `window.HERMES_DESKTOP_COMPANION_CONFIG` before the adapter loads. Do not point
 that override at an untrusted remote origin, because the adapter sends
-authenticated WebUI attention state and executes queued desktop-pet actions.
+authenticated Desktop attention state and executes queued desktop-pet actions.
 
 The autosend path is intentionally limited to commands delivered by the local
 loopback sidecar the user starts. It is not exposed to remote origins or
@@ -186,7 +186,7 @@ Expected response shape:
   "ok": true,
   "status": "ok",
   "service": "hermes-webui-desktop-companion",
-  "name": "Hermes WebUI Desktop Companion",
+  "name": "Desktop Companion",
   "version": "0.1.0",
   "sidecar": {
     "type": "loopback",
@@ -195,24 +195,24 @@ Expected response shape:
 }
 ```
 
-The sidecar metadata is descriptive. It does not imply that Hermes WebUI core
+The sidecar metadata is descriptive. It does not imply that Desktop core
 can install, auto-start, proxy, or manage the native process yet.
 
 ## Compatibility
 
-Required WebUI surface:
+Required Desktop surface:
 
 - manifest-bundled extension assets
 - same-origin extension asset serving under `/extensions/`
-- browser access to authenticated WebUI session APIs
-- authenticated WebUI write APIs for session drafts, approval responses, and
+- browser access to authenticated Desktop session APIs
+- authenticated Desktop write APIs for session drafts, approval responses, and
   clarification responses
-- authenticated WebUI read APIs for pending approval and clarification context
+- authenticated Desktop read APIs for pending approval and clarification context
 - browser navigation/session-loading hooks for desktop-pet jump and quick-reply
   flows
 - loopback CSP allowance for `http://127.0.0.1:17787`
-- guarded access to the current WebUI browser globals listed in the trust
-  section until WebUI core exposes an equivalent extension runtime API
+- guarded access to the current Desktop browser globals listed in the trust
+  section until Desktop core exposes an equivalent extension runtime API
 
 Current lifecycle declaration:
 
@@ -225,7 +225,7 @@ Current lifecycle declaration:
 }
 ```
 
-Manual env-var setup may still require restarting WebUI so it rereads its
+Manual env-var setup may still require restarting Desktop so it rereads its
 configured extension manifest. The lifecycle declaration describes the extension
 capability model rather than today's manual startup mechanics.
 
@@ -248,18 +248,18 @@ npm test
 
 Manual verification should confirm:
 
-- WebUI loads the adapter from `manifest.json`
-- no browser pet or WebUI overlay appears
+- Desktop loads the adapter from `manifest.json`
+- no browser pet or Desktop overlay appears
 - the sidecar receives `POST /api/webui/snapshot` when it is running
 - `GET /health` returns `status: "ok"`
 - the native desktop pet host can load from the sidecar
 
 ## Known Limitations
 
-- Gallery installation is available for the WebUI adapter; the external Desktop
+- Gallery installation is available for the Desktop adapter; the external Desktop
   Companion application and sidecar still require their own installation.
-- WebUI settings do not yet manage sidecar lifecycle.
-- Hermes WebUI core's consent-gated sidecar proxy is shipped, but this external
+- Desktop settings do not yet manage sidecar lifecycle.
+- Desktop core's consent-gated sidecar proxy is shipped, but this external
   runtime remains explicitly `legacy` and its adapter still uses direct loopback.
   Moving it to the proxy requires the external runtime to adopt `token-v1`.
 - The native host source is linked, not vendored, in this extension entry.

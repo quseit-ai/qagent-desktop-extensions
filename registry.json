@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "generated_at": "2026-10-28T06:17:16.722Z",
+  "generated_at": "2026-10-28T06:54:44.889Z",
   "extensions": [
     {
       "id": "assistant-avatar",
       "name": "Assistant Avatar",
       "description": "2D animated companion character that reacts to AI state and follows your cursor. Pure Canvas 2D — zero dependencies, 100% MIT. 一个会响应 AI 状态并跟随鼠标光标的 2D 动画伙伴角色；纯 Canvas 2D 实现，零依赖，MIT 许可。",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "author": "chonsong",
       "assets": {
         "scripts": [
@@ -53,15 +53,15 @@
       },
       "entry_path": "extensions/assistant-avatar/extension.json",
       "runtime_manifest_path": "extensions/assistant-avatar/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/assistant-avatar-0.5.0.zip",
-      "sha256": "d2837820d5cf7eaf1affd138999b2c10295d618ad4d820e08aa672c887fa3d0c",
-      "artifact_size": 45524,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/assistant-avatar-0.5.1.zip",
+      "sha256": "1f52796fa34c9ac8cc8c9147167430f845f65ad663a1c089163f00847065c164",
+      "artifact_size": 45519,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "887f766e79ca934a5c3004a802de196c802e6b302795a1c27492d17e40c3be5b"
+          "sha256": "bee43fecdc5d6cc5a695cebd3445b71f2ec4c08243d253ccc447e3d6ca52fce9"
         },
         {
           "path": "assets/avatar.css",
@@ -73,7 +73,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "dfde3ab95cc8155ffe125275640cd2175a080cc766b7fa8d5814b90dce183048"
+          "sha256": "48d3680c8d1d512b94e47732d5f411132969309ef7675986d4625bd7dfa18e85"
         },
         {
           "path": "manifest.json",
@@ -85,7 +85,7 @@
       "id": "auto-list",
       "name": "Auto List",
       "description": "Smart list typing in the message composer: pressing the newline key inside an ordered (1., 1)) or unordered (-, *, +) list item auto-inserts the next marker (preserving indent); an empty item + newline breaks out of the list; Tab indents the item by 2 spaces and Shift+Tab outdents — like modern editors. Send-key aware (acts only on the newline combo, never the send combo). Pure JS, no sidecar. 在消息输入框中智能续写列表：在有序（1.、1)）或无序（-、*、+）列表中换行会自动插入下一个标记并保留缩进；空项换行退出列表；Tab 按两空格缩进，Shift+Tab 反缩进。可感知发送键，只作用于换行组合，绝不拦截发送组合。纯 JS，无需 sidecar。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "asorourx",
       "assets": {
         "scripts": [
@@ -127,15 +127,15 @@
       },
       "entry_path": "extensions/auto-list/extension.json",
       "runtime_manifest_path": "extensions/auto-list/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/auto-list-0.2.0.zip",
-      "sha256": "8db291b48764d45edf19e8d817f16c2bbc39ae898274d6f352221e809f133db1",
-      "artifact_size": 19504,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/auto-list-0.2.1.zip",
+      "sha256": "2919e85f57318fa11af094a553ec97d62291b91a480af1ae730ef163ea6460a2",
+      "artifact_size": 19491,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 4,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "27968074396e6e7b6794818e2bde5e0de7e6045ff6fedf4bbdb28bcb64511043"
+          "sha256": "35f0cd5541458f5df4600710442f1f61c01a01590b93d345470c46c0f9c17a2f"
         },
         {
           "path": "assets/auto-list.js",
@@ -143,7 +143,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "1b57595cccdd441bac7ac66df88bd7359f44ff397a1c31e6a8a9aa778fa95093"
+          "sha256": "5f61e4f35ebd3696126d68678b2735c2f762aa5f3e0862e05d5255983539b5fa"
         },
         {
           "path": "manifest.json",
@@ -155,7 +155,7 @@
       "id": "custom-avatar",
       "name": "Custom Assistant Avatar",
       "description": "Give the assistant a custom avatar image in the chat transcript. Click any assistant avatar badge to upload or clear an image; it's downscaled and stored locally and re-applied as the transcript re-renders. 在聊天记录中为助手设置自定义头像：点击助手头像徽章即可上传或清除图片，图片会压缩后保存在本地，并在消息重新渲染后自动恢复。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -201,15 +201,15 @@
       },
       "entry_path": "extensions/custom-avatar/extension.json",
       "runtime_manifest_path": "extensions/custom-avatar/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/custom-avatar-0.2.0.zip",
-      "sha256": "c18f6bcc9931a349002f1ac7829fab0a101bbe6b4ec4aee6053d54d52a176b67",
-      "artifact_size": 21777,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/custom-avatar-0.2.1.zip",
+      "sha256": "bf6f78a3f97f3414145fa7935484262be325a4194d63c22b81458dcdb5e716cb",
+      "artifact_size": 21767,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "2c33ac72b8766a3a59df80d2e845c604cfc11e5d6d1b8894a83715d178e63e81"
+          "sha256": "273b69cfc59f11b6182ab6662792dc20fdac5c21211ad3438285bec1e565d199"
         },
         {
           "path": "assets/custom-avatar.css",
@@ -221,7 +221,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "fa868de699c191208e05efa8e0874d81846d84170d75170edffa2eae947957a9"
+          "sha256": "5c485161c9a3a6c7b8a44ddd288923f524d06a4465c399ba776ec067b0f651e2"
         },
         {
           "path": "manifest.json",
@@ -232,8 +232,8 @@
     {
       "id": "custom-branding",
       "name": "Custom Branding",
-      "description": "White-label the Hermes WebUI chrome with your own logo and favicon. Click the titlebar logo to upload a custom logo (swaps the titlebar + empty-state marks) and a custom favicon (swaps the browser tab icon). Images are downscaled and stored locally, and re-applied as the UI re-renders. 用自定义标志和网站图标替换 Hermes WebUI 的品牌标识：点击标题栏标志即可上传标志（同时替换标题栏和空状态图标）与网站图标；图片会压缩后保存在本地，并在界面重新渲染后自动恢复。",
-      "version": "0.2.0",
+      "description": "White-label the Desktop chrome with your own logo and favicon. Click the titlebar logo to upload a custom logo (swaps the titlebar + empty-state marks) and a custom favicon (swaps the browser tab icon). Images are downscaled and stored locally, and re-applied as the UI re-renders. 用自定义标志和网站图标替换 Desktop 的品牌标识：点击标题栏标志即可上传标志（同时替换标题栏和空状态图标）与网站图标；图片会压缩后保存在本地，并在界面重新渲染后自动恢复。",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -280,15 +280,15 @@
       },
       "entry_path": "extensions/custom-branding/extension.json",
       "runtime_manifest_path": "extensions/custom-branding/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/custom-branding-0.2.0.zip",
-      "sha256": "65d63184750a1535a073a1fb5482ba751e8b9a9010c3dc8729977e74849edf23",
-      "artifact_size": 35771,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/custom-branding-0.2.1.zip",
+      "sha256": "7d7c864fd4379e9d12b8467bac140d449d31cc4b5a6075adff40219acd79552b",
+      "artifact_size": 35737,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "47a45668bd11a7730e2f3693848135e4c8e382bdbc33d7176651872f0e2faa34"
+          "sha256": "1f9e6da1fa6c612258852d5e9ae34c00c31d15292e4e0a22a96a3b9fddf5a2c3"
         },
         {
           "path": "assets/custom-branding.css",
@@ -300,19 +300,19 @@
         },
         {
           "path": "extension.json",
-          "sha256": "848809b18e9b9d2088c1490ee0353e89d3be04564011adc83f6cf5bd4eff5a93"
+          "sha256": "c812b3e52894a799d9ed3a21b57a20ca1be607ad05da7d8b4e9dc925e79ee809"
         },
         {
           "path": "manifest.json",
-          "sha256": "8b5c9e449e97904de45f5f90ac4d9582eee6262367754df5d9cb250045cfad10"
+          "sha256": "188bc47f69bc4d90f7c2021d5b1deba979f02aa8908c8d765831919cf26503ff"
         }
       ]
     },
     {
       "id": "desktop-companion",
       "name": "Desktop Companion",
-      "description": "Trusted local desktop companion for Hermes WebUI. Ships a WebUI adapter, a loopback sidecar protocol, and a native desktop pet host. 适用于 Hermes WebUI 的可信本地桌面伴侣：提供 WebUI 适配器、回环 sidecar 协议与原生桌面宠物宿主。",
-      "version": "0.2.0",
+      "description": "Trusted local desktop companion for Desktop. Ships a Desktop adapter, a loopback sidecar protocol, and a native desktop pet host. 适用于 Desktop 的可信本地桌面伴侣：提供 Desktop 适配器、回环 sidecar 协议与原生桌面宠物宿主。",
+      "version": "0.2.1",
       "author": "franksong2702",
       "homepage": "https://github.com/franksong2702/hermes-webui-desktop-companion",
       "assets": {
@@ -342,7 +342,7 @@
         "native_host_autostart": "extension_owned"
       },
       "post_install": {
-        "summary": "Install enables the WebUI bridge. In the Desktop Companion repo, run npm run start:pet to launch the desktop pet.",
+        "summary": "Install enables the Desktop bridge. In the Desktop Companion repo, run npm run start:pet to launch the desktop pet.",
         "docs_url": "https://github.com/franksong2702/hermes-webui-desktop-companion#after-gallery-install",
         "requires_local_app": true,
         "local_app_label": "Desktop Companion app"
@@ -397,15 +397,15 @@
       },
       "entry_path": "extensions/desktop-companion/extension.json",
       "runtime_manifest_path": "extensions/desktop-companion/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/desktop-companion-0.2.0.zip",
-      "sha256": "eba619eb9f4667a8cab969decf77387331746f0e9896eb4caa47ac6cd9c4a557",
-      "artifact_size": 4191575,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/desktop-companion-0.2.1.zip",
+      "sha256": "a9cc72d67fe510466c6518b2bbe24200668932473504dc90cc94a8c9c2de8d51",
+      "artifact_size": 4191543,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 10,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "b219c17dd2629119f16a3bbb0ef052c4791af0d8595f9a27a820d6e0b4a22a2b"
+          "sha256": "cfa108aad13a3e5b677ed8326fd169b3b16595a7e052aab3dfae6a5da162b713"
         },
         {
           "path": "assets/companion-adapter.js",
@@ -413,11 +413,11 @@
         },
         {
           "path": "extension.json",
-          "sha256": "28b9c16dc1198e16fbe1c9ce120f911493aeb3efa608f370d0864411c7d024fd"
+          "sha256": "a5cc7e6de7427b216229baf2284f05c2c74d5da40175f94ab9f0c64257820788"
         },
         {
           "path": "manifest.json",
-          "sha256": "8d256e50cbf76cb5710b44a4be9829878816a4838d50ff371d624622cc09bdb7"
+          "sha256": "ed9e7680389dbf678782de48b6c894ad6b63cba89bfcf7ad5d01775dab2e8b59"
         },
         {
           "path": "pets/courier/pet.json",
@@ -449,7 +449,7 @@
       "id": "e-ink-skin",
       "name": "E-Ink Skin",
       "description": "A maximum-contrast, near-monochrome light skin tuned for e-ink displays (Kindle, Boox, reMarkable). Pure-white background, near-black text, no gray-on-gray, flattened shadows. Registers into the native Settings → Appearance skin picker. 专为电子墨水屏优化的高对比度、近单色浅色皮肤，可在系统外观选择器中选择。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -492,15 +492,15 @@
       },
       "entry_path": "extensions/e-ink-skin/extension.json",
       "runtime_manifest_path": "extensions/e-ink-skin/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/e-ink-skin-0.2.0.zip",
-      "sha256": "18a5dd52f80cab4a504248ecd8a20d90a81e1e4281cf7fcc1e11bebb9347e1b3",
-      "artifact_size": 11661,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/e-ink-skin-0.2.1.zip",
+      "sha256": "e98418605b9c1e6a63c5772ddf5ae58eb0984913f0240cae975f4e526230a8c6",
+      "artifact_size": 11652,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 4,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "5bc97c03d7c4089bc979b4e7b3a2a00954501cd32b232d703363d12fa4c1fd52"
+          "sha256": "3a4eb90c43c7055322264d4d50b1f3ebc98447243533457b8d1b6f18dcab4b9f"
         },
         {
           "path": "assets/e-ink-skin.js",
@@ -508,7 +508,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "812a13c5097f34914c3456bcad0a3b726daae3e264e49161018e29487bb4ed58"
+          "sha256": "b5313240d993846f6fab93998fa31c8650bc3f64fb82cdf61bfcf030d7e3fff5"
         },
         {
           "path": "manifest.json",
@@ -519,8 +519,8 @@
     {
       "id": "external-app-tab",
       "name": "External App Tab",
-      "description": "Pin a compatible self-hosted web app as a tab inside Hermes WebUI via an iframe, or browse the profile's trusted workspaces and preview local files (HTML first) in a sandboxed frame with a top-bar workspace switcher and a collapsible file list. 将兼容的自托管 Web 应用内嵌为标签页；也可浏览可信工作区并在沙箱中预览本地文件（优先 HTML），支持顶栏工作区切换与可折叠文件列表。",
-      "version": "0.5.0",
+      "description": "Pin a compatible self-hosted web app as a tab inside Desktop via an iframe, or browse the profile's trusted workspaces and preview local files (HTML first) in a sandboxed frame with a top-bar workspace switcher and a collapsible file list. 将兼容的自托管 Web 应用内嵌为标签页；也可浏览可信工作区并在沙箱中预览本地文件（优先 HTML），支持顶栏工作区切换与可折叠文件列表。",
+      "version": "0.5.2",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -606,15 +606,15 @@
       ],
       "entry_path": "extensions/external-app-tab/extension.json",
       "runtime_manifest_path": "extensions/external-app-tab/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/external-app-tab-0.5.0.zip",
-      "sha256": "1fd12bda9ff899b6232d2d8fb45295f17403c0dfa073fecd06564b109a5f5ff5",
-      "artifact_size": 100927,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/external-app-tab-0.5.2.zip",
+      "sha256": "7e8964b46761e0a568f8ab820e4a3e353f7c20f4f81662854d109228671e5d49",
+      "artifact_size": 100823,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "826f5a73f2dec384a6aeacb534d95b485787593f4e96e19d3de78a8d6e2af017"
+          "sha256": "ab579574f7d5565301a5d533968f55a218e488bdd03acce1ec01487edf02be67"
         },
         {
           "path": "assets/external-app-tab.css",
@@ -622,15 +622,15 @@
         },
         {
           "path": "assets/external-app-tab.js",
-          "sha256": "71c3ff3b10c68de8a14471b1281143837256ddbe79ade259a235104c42d37921"
+          "sha256": "d9f08f9099d591ac2718bd13c825e9dc73a6765b17ec8bb8f1a6ac3fe70d11fb"
         },
         {
           "path": "extension.json",
-          "sha256": "532ed4d72eadaccdab1d25011bbc30b1a8563428acd1060536e003f71da88c96"
+          "sha256": "aac2beb2cd31a962c8165dfb2b9a10fdfbeb60e196372f97d6d45a263c4c151c"
         },
         {
           "path": "manifest.json",
-          "sha256": "310d185d88c2d6ff1e915a48dcbfcfe58372a961988a205a598f001ad4f22f09"
+          "sha256": "73709a29a6fde7917f37984a9f8d7b72b64900bc1a6890f832765dc56dee139c"
         }
       ]
     },
@@ -638,7 +638,7 @@
       "id": "mcp-tool-shortcuts",
       "name": "MCP Tool Shortcuts",
       "description": "Pin frequently-used MCP tools and get a one-click strip that DRAFTS a ready-to-send natural-language tool request into the composer. Never auto-executes a tool — it only inserts a prompt you review and send. Lives in Settings → MCP Tools. 固定常用的 MCP 工具，并可一键把待发送的自然语言工具请求起草到输入框；绝不自动执行工具，仅插入由你检查后发送的提示词。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -688,15 +688,15 @@
       },
       "entry_path": "extensions/mcp-tool-shortcuts/extension.json",
       "runtime_manifest_path": "extensions/mcp-tool-shortcuts/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/mcp-tool-shortcuts-0.2.0.zip",
-      "sha256": "64139e92fe1cb3a853c8a646b23150e96364f7e86dbed41fedf980eab9294f85",
-      "artifact_size": 24697,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/mcp-tool-shortcuts-0.2.1.zip",
+      "sha256": "ec01c38e4f80d80f3b2f785d685dcaed4be31be880a591cfc3ae30265e0fad85",
+      "artifact_size": 24684,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "efc3d479e19764f4f24249ca7396b04db3b82a11ef4166651624154512929103"
+          "sha256": "6e8b5482315cd99e2661ddae1b8d192c1373fdcfbea60902905d74b489c68f6e"
         },
         {
           "path": "assets/mcp-tool-shortcuts.css",
@@ -708,7 +708,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "3102dac57b1cbccbb899410827b679cfeda740dc8441251fe352c9f17449ce06"
+          "sha256": "2895cfbfe9df94c253def4717e8c4675bfc50559e979b84d09be66fa30bb5da2"
         },
         {
           "path": "manifest.json",
@@ -720,7 +720,7 @@
       "id": "message-pins",
       "name": "Message Pins",
       "description": "Pin individual messages in a conversation. Adds a pin button to each message, a header popover listing pinned messages with click-to-jump, and a small badge with the pin count. Pins persist locally per session. 在对话中固定个别消息：为每条消息添加固定按钮，右上角入口列出已固定消息并可点击跳转，同时显示固定数量徽标；固定记录按会话保存在本地。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -766,15 +766,15 @@
       },
       "entry_path": "extensions/message-pins/extension.json",
       "runtime_manifest_path": "extensions/message-pins/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/message-pins-0.2.0.zip",
-      "sha256": "6a3b748a0c8a27909bf5bb3a83bcaa77d28d84ffb203f0475426260554a05da2",
-      "artifact_size": 42922,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/message-pins-0.2.1.zip",
+      "sha256": "9bd7cd2d6cde725c29e8482befc3e9d7614ee92c8169bb68af329081350f346c",
+      "artifact_size": 42908,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "122e1414d90c9966becef6a0588337eaf23f454f7e95e140510425fd6bfe704b"
+          "sha256": "28eb554a414c53b056e9cf5e9191028c70535da1d82e21813c0556534fbb34cf"
         },
         {
           "path": "assets/message-pins.css",
@@ -786,7 +786,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "693c4c9ad6ff3a453b6688b5ed77601bd9e1b794179b46253b432ab1f99be955"
+          "sha256": "f5c652208ff5e0714f0ce0bdab06c6c5dc36e3a055887f62dd555b005d371057"
         },
         {
           "path": "manifest.json",
@@ -797,8 +797,8 @@
     {
       "id": "mobile-conversations",
       "name": "Mobile Conversations Button",
-      "description": "Phone-only floating Conversations button for Hermes WebUI that opens the existing mobile conversations drawer, becomes a same-location close X while the drawer is open, and exposes long-press shortcuts. 仅在手机上显示的浮动对话按钮：打开移动端对话侧边栏，侧边栏打开后就地变为关闭图标，并支持长按快捷菜单。",
-      "version": "0.2.0",
+      "description": "Phone-only floating Conversations button for Desktop that opens the existing mobile conversations drawer, becomes a same-location close X while the drawer is open, and exposes long-press shortcuts. 仅在手机上显示的浮动对话按钮：打开移动端对话侧边栏，侧边栏打开后就地变为关闭图标，并支持长按快捷菜单。",
+      "version": "0.2.1",
       "author": "santastabber",
       "assets": {
         "scripts": [
@@ -842,15 +842,15 @@
       },
       "entry_path": "extensions/mobile-conversations/extension.json",
       "runtime_manifest_path": "extensions/mobile-conversations/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/mobile-conversations-0.2.0.zip",
-      "sha256": "2ee2480d22e1468bb17186113ba7e0f90176aab9345d78038e87d8920245d440",
-      "artifact_size": 29775,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/mobile-conversations-0.2.1.zip",
+      "sha256": "03df2c2ba91fb73ddaab3326f6e4655fd293eff02e39c7fc4fed1083019a7909",
+      "artifact_size": 29754,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "166a4206f33f5b80a413d3d8532479dcfb1a28e0f262bda1c2ef1eb39f9da6df"
+          "sha256": "c404e52a9756c6181ce58552f16211ad4fe6801c7f1dd97083ec4029f7208781"
         },
         {
           "path": "assets/mobile-conversations.css",
@@ -862,11 +862,11 @@
         },
         {
           "path": "extension.json",
-          "sha256": "4f5244f3c45cf5799d1b49478d1066f9215a3552eaff626582eceebe9816c1d6"
+          "sha256": "ee45759959f249c01fab2de79da2c003f346f96e22cc6c1cb386075e44fa0c81"
         },
         {
           "path": "manifest.json",
-          "sha256": "f0fdaf629fd6cfc226269466a3120b2136b499737b7f228b1cc7c3a077c8df16"
+          "sha256": "bc8128ca6d6cf184e098021bef453b67718b38ee6110b704cb7d312506e4f6e8"
         }
       ]
     },
@@ -874,7 +874,7 @@
       "id": "mobile-haptics",
       "name": "Mobile Haptics",
       "description": "A short device vibration when an assistant turn finishes, so a phone user who set the device down gets a physical \"it's done\" cue. Opt-in; Android / Android-PWA only (no-ops on desktop and iOS Safari). 当助手回合结束时让设备短暂振动，为放下手机的用户提供物理提示。需手动开启，仅 Android / Android-PWA 生效（桌面与 iOS Safari 无操作）。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -925,15 +925,15 @@
       ],
       "entry_path": "extensions/mobile-haptics/extension.json",
       "runtime_manifest_path": "extensions/mobile-haptics/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/mobile-haptics-0.2.0.zip",
-      "sha256": "167f7d33724c3ad752a49bb375a150f935964d0fb78d844a824d037d603f628e",
-      "artifact_size": 12215,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/mobile-haptics-0.2.1.zip",
+      "sha256": "af5a8e819bc1db92e00da470ac4fbfc7e6a3d1ec26f153a0b715caaa2af8d840",
+      "artifact_size": 12208,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 4,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "19df9eab54114a6f3ddeed80d972d7ee14e5e2667f632dd4b583054c8398f666"
+          "sha256": "d4ce427e36d628eb5e029e081ffbab6b32d0d502468f6f4590c142447fd12368"
         },
         {
           "path": "assets/mobile-haptics.js",
@@ -941,7 +941,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "a53a89a7f872ad8b619d327349ea069fd98377fe9c9472c87f09eae2b2a195eb"
+          "sha256": "5ca8822dd6b582ae8f0ff3700de2c740d1fc36b9747302533acc5b95c1443f6c"
         },
         {
           "path": "manifest.json",
@@ -953,7 +953,7 @@
       "id": "model-favorites",
       "name": "Model Favorites",
       "description": "Star your most-used models in the composer model picker. Favorited models are promoted to a ★ Favorites group at the top of the dropdown for one-click switching. Provider-aware and persisted locally. 在输入框的模型选择器中收藏常用模型，收藏项会提升到下拉列表顶部的「★ 收藏」分组，按提供商区分并保存在本地。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -999,15 +999,15 @@
       },
       "entry_path": "extensions/model-favorites/extension.json",
       "runtime_manifest_path": "extensions/model-favorites/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/model-favorites-0.2.0.zip",
-      "sha256": "962c7f7aaec81117d83e308182f3b54f337d4eb9fd404066670ae753ba20bbb6",
-      "artifact_size": 22292,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/model-favorites-0.2.1.zip",
+      "sha256": "df9563dc3b8a22129a0a91892fd355e16eb0d6ddb15a8af8adba7fe61dbad801",
+      "artifact_size": 22281,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "f0f8ec80f340561bca2645e8f2730c96d70a5ed07d0dca39087c5707469dcaee"
+          "sha256": "fbf25bc6f6689f2fe4a401cd3a179cda3d0f71462e539f756216f590c181fd8d"
         },
         {
           "path": "assets/model-favorites.css",
@@ -1019,7 +1019,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "edee4504266947eb6bc25e32b95de43d76e5917f50aed9bb6caf457134c0d31b"
+          "sha256": "545783f0050c3c83876fde13a55722a0f059883df3562c833f68b49a7304a79a"
         },
         {
           "path": "manifest.json",
@@ -1031,7 +1031,7 @@
       "id": "profile-avatars",
       "name": "Profile Avatars",
       "description": "Per-profile avatar images everywhere: profile chips, transcript assistant badges, and the session list (including other-profile chats). Server-stored via a loopback sidecar, so avatars sync across devices with zero localStorage. 每个资料的头像会显示在资料标签、聊天徽章和会话列表中，并存储在服务端，可在各设备间同步。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "asorourx",
       "assets": {
         "scripts": [
@@ -1099,15 +1099,15 @@
       },
       "entry_path": "extensions/profile-avatars/extension.json",
       "runtime_manifest_path": "extensions/profile-avatars/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/profile-avatars-0.2.0.zip",
-      "sha256": "7d0657bd4623cd60220e7aeaa2556d4812521e874150c3dbdf158d37b48033cc",
-      "artifact_size": 93446,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/profile-avatars-0.2.1.zip",
+      "sha256": "ccb1ced0d675ca183adb107d54345cbd50b93d1483f50498813665ec53ab39cb",
+      "artifact_size": 93459,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 11,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "21ed1272974d4b765b584b91b0fc804b2c5ddb47d4bdb8f0d0c36ad3e51aaf3c"
+          "sha256": "f3141508e2bd24c9ba8140ce62cc80207a6fe81701139b0fef9c982cd37e15ad"
         },
         {
           "path": "assets/avatars.css",
@@ -1115,11 +1115,11 @@
         },
         {
           "path": "assets/avatars.js",
-          "sha256": "687887f0c88c0033504acd1586870b6d9572a0730d548d00d451019ddf79f81c"
+          "sha256": "bcf6239e6f3a0c303351e7a4d04ed7c1d463d85629009f8191ece6df171ba1a2"
         },
         {
           "path": "extension.json",
-          "sha256": "462387adc01d5897a3b3a5cb11ddb184b76c692b6655ac058b581d9ae266382f"
+          "sha256": "c66729d6ded82b9bc58c440db2fbda473352183ee6f621451afd54cf80da4df1"
         },
         {
           "path": "manifest.json",
@@ -1147,15 +1147,15 @@
         },
         {
           "path": "sidecar/sidecar_base.py",
-          "sha256": "8ff63e0b7d3f4286f4d8b5dd56a8bce544e1b2fc5c8b74c86c74b2c3a70db7fd"
+          "sha256": "4393d00f9376713e1a73da33cabfd9fb43f4b8083826c5db651d55711e2b88cc"
         }
       ]
     },
     {
       "id": "rss-feeds",
       "name": "RSS Feeds",
-      "description": "RSS/Atom reader for the WebUI — categorized subscriptions, keyword filters, search, read tracking, and optional AI summaries via a local loopback sidecar. 为 WebUI 提供完整的 RSS/Atom 阅读器，支持分类订阅、关键词过滤、搜索、已读跟踪，并可通过本地回环 sidecar 选用 AI 摘要。",
-      "version": "0.2.0",
+      "description": "RSS/Atom reader for the Desktop — categorized subscriptions, keyword filters, search, read tracking, and optional AI summaries via a local loopback sidecar. 为 Desktop 提供完整的 RSS/Atom 阅读器，支持分类订阅、关键词过滤、搜索、已读跟踪，并可通过本地回环 sidecar 选用 AI 摘要。",
+      "version": "0.2.1",
       "author": "asorourx",
       "assets": {
         "scripts": [
@@ -1244,19 +1244,19 @@
       },
       "entry_path": "extensions/rss-feeds/extension.json",
       "runtime_manifest_path": "extensions/rss-feeds/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/rss-feeds-0.2.0.zip",
-      "sha256": "70ddd2e857819ba065b31f88077043515bd7ed08ea37005138cfb03ba236b9e9",
-      "artifact_size": 906820,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/rss-feeds-0.2.1.zip",
+      "sha256": "ff89b65813e033927075a75c1fdc40050aca293ccbbbf3bb43e5028bcec15c13",
+      "artifact_size": 906838,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 17,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "2a7f1f282af21febd5bae4e9a8f391768255d2b6322826d3c1e8f9080847c79e"
+          "sha256": "d6a876af60417a65a87c669940a11100d1d2c7e2d87cfd8e69e22eb66289c4c5"
         },
         {
           "path": "assets/feeds-inject.js",
-          "sha256": "35133615f159b119dd17df325ec42bba3b9fafbac799b50635cc2c1918759bef"
+          "sha256": "8720d3f3077f29ffd0416f4b179cb7929f1a0324b665ec7a08fc3572ad5c8202"
         },
         {
           "path": "assets/feeds.css",
@@ -1268,11 +1268,11 @@
         },
         {
           "path": "extension.json",
-          "sha256": "61c944bf0d41140691643950dfc3dd6c64c95f92c921d3fcc23262d1f7b5c289"
+          "sha256": "c88d095db10468d393c0ab9e4bac30e1dc73f2c173d28a065c9136faf700c24f"
         },
         {
           "path": "manifest.json",
-          "sha256": "d4d5e4fc491b30376a365e77622e6cf4d2bfc4a0f7ab50f5aac952cbfae0db24"
+          "sha256": "5ecc7f2877db538ae40a0e8b35407c8713b25f3af6728688394054a67179e6bf"
         },
         {
           "path": "screenshots/reader-dark.png",
@@ -1284,7 +1284,7 @@
         },
         {
           "path": "sidecar/feeds.py",
-          "sha256": "07f2bd3ecabdf5dafad321e1b02dd16dfd3cd2f395fe4c3d9e87e33abb1da1f8"
+          "sha256": "c4bd3da06eaf2db19f96ba9a6baa766ccac021c0fda6acef001fcf64fc608e09"
         },
         {
           "path": "sidecar/feeds_seed.txt",
@@ -1312,7 +1312,7 @@
         },
         {
           "path": "sidecar/sidecar_base.py",
-          "sha256": "8ff63e0b7d3f4286f4d8b5dd56a8bce544e1b2fc5c8b74c86c74b2c3a70db7fd"
+          "sha256": "4393d00f9376713e1a73da33cabfd9fb43f4b8083826c5db651d55711e2b88cc"
         },
         {
           "path": "sidecar/test_job_ownership.py",
@@ -1324,7 +1324,7 @@
       "id": "session-export-pdf",
       "name": "Session Export to PDF",
       "description": "Export the current conversation to a clean PDF (via the browser print dialog, with a print-styled layout) or copy it as Markdown. Adds an export button to the app titlebar, or to the left rail on the redesigned banner-less homepage. No backend, no bundled PDF library. 将当前对话导出为排版干净的 PDF（通过浏览器打印对话框），或复制为 Markdown；无需后端，也不内置 PDF 库。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -1370,15 +1370,15 @@
       },
       "entry_path": "extensions/session-export-pdf/extension.json",
       "runtime_manifest_path": "extensions/session-export-pdf/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/session-export-pdf-0.2.0.zip",
-      "sha256": "afd963335af115137057dece36323900e1fd7213659f487b7f20d13500a624b9",
-      "artifact_size": 33359,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/session-export-pdf-0.2.1.zip",
+      "sha256": "bdd2b8b3cd296e00394a7a40d2c4b2280cee9a69e8c5d8bddfbabba52313de48",
+      "artifact_size": 33345,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "99ab8f02ab514e5c34e6118c7289ad94937aebcfdbbc3db6990739a25043f423"
+          "sha256": "d68e5234ef810fef7f52b0bcdd8987c30f10421fffc035b2db66f84808f52b4b"
         },
         {
           "path": "assets/session-export-pdf.css",
@@ -1390,7 +1390,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "c4bbc9ffd488bfc93f0dd36b2fade0a04f8a7eae0cb6689d5177022c734d54de"
+          "sha256": "f9330293a0f1d6889cc138f3d3511b11b5a603d25ab5ec8e8ffe6699e34922d2"
         },
         {
           "path": "manifest.json",
@@ -1402,7 +1402,7 @@
       "id": "skin-pack",
       "name": "Skin Pack",
       "description": "A pack of popular editor-inspired color themes (Dracula, Gruvbox, One Dark, Tokyo Night, Rosé Pine, Solarized Dark) that register into the native Settings → Appearance skin picker. 一组受主流编辑器启发的配色主题，可在系统外观选择器中选择。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -1445,15 +1445,15 @@
       },
       "entry_path": "extensions/skin-pack/extension.json",
       "runtime_manifest_path": "extensions/skin-pack/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/skin-pack-0.2.0.zip",
-      "sha256": "09ceae9ae54c52eaa2478d796e16bc6f20a8aae9729fefd311cd32aa787bcf9a",
-      "artifact_size": 15140,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/skin-pack-0.2.1.zip",
+      "sha256": "53f2404bcccca5f8d57fca100a0311494058f1b4f6cb07099c9206349f67ff51",
+      "artifact_size": 15133,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 4,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "3d919ca5213d08394a8735b020da93c5bb030e15bd5a57182865887c337bb688"
+          "sha256": "20fef6205276c2e9b25d654ba82a4cdfebbd40478920ff5f337d5bf1db1b638a"
         },
         {
           "path": "assets/skin-pack.js",
@@ -1461,7 +1461,7 @@
         },
         {
           "path": "extension.json",
-          "sha256": "aa6b7ac81e56a339113ed25824de721f71f6fa55c424a608866f92528f0538ee"
+          "sha256": "255244bda9c454ae91026ddcdfac659ddad0f5b534484a0ee39c5e572e05734b"
         },
         {
           "path": "manifest.json",
@@ -1473,7 +1473,7 @@
       "id": "theme-creator",
       "name": "Theme Creator",
       "description": "Build your own theme: pick colors for the key design tokens, see a live preview, name it, and save. Custom themes register into the native Settings → Appearance picker. Create, edit, and delete multiple themes; everything is stored locally. 自定义主题可实时预览并保存到系统外观选择器，所有数据都保存在本地。",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "author": "nesquena-hermes",
       "assets": {
         "scripts": [
@@ -1526,15 +1526,15 @@
       },
       "entry_path": "extensions/theme-creator/extension.json",
       "runtime_manifest_path": "extensions/theme-creator/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/theme-creator-0.4.0.zip",
-      "sha256": "5673f1e8d8efe27348141c84b160c76526926e9ca70f091709cd310f91312fce",
-      "artifact_size": 1939746,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/theme-creator-0.4.1.zip",
+      "sha256": "e23b2ca9c5e2a725c0b8f6a710b60f1ded943e429b10584900a0db04f26db5c9",
+      "artifact_size": 1939741,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 6,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "7cc8ae3f393f3b626958d2c7f2e809afeeb515e492e3eed75a716b87ed3fcf2b"
+          "sha256": "e75f3c7941430bb0e299d5887b3a7fa7ae785b5ce38fa31b75e1e476fb28a883"
         },
         {
           "path": "assets/theme-creator.css",
@@ -1542,11 +1542,11 @@
         },
         {
           "path": "assets/theme-creator.js",
-          "sha256": "227c920ea81cbc0d3f9d5e325cf4e2ca139eaa2738164944ac222f40d4f63d0c"
+          "sha256": "ec4883c9c9fb42d24d2a05719cd74c3379d5e558f27c4621ce7eb4c9f6d0988f"
         },
         {
           "path": "extension.json",
-          "sha256": "9d8ae2484846fe21708d18e5e6542a213550b0392268926b7ab0554b07205c1f"
+          "sha256": "a232e88f1d5284693e926844f3f513ae20f8fe3d76c5da1ad41ccdda05f27649"
         },
         {
           "path": "manifest.json",
@@ -1562,7 +1562,7 @@
       "id": "typography",
       "name": "Typography",
       "description": "Choose interface, conversation, and code fonts independently with curated Google Fonts, role-based presets, and browser-local imports. 可分别选择界面、对话和代码字体，支持精选 Google 字体、按角色预设以及浏览器本地导入。",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "starship-s",
       "min_webui_version": "0.52.184",
       "assets": {
@@ -1607,15 +1607,15 @@
       },
       "entry_path": "extensions/typography/extension.json",
       "runtime_manifest_path": "extensions/typography/manifest.json",
-      "download": "https://qde.quseit.com/artifacts/typography-0.2.0.zip",
-      "sha256": "f541d0069e00979f563a84b71924e01d68e114e969f4874d053f174810727b28",
-      "artifact_size": 89192,
-      "published_at": "2026-10-28T06:17:16.722Z",
+      "download": "https://qde.quseit.com/artifacts/typography-0.2.1.zip",
+      "sha256": "24e9385518c4228bbc4122106ed1c96f1fb8eb574db70a49536ff4fd7706d849",
+      "artifact_size": 89210,
+      "published_at": "2026-10-28T06:54:44.889Z",
       "file_count": 5,
       "file_sha256": [
         {
           "path": "README.md",
-          "sha256": "1456b9ec8584f1199f08c0462ed11ddb4843c6a84e7e1c9caeb4a874a2dbf6b0"
+          "sha256": "925636293a840754f5a93818bb27137889baa075f48a874fd3b69e63346db7c4"
         },
         {
           "path": "assets/typography.css",
@@ -1623,11 +1623,11 @@
         },
         {
           "path": "assets/typography.js",
-          "sha256": "e171a803df1541d4e51eafe3bae9243cf4099b707220f5f82f2e4a551383972d"
+          "sha256": "ce69b7c31ddb09fc8c9da332e977851c434608e0d2782ae43b42a2fbc4c7f55e"
         },
         {
           "path": "extension.json",
-          "sha256": "546fc05f74106103056ff7343319c86452ce8343196f5d6e740bf8660e3ba560"
+          "sha256": "5a1d2696281eb37f064b9dd8855eabad680a4502712652b63acfef473bd8d6c0"
         },
         {
           "path": "manifest.json",
