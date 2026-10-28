@@ -44,7 +44,7 @@ need it and maintainers agree on the shared contract.
 - `mobile-haptics`: short device vibration when an assistant turn finishes
   (Android / Android-PWA; no-ops on desktop and iOS).
 - `external-app-tab`: pin a compatible self-hosted web app (Grafana, a
-  dashboard, or another framable tool) as a tab inside the WebUI via an iframe
+  dashboard, or another framable tool) as a tab inside the Desktop via an iframe
   (needs the core `HERMES_WEBUI_CSP_FRAME_EXTRA` knob for external origins).
 - `profile-avatars`: per-profile avatar images across profile chips, transcript
   assistant badges, and the session list; server-stored via a loopback sidecar

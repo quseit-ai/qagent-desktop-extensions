@@ -33,14 +33,14 @@
       typography: 'Typography',
       panelTitle: 'Typography',
       subtitle: 'Choose a font for each part of Hermes.',
-      disclosure: 'Google-hosted choices load selected families from Google and expose your browser IP to Google. WebUI default choices use core-provided system font stacks; this extension makes no external font request for them. Local fonts stay in this browser and are never sent to a server.',
+      disclosure: 'Google-hosted choices load selected families from Google and expose your browser IP to Google. Desktop default choices use core-provided system font stacks; this extension makes no external font request for them. Local fonts stay in this browser and are never sent to a server.',
       disclosureAria: 'Privacy and network information: {0}',
       close: 'Close',
       closeAria: 'Close typography',
       preset: 'Preset',
       presetAria: 'Typography preset',
       presetCustom: 'Custom',
-      presetWebuiDefault: 'WebUI Default',
+      presetWebuiDefault: 'Desktop Default',
       presetModern: 'Modern',
       presetAccessible: 'Accessible',
       presetComfortableReading: 'Comfortable Reading',
@@ -58,7 +58,7 @@
       localDisclosure: 'Import up to 8 .woff2, .woff, .ttf, or .otf files, 10 MiB each and 40 MiB total.',
       importFont: 'Import font',
       localHelp: 'Choose local fonts in any role selector.',
-      fontWebuiDefault: 'WebUI default',
+      fontWebuiDefault: 'Desktop default',
       fontSameAsInterface: 'Same as interface',
       noLocalFonts: 'No local fonts imported yet.',
       storedUnavailable: 'Stored but unavailable; replace or delete it.',
@@ -105,14 +105,14 @@
       typography: '字体',
       panelTitle: '字体',
       subtitle: '为 Hermes 的各个部分选择字体。',
-      disclosure: 'Google 托管的字体选项会从 Google 加载所选字体族，并向 Google 暴露你的浏览器 IP 地址。WebUI 默认选项使用核心内置的系统字体栈；本扩展不会为这些选项发起外部字体请求。本地字体仅保存在此浏览器中，绝不会发送到服务器。',
+      disclosure: 'Google 托管的字体选项会从 Google 加载所选字体族，并向 Google 暴露你的浏览器 IP 地址。Desktop 默认选项使用核心内置的系统字体栈；本扩展不会为这些选项发起外部字体请求。本地字体仅保存在此浏览器中，绝不会发送到服务器。',
       disclosureAria: '隐私与网络信息：{0}',
       close: '关闭',
       closeAria: '关闭字体设置',
       preset: '预设',
       presetAria: '字体预设',
       presetCustom: '自定义',
-      presetWebuiDefault: 'WebUI 默认',
+      presetWebuiDefault: 'Desktop 默认',
       presetModern: '现代',
       presetAccessible: '无障碍',
       presetComfortableReading: '舒适阅读',
@@ -130,7 +130,7 @@
       localDisclosure: '最多可导入 8 个 .woff2、.woff、.ttf 或 .otf 文件，每个不超过 10 MiB，总计不超过 40 MiB。',
       importFont: '导入字体',
       localHelp: '可在任意角色选择器中选择本地字体。',
-      fontWebuiDefault: 'WebUI 默认',
+      fontWebuiDefault: 'Desktop 默认',
       fontSameAsInterface: '与界面相同',
       noLocalFonts: '尚未导入本地字体。',
       storedUnavailable: '已保存但不可用；请替换或删除。',
@@ -225,7 +225,7 @@
   }
 
   const PRESETS = Object.freeze([
-    Object.freeze({ id: 'webui-default', label: 'WebUI Default', interface: 'default', conversation: 'same-ui', code: 'default' }),
+    Object.freeze({ id: 'webui-default', label: 'Desktop Default', interface: 'default', conversation: 'same-ui', code: 'default' }),
     Object.freeze({ id: 'nous', label: 'Nous', interface: 'courier-prime', conversation: 'same-ui', code: 'courier-prime' }),
     Object.freeze({ id: 'modern', label: 'Modern', interface: 'geist', conversation: 'same-ui', code: 'geist-mono' }),
     Object.freeze({ id: 'accessible', label: 'Accessible', interface: 'atkinson-hyperlegible-next', conversation: 'same-ui', code: 'atkinson-hyperlegible-mono' }),
@@ -297,14 +297,14 @@
   ]);
 
   const CATALOG = Object.freeze({
-    interface: freezeOptions([{ value: 'default', label: 'WebUI default' }, ...UI_OPTIONS]),
+    interface: freezeOptions([{ value: 'default', label: 'Desktop default' }, ...UI_OPTIONS]),
     conversation: freezeOptions([
-      { value: 'default', label: 'WebUI default' },
+      { value: 'default', label: 'Desktop default' },
       { value: 'same-ui', label: 'Same as interface' },
       ...UI_OPTIONS,
       ...READING_OPTIONS,
     ]),
-    code: freezeOptions([{ value: 'default', label: 'WebUI default' }, ...CODE_OPTIONS]),
+    code: freezeOptions([{ value: 'default', label: 'Desktop default' }, ...CODE_OPTIONS]),
   });
   const PUBLIC_CATALOG = Object.freeze({
     interface: Object.freeze(CATALOG.interface.map(({ value, label }) => Object.freeze({ value, label }))),

@@ -165,7 +165,7 @@ python3 -m json.tool extensions/theme-creator/extension.json
 python3 -m json.tool extensions/theme-creator/manifest.json
 ```
 
-Manual verification (on a WebUI build with PR #5100):
+Manual verification (on a Desktop build with PR #5100):
 
 - the rail button opens the editor; color pickers + hex fields stay in sync
 - Live preview applies the theme app-wide; Stop preview reverts
@@ -186,8 +186,8 @@ Manual verification (on a WebUI build with PR #5100):
 - Glassmorphism transparency (controlled by the **Glass opacity** slider) works best with
   bright or vibrant images. Very dark images may still look nearly opaque
   through the frosted-glass layer. Adjust opacity in the source if needed.
-- The glassmorphism overrides target known WebUI panel class names
-  (`.rail`, `.sidebar`, `.rightpanel`, `.main-view`). If the core WebUI
+- The glassmorphism overrides target known Desktop panel class names
+  (`.rail`, `.sidebar`, `.rightpanel`, `.main-view`). If the core Desktop
   changes these class names, the effect will break until the extension is
   updated. The `nav`/`main`/`aside` backdrop-filter and CSS variable
   overrides are version-independent.

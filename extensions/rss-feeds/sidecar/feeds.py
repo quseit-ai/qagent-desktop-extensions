@@ -200,7 +200,7 @@ def _openrouter_summarize(prompt: str) -> str:
             "Authorization": f"Bearer {key}",
             # OpenRouter asks for these for free-tier attribution.
             "HTTP-Referer": "https://hermes-webui.local",
-            "X-Title": "Hermes WebUI RSS",
+            "X-Title": "Desktop RSS",
         },
     )
     with _NOREDIR_OPENER.open(req, timeout=_OPENROUTER_TIMEOUT) as resp:

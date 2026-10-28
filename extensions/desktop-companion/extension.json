@@ -1,7 +1,7 @@
 {
   "id": "desktop-companion",
   "name": "Desktop Companion",
-  "description": "Trusted local desktop companion for Desktop. Ships a WebUI adapter, a loopback sidecar protocol, and a native desktop pet host. 适用于 Desktop 的可信本地桌面伴侣：提供 WebUI 适配器、回环 sidecar 协议与原生桌面宠物宿主。",
+  "description": "Trusted local desktop companion for Desktop. Ships a Desktop adapter, a loopback sidecar protocol, and a native desktop pet host. 适用于 Desktop 的可信本地桌面伴侣：提供 Desktop 适配器、回环 sidecar 协议与原生桌面宠物宿主。",
   "version": "0.2.1",
   "author": "franksong2702",
   "homepage": "https://github.com/franksong2702/hermes-webui-desktop-companion",
@@ -32,7 +32,7 @@
     "native_host_autostart": "extension_owned"
   },
   "post_install": {
-    "summary": "Install enables the WebUI bridge. In the Desktop Companion repo, run npm run start:pet to launch the desktop pet.",
+    "summary": "Install enables the Desktop bridge. In the Desktop Companion repo, run npm run start:pet to launch the desktop pet.",
     "docs_url": "https://github.com/franksong2702/hermes-webui-desktop-companion#after-gallery-install",
     "requires_local_app": true,
     "local_app_label": "Desktop Companion app"

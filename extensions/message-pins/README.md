@@ -12,7 +12,7 @@ session.
 右上角有带计数的入口，点开后可查看已固定消息列表并点击跳转。每个会话
 最多固定 3 条，超出时会提示先取消一条。固定记录按会话保存在浏览器的
 `localStorage` 中（键：`hermes-ext-message-pins`），不会跨设备同步。
-界面文案会跟随 WebUI 的语言设置，简体中文环境下自动显示中文。
+界面文案会跟随 Desktop 的语言设置，简体中文环境下自动显示中文。
 
 ## What It Does
 
@@ -37,7 +37,7 @@ Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/message-pins.js
   -> /extensions/assets/message-pins.css
-  -> existing WebUI message rows ([data-msg-idx]) + .messages-shell
+  -> existing Desktop message rows ([data-msg-idx]) + .messages-shell
   -> localStorage (key: hermes-ext-message-pins)
 ```
 
@@ -83,7 +83,7 @@ This entry can be browsed and installed from Settings -> Extensions.
 
 ## Disable And Uninstall
 
-To disable the WebUI extension, restart Desktop without:
+To disable the Desktop extension, restart Desktop without:
 
 ```text
 HERMES_WEBUI_EXTENSION_DIR
@@ -118,7 +118,7 @@ Current disclosed behavior:
 - uses a `MutationObserver` on the messages container to re-apply pin
   decorations after the transcript re-renders
 - reads and writes `localStorage` under the single key `hermes-ext-message-pins`
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services
 - does not use arbitrary filesystem or native host APIs
@@ -128,7 +128,7 @@ All message text rendered into the popover and previews is inserted via
 
 ## Compatibility
 
-Required WebUI surface:
+Required Desktop surface:
 
 - manifest-bundled extension assets
 - same-origin extension asset serving under `/extensions/`

@@ -43,7 +43,7 @@
         menu: 'Menu',
         openFeeds: 'Open Feeds',
         approvalNeeded: 'Approval needed',
-        approvalNoPassword: 'The RSS Feeds sidecar is blocked while WebUI has no password. Enable <strong>Settings → Password</strong>, then approve the sidecar under <strong>Settings → Extensions</strong>, then reopen.',
+        approvalNoPassword: 'The RSS Feeds sidecar is blocked while Desktop has no password. Enable <strong>Settings → Password</strong>, then approve the sidecar under <strong>Settings → Extensions</strong>, then reopen.',
         approvalSidecar: 'Approve the RSS Feeds sidecar under <strong>Settings → Extensions</strong>, then reopen.',
       },
       zh: {
@@ -73,7 +73,7 @@
         menu: '菜单',
         openFeeds: '打开订阅源',
         approvalNeeded: '需要授权',
-        approvalNoPassword: 'WebUI 未设置密码，RSS Feeds sidecar 已被阻止。请先在<strong>设置 → 密码</strong>中启用密码，然后在<strong>设置 → 扩展</strong>中批准该 sidecar，再重新打开。',
+        approvalNoPassword: 'Desktop 未设置密码，RSS Feeds sidecar 已被阻止。请先在<strong>设置 → 密码</strong>中启用密码，然后在<strong>设置 → 扩展</strong>中批准该 sidecar，再重新打开。',
         approvalSidecar: '请在<strong>设置 → 扩展</strong>中批准 RSS Feeds sidecar，然后重新打开。',
       },
     };

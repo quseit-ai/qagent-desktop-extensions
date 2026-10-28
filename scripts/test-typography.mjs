@@ -27,7 +27,7 @@ vm.runInNewContext(source, {
 const extension = window.HermesTypographyExtension;
 assert.equal(extension.version, '0.1.0');
 const expectedPresets = [
-  ['webui-default', 'WebUI Default', 'default', 'same-ui', 'default'],
+  ['webui-default', 'Desktop Default', 'default', 'same-ui', 'default'],
   ['nous', 'Nous', 'courier-prime', 'same-ui', 'courier-prime'],
   ['modern', 'Modern', 'geist', 'same-ui', 'geist-mono'],
   ['accessible', 'Accessible', 'atkinson-hyperlegible-next', 'same-ui', 'atkinson-hyperlegible-mono'],

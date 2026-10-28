@@ -99,7 +99,7 @@ This is trusted local code. Current disclosed behavior:
 - on **Tab** / **Shift+Tab** inside the composer, inserts / removes two spaces
 - edits only the composer textarea's own value via `setRangeText(...)` and
   dispatches a synthetic `input` event; it creates no DOM of its own
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services
 - does not read or write any storage (localStorage / cookies / files)

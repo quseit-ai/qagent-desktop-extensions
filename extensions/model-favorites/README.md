@@ -10,7 +10,7 @@ to a **★ Favorites** group at the top of the dropdown for one-click switching.
 按钮，收藏的模型会提升到下拉列表顶部的「★ 收藏」分组，点击即可切换。
 同一个模型 ID 在不同提供商下视为不同的收藏项；收藏保存在浏览器本地
 （`localStorage`，键：`hermes-ext-model-favorites`）。界面文案会跟随
-WebUI 的语言设置，简体中文环境下自动显示中文。
+Desktop 的语言设置，简体中文环境下自动显示中文。
 
 ## What It Does
 
@@ -71,7 +71,7 @@ This is trusted local code. Current disclosed behavior:
 - selects a favorite by calling the existing `window.selectModelFromDropdown(...)`
 - reads and writes `localStorage` under the single key
   `hermes-ext-model-favorites`
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services
 - does not use arbitrary filesystem or native host APIs

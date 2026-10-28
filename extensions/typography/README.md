@@ -2,7 +2,7 @@
 
 Typography lets users choose curated fonts, role-based presets, and browser-local
 font files for the Desktop interface, conversations, and code. It adds a
-**Typography** button to the WebUI rail.
+**Typography** button to the Desktop rail.
 
 ## 中文说明
 
@@ -10,10 +10,10 @@ font files for the Desktop interface, conversations, and code. It adds a
 「字体」按钮。面板提供精选 Google Fonts、按角色划分的预设，以及仅在浏览器
 本地保存的字体导入。
 
-- 预设：WebUI 默认、现代、无障碍、舒适阅读、Noto、IBM Plex、开发者、紧凑、温暖、赛博终端。
+- 预设：Desktop 默认、现代、无障碍、舒适阅读、Noto、IBM Plex、开发者、紧凑、温暖、赛博终端。
 - 字体选择按角色（`interface`、`conversation`、`code`）保存，可随时手动调整。
 - 本地字体仅保存在此浏览器中，不会发送到服务器；Google 字体选项会从 Google 加载。
-- 界面跟随 WebUI 的语言设置（`<html lang>` 或 `localStorage['hermes-lang']`），支持英文和简体中文。
+- 界面跟随 Desktop 的语言设置（`<html lang>` 或 `localStorage['hermes-lang']`），支持英文和简体中文。
 
 ## Install for local testing
 
@@ -30,7 +30,7 @@ Click **Typography** in the rail to open the panel.
 ## Behavior
 
 - The compact Preset selector applies and persists one complete triple in this
-  order: **WebUI Default** (`default`, `same-ui`, `default`); **Nous**
+  order: **Desktop Default** (`default`, `same-ui`, `default`); **Nous**
   (`courier-prime`, `same-ui`, `courier-prime`); **Modern** (`geist`,
   `same-ui`, `geist-mono`); **Accessible** (`atkinson-hyperlegible-next`,
   `same-ui`, `atkinson-hyperlegible-mono`); **Comfortable Reading**
@@ -51,7 +51,7 @@ Click **Typography** in the rail to open the panel.
 - **Google-hosted choices** load selected families from Google and expose the
   browser IP to Google. Interface and Conversations families request upright
   weights plus true italic 400/700 faces; Code-only families request upright
-  weights. Shared families are requested once with the union. **WebUI default
+  weights. Shared families are requested once with the union. **Desktop default
   choices** use core-provided system font stacks; this extension makes no
   external font request for them. **Local fonts** are read from this browser
   and are never sent to a server.
@@ -106,14 +106,14 @@ upload. It may load the Google stylesheet for selected curated families; this is
 declared as `network_external: true`. Local font bytes never enter the Google
 request, extension settings, or localStorage.
 
-The extension uses WebUI's stable root font tokens:
+The extension uses Desktop's stable root font tokens:
 
 - `--font-ui`
 - `--font-conversation`
 - `--font-mono`
 
 It sets or removes only those three inline properties on
-`document.documentElement.style`. WebUI defaults remove the inline property so
+`document.documentElement.style`. Desktop defaults remove the inline property so
 core owns the fallback. **Same as interface** follows the current interface
 stack, including a local font when selected.
 

@@ -14,7 +14,7 @@ A small Canvas 2D character face that floats in the bottom-right corner of the D
 - **角色**：Pixel、Neko、Yuki、Robot、Monster 可选（名称保留英文）。
 - **颜色**：可为当前角色调整皮肤、头发、虹膜等颜色；点击「恢复默认颜色」复位。
 - **跟随鼠标**：用「👀 跟随 ✓ / 👀 静止」按钮切换瞳孔跟随。
-- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+- 界面文案跟随 Desktop 的界面语言（简体 / 繁体中文时自动显示中文）。
 
 ## What's new in v0.4.0
 

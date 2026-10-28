@@ -217,8 +217,8 @@ class Sidecar:
             return self.json(
                 {
                     "error": "sidecar proxy token missing or mismatched",
-                    "hint": "requests must arrive through the authenticated WebUI "
-                            "sidecar proxy; is WebUI running and do core + sidecar "
+                    "hint": "requests must arrive through the authenticated Desktop "
+                            "sidecar proxy; is Desktop running and do core + sidecar "
                             "agree on the state dir?",
                     "sidecar_base_version": SIDECAR_BASE_VERSION,
                 },

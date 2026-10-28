@@ -11,7 +11,7 @@ provides a long-press shortcuts menu for common conversation navigation actions.
 本扩展在手机宽度下为聊天界面添加一个浮动的「对话」按钮：轻点打开现有的
 移动端对话侧边栏，侧边栏打开后按钮停留在原位并变成关闭（X）图标；长按
 可打开快捷菜单，包含新建对话、打开侧边栏、回到顶部、跳到最新消息。
-桌面宽度下界面保持不变。界面文案会跟随 WebUI 的语言设置，简体中文环境
+桌面宽度下界面保持不变。界面文案会跟随 Desktop 的语言设置，简体中文环境
 下自动显示中文。
 
 ## What It Does
@@ -34,7 +34,7 @@ Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/mobile-conversations.js
   -> /extensions/assets/mobile-conversations.css
-  -> existing WebUI mobile sidebar, session, and scroll UI hooks
+  -> existing Desktop mobile sidebar, session, and scroll UI hooks
 ```
 
 This extension is `static-ui` / manifest-bundle only. It does not add backend
@@ -76,7 +76,7 @@ The runtime `manifest.json` injects:
 
 ## Disable And Uninstall
 
-To disable the WebUI extension, restart Desktop without:
+To disable the Desktop extension, restart Desktop without:
 
 ```text
 HERMES_WEBUI_EXTENSION_DIR
@@ -98,8 +98,8 @@ Current disclosed behavior:
 
 - creates extension-owned DOM for the floating button and long-press menu
 - inserts the floating button into the existing `.messages-shell` and temporarily reparents it to `document.body` while the mobile drawer is open so it can sit above the drawer at the same visual position
-- reads existing mobile layout state through WebUI DOM/classes
-- calls existing WebUI browser functions when available, including
+- reads existing mobile layout state through Desktop DOM/classes
+- calls existing Desktop browser functions when available, including
   `switchPanel`, `closeMobileSidebar`, `newSession`, `renderSessionList`,
   `jumpToSessionStart`, and `scrollToBottom`
 - toggles existing mobile sidebar classes as a fallback when the public browser
@@ -107,7 +107,7 @@ Current disclosed behavior:
 - swaps its icon between the conversations glyph and a close X based on the mobile sidebar state
 - uses pointer, context-menu, keyboard, resize, scroll, and mutation-observer
   handlers for mobile interaction and accessibility behavior
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not use localStorage or sessionStorage
 - does not access cookies
 - does not contact loopback or external network services
@@ -115,11 +115,11 @@ Current disclosed behavior:
 
 ## Compatibility
 
-Required WebUI surface:
+Required Desktop surface:
 
 - manifest-bundled extension assets
 - same-origin extension asset serving under `/extensions/`
-- mobile WebUI layout with `.messages-shell`, `.sidebar`, and `#panelChat`
+- mobile Desktop layout with `.messages-shell`, `.sidebar`, and `#panelChat`
 - existing browser hooks for mobile drawer/session/scroll behavior where
   available; the extension has DOM fallbacks for older builds
 
@@ -154,6 +154,6 @@ Manual mobile verification should confirm:
 
 ## Known Limitations
 
-- The extension relies on current WebUI DOM and browser helper names until a
+- The extension relies on current Desktop DOM and browser helper names until a
   formal mobile sidebar extension API exists.
 - The extension is intentionally mobile-only and does not add a desktop control.

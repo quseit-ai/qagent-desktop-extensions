@@ -15,7 +15,7 @@ choice.
 - **本地保存**：图片会压缩为 64×64 正方形并以 data-URL 存入 `localStorage`，
   不上传到任何服务器；消息重新渲染后会自动恢复。
 - 用户消息本身没有头像位置，因此仅支持自定义助手头像。
-- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+- 界面文案跟随 Desktop 的界面语言（简体 / 繁体中文时自动显示中文）。
 
 ## What It Does
 
@@ -94,7 +94,7 @@ This is trusted local code. Current disclosed behavior:
   `<canvas>`; the result is a small data-URL
 - reads and writes `localStorage` under the single key
   `hermes-ext-assistant-avatar`
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies
 - does not contact loopback or external network services (the image never leaves
   the browser)
@@ -131,7 +131,7 @@ Manual verification:
 
 ## Known Limitations
 
-- Assistant-only (the user role has no avatar slot in the WebUI by design).
+- Assistant-only (the user role has no avatar slot in the Desktop by design).
 - Avatars are per-browser (`localStorage`), not synced across devices.
 - Relies on the `.role-icon.assistant` badge; a core rename would need an update.
 - Images are downscaled to 64×64 to keep localStorage small.

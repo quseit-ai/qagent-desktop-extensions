@@ -239,7 +239,7 @@
       invalidUrl: 'Enter a valid http(s) URL (or leave blank to clear).',
       cancel: 'Cancel',
       save: 'Save',
-      cspHint: 'If this stays blank, the page may be blocked by the WebUI ' +
+      cspHint: 'If this stays blank, the page may be blocked by the Desktop ' +
         'Content-Security-Policy. Allow it (operator) with ',
     },
     zh: {
@@ -287,7 +287,7 @@
       invalidUrl: '请输入有效的 http(s) URL（或留空以清除）。',
       cancel: '取消',
       save: '保存',
-      cspHint: '如果此处一直空白，页面可能被 WebUI 的内容安全策略（CSP）拦截。' +
+      cspHint: '如果此处一直空白，页面可能被 Desktop 的内容安全策略（CSP）拦截。' +
         '请运维配置 ',
     },
   };

@@ -76,7 +76,7 @@ cd /path/to/hermes-webui
 HERMES_WEBUI_EXTENSION_DIR=/path/to/hermes-webui-extensions/extensions/mobile-haptics HERMES_WEBUI_EXTENSION_MANIFEST=manifest.json ./start.sh
 ```
 
-Open the WebUI on an Android device (or Android-PWA), send a message, and feel
+Open the Desktop app on an Android device (or Android-PWA), send a message, and feel
 a short buzz when the reply completes.
 
 ## Controls
@@ -111,7 +111,7 @@ This is trusted local code. Current disclosed behavior:
   and subscribes to the B1 `turn:complete` event
 - reads/writes the `enabled` setting through the returned `ext.settings` handle
 - creates NO DOM and does not inspect Core-owned DOM views
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not access cookies, unscoped browser storage, loopback, or external
   network services
 - does not use arbitrary filesystem or native host APIs

@@ -11,7 +11,7 @@ opt-in alternative (switch it in **Configure**):
   With no saved config it starts on the server's **last workspace**
   (`/api/workspaces` → `last`).
 - **External URL** — pins a compatible self-hosted web app (Grafana,
-  Vaultwarden, Linkwarden, a personal dashboard) as a tab inside the WebUI via
+  Vaultwarden, Linkwarden, a personal dashboard) as a tab inside the Desktop via
   an `<iframe>` framing a URL you configure.
 
 ### Where the config lives (desktop restart caveat)
@@ -29,7 +29,7 @@ either a fixed port or server-side extension settings in core.
 The external mode works best for **framable dashboards, status pages, and
 local tools** that don't require a cross-origin cookie login; see **Known
 Limitations** for the third-party-iframe auth/cookie caveats. The workspace
-mode works entirely same-origin against WebUI's own file APIs.
+mode works entirely same-origin against Desktop's own file APIs.
 
 ## 中文说明（Chinese） / 中文說明（繁體）
 
@@ -44,18 +44,18 @@ mode works entirely same-origin against WebUI's own file APIs.
 - **工作区文件模式**：顶栏左侧显示应用名称、`工作区` 标签和切换下拉框；
   右侧是可折叠的文件列表；点击文件即可预览。进入面板时会自动打开当前
   工作区的第一个 HTML 文件（优先 `index.html`），并记住上次预览的文件。
-  支持的预览格式与 WebUI 原生工作区预览一致：HTML（沙箱 iframe）、图片、
+  支持的预览格式与 Desktop 原生工作区预览一致：HTML（沙箱 iframe）、图片、
   PDF、音频、视频、Markdown、CSV/TSV 表格、代码/文本（语法高亮）、
   Word（.docx）、Excel（.xlsx/.xls，支持多工作表切换）、
   PowerPoint（.pptx，上一页/下一页翻页）。压缩包、安装包、字体、
   旧版 Office 二进制（.doc/.ppt）等会提示改用「在新标签页中打开」下载。
 
-界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）；
-设置项名称使用中英双语。工作区列表来自 WebUI 的「设置 → 工作区」，
+界面文案跟随 Desktop 的界面语言（简体 / 繁体中文时自动显示中文）；
+设置项名称使用中英双语。工作区列表来自 Desktop 的「设置 → 工作区」，
 文件读取完全复用核心的同源 API，扩展自身不新增后端。
 
 已知限制：预览的 HTML 中的**相对路径资源**（如 `<link href="style.css">`）
-不会加载，这一点与 WebUI 原生工作区预览一致；自包含 HTML 与 CDN 绝对
+不会加载，这一点与 Desktop 原生工作区预览一致；自包含 HTML 与 CDN 绝对
 地址正常。
 
 ## What It Does
@@ -63,7 +63,7 @@ mode works entirely same-origin against WebUI's own file APIs.
 - Adds a rail button (with the content tabs, above Settings).
 - Clicking it opens a full-area overlay with a top bar: the app label
   (external mode only), a **Workspace** label + switcher (workspace mode
-  only), and a row of icon buttons styled like the WebUI's own toolbar
+  only), and a row of icon buttons styled like the Desktop's own toolbar
   buttons — configure, open in new tab, refresh, file-list toggle
   (immediately left of close), and close. Hovering an icon shows its tooltip;
   the framed content sits below.
@@ -100,7 +100,7 @@ mode works entirely same-origin against WebUI's own file APIs.
 - External mode falls back to a "no app configured" prompt until you set a
   URL.
 - Escape or the ✕ closes the overlay; the rail stays accessible.
-- **Language**: in-panel text follows the WebUI interface language
+- **Language**: in-panel text follows the Desktop interface language
   (`<html lang>` / `localStorage['hermes-lang']`) and switches live between
   English and Simplified/Traditional Chinese; settings labels are bilingual.
   Extension bundles cannot register into core's i18n dictionary, so the
@@ -108,7 +108,7 @@ mode works entirely same-origin against WebUI's own file APIs.
 
 ## ⚠️ CSP dependency (external mode only — read this)
 
-The WebUI's Content-Security-Policy only allows framing **same-origin**
+The Desktop's Content-Security-Policy only allows framing **same-origin**
 content by default. To frame an **external** origin, the operator must allow
 it via the core knob (added in `nesquena/hermes-webui` **PR #5091**):
 
@@ -121,8 +121,8 @@ export HERMES_WEBUI_CSP_FRAME_EXTRA="https://your-app.example.com"
 - If the configured URL is blocked by CSP, the browser refuses to load the
   frame (it stays blank). The overlay shows a hint with the exact
   `HERMES_WEBUI_CSP_FRAME_EXTRA` value to set.
-- On a WebUI build **without** PR #5091, only same-origin URLs can be framed.
-- **Workspace mode needs no CSP change** — it frames WebUI's own
+- On a Desktop build **without** PR #5091, only same-origin URLs can be framed.
+- **Workspace mode needs no CSP change** — it frames Desktop's own
   `/api/file/raw` endpoint (same-origin).
 
 ## Current Shape
@@ -152,7 +152,7 @@ every session-anchored call self-heals a 404 by re-minting the session once.
 
 This extension is `static-ui` / manifest-bundle only. It does not add backend
 routes, start a sidecar, or use native host APIs. External mode sets an
-`<iframe src>` directly; workspace mode makes same-origin WebUI API calls.
+`<iframe src>` directly; workspace mode makes same-origin Desktop API calls.
 
 ## Capabilities
 
@@ -205,7 +205,7 @@ This is trusted local code. Current disclosed behavior:
 - external mode embeds a **user-configured external URL** in an `<iframe>`
   (`permissions.network_external: true`) — the URL is whatever the operator
   sets and is subject to the page CSP
-- workspace mode calls same-origin WebUI HTTP APIs (`permissions.webui_api`):
+- workspace mode calls same-origin Desktop HTTP APIs (`permissions.webui_api`):
   reads `GET /api/workspaces`, `GET /api/list`, `GET /api/file`,
   `GET /api/file/raw`, and creates preview sessions with
   `POST /api/session/new` (in-memory sessions bound to trusted workspace
@@ -217,7 +217,7 @@ This is trusted local code. Current disclosed behavior:
   (`permissions.storage.owned: true`), with a legacy fallback to the single
   `hermes-ext-external-app` localStorage key on older core builds
 - does NOT access cookies, loopback sidecars, the filesystem, or native hosts
-  beyond what the WebUI APIs above already enforce server-side
+  beyond what the Desktop APIs above already enforce server-side
 
 External-mode apps run in their own `<iframe>` with an explicit `sandbox`
 allow-list: `allow-scripts allow-forms allow-popups
@@ -235,7 +235,7 @@ Workspace-mode HTML previews run in a stricter frame: `sandbox="allow-scripts
 allow-popups allow-popups-to-escape-sandbox"` with **no**
 `allow-same-origin`, matching the server-side CSP sandbox core puts on
 `/api/file/raw?…&inline=1` responses. The previewed file executes scripts but
-lives in an opaque origin — it cannot read WebUI cookies/storage or touch the
+lives in an opaque origin — it cannot read Desktop cookies/storage or touch the
 parent page. **PDF previews are the one exception**: Chromium renders PDFs
 with its built-in viewer, which is refused inside an element-sandboxed frame
 (`net::ERR_BLOCKED_BY_CLIENT`), so the PDF frame carries no `sandbox`
@@ -292,7 +292,7 @@ Manual verification:
   new tab; Close / Escape closes the overlay
 - the file-list icon toggles the right-side list; the refresh icon reloads it
 - config (mode + workspace + last file) persists across a reload
-- switching the WebUI interface language to 中文 makes the panel, tooltips,
+- switching the Desktop interface language to 中文 makes the panel, tooltips,
   empty states and config dialog render in Chinese; switching back restores
   English (no reload needed — reopen or re-render the panel)
 
@@ -304,7 +304,7 @@ Manual verification:
   origin?", not "will this app work correctly embedded?"
 - Some sites send `X-Frame-Options: DENY` / their own `frame-ancestors` and
   refuse to be embedded by anyone; those can't be framed (open them in a new
-  tab instead). This is the remote site's choice, not a WebUI limitation.
+  tab instead). This is the remote site's choice, not a Desktop limitation.
 - **Authenticated apps may fail inside the iframe even when the origin is
   allow-listed.** An embedded app runs in a third-party (cross-origin) context,
   so its session cookies may not be sent from inside the iframe — third-party
@@ -325,7 +325,7 @@ Manual verification:
   `<img src="img/logo.png">`) do not resolve and will 404. Self-contained HTML
   (inline CSS/JS) and absolute/CDN URLs render fully. Multi-file site preview
   would need core-side relative-URL rewriting — deliberately out of scope here.
-- Rich previews reuse the WebUI's **vendored parser bundles** under
+- Rich previews reuse the Desktop's **vendored parser bundles** under
   `static/vendor/` (`docx-preview`, `SheetJS`, `PptxViewJS` + `JSZip`/
   `Chart.js`) and are lazy-loaded on first use, exactly like core. On a core
   build that does not ship those bundles, the corresponding preview fails with

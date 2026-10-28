@@ -11,7 +11,7 @@ skin.
 - 提供一款专为电子墨水屏（Kindle、Boox、reMarkable 等）优化的高对比度、近单色浅色皮肤。
 - 纯白背景、近黑文字、硬边框，避免灰上加灰，并压平阴影。
 - 通过核心的主题注册能力注册，可直接在“设置 → 外观”的皮肤选择器中选择。
-- 需要较新版本的 WebUI；若内核不支持，扩展会静默停用，不会报错。
+- 需要较新版本的 Desktop；若内核不支持，扩展会静默停用，不会报错。
 
 ## What It Does
 
@@ -29,7 +29,7 @@ skin.
 This extension requires the core **theme-registration capability**
 (`window.registerHermesSkin`) with the **`scheme` option** — the base capability
 landed in `nesquena/hermes-webui` **PR #5100**, and the `scheme: 'light' | 'dark'`
-extension shipped in **PR #5271**. On an older WebUI build without it, the
+extension shipped in **PR #5271**. On an older Desktop build without it, the
 extension **no-ops gracefully** (the skin is simply unavailable; nothing errors).
 Once that capability ships, the skin registers automatically on load.
 
@@ -81,7 +81,7 @@ Current disclosed behavior:
 
 - calls `window.registerHermesSkin(...)` once with a static color-token set
 - creates NO DOM (no buttons, panels, or message-row mutations)
-- does not call WebUI HTTP APIs
+- does not call Desktop HTTP APIs
 - does not read or write localStorage / sessionStorage / cookies
 - does not contact loopback or external network services
 - does not use arbitrary filesystem or native host APIs
@@ -92,7 +92,7 @@ color tokens.
 
 ## Compatibility
 
-Required WebUI surface:
+Required Desktop surface:
 
 - manifest-bundled extension assets + same-origin serving under `/extensions/`
 - the core theme-registration capability with the `scheme` option (`window.registerHermesSkin`, PR #5100 + #5271)
@@ -122,7 +122,7 @@ python3 -m json.tool extensions/e-ink-skin/extension.json
 python3 -m json.tool extensions/e-ink-skin/manifest.json
 ```
 
-Manual verification (on a WebUI build with PR #5100 + #5271):
+Manual verification (on a Desktop build with PR #5100 + #5271):
 
 - Settings → Appearance shows **E-Ink** in the skin picker
 - selecting it applies the high-contrast monochrome palette across the app

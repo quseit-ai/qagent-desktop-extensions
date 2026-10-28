@@ -16,7 +16,7 @@ homepage, where the titlebar is collapsed.
 - **复制为 Markdown**：把对话复制为 `# 标题` 加 `## 你` / `## 助手` 分节。
 
 全程在浏览器内完成，不需要后端、不内置 PDF 库、不访问网络。按钮提示、菜单、
-导出提示与导出文档中的角色文案都会跟随 WebUI 的中英文语言设置切换。
+导出提示与导出文档中的角色文案都会跟随 Desktop 的中英文语言设置切换。
 
 ## What It Does
 
@@ -95,7 +95,7 @@ This is trusted local code. Current disclosed behavior:
   message row; hidden anchor/worklog segments are skipped)
 - calls `window.print()` (`uses_print`) and writes to the clipboard
   (`uses_clipboard`) for the Markdown copy
-- does NOT call WebUI HTTP APIs, read/write localStorage, access cookies, contact
+- does NOT call Desktop HTTP APIs, read/write localStorage, access cookies, contact
   any network, or use the filesystem / native hosts
 - the print body reuses the already-sanitized rendered HTML from core's renderer
   (it is cloned, not re-parsed from raw input)
@@ -136,7 +136,7 @@ Manual verification:
   no silent server-side PDF render (deliberate: no bundled library, no backend).
 - Exports the currently-open conversation (not a bulk/all-sessions export).
 - **Scope = the loaded/rendered transcript, not guaranteed to be the full
-  session.** It reads `#messages` from the DOM and adds no WebUI API dependency.
+  session.** It reads `#messages` from the DOM and adds no Desktop API dependency.
   For long conversations the transcript can be windowed/virtualized (the core
   "virtualize transcript" setting, or large sessions), so earlier messages may
   not be in the DOM at export time. The extension **detects this** (a virtual

@@ -16,7 +16,7 @@ swapped for images of your choice.
 - **按钮**：「上传… / 更换…」「移除」；仅支持 PNG / JPEG / WebP 图片。
 - 图片在浏览器内压缩后存入 `localStorage`，不会上传到任何服务器；点击「移除」
   即可恢复 Hermes 默认图标。
-- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+- 界面文案跟随 Desktop 的界面语言（简体 / 繁体中文时自动显示中文）。
 
 ## What It Does
 
@@ -103,8 +103,8 @@ This is trusted local code. Current disclosed behavior:
   `<canvas>`; the result is a small data-URL
 - reads and writes `localStorage` under exactly two keys:
   `hermes-ext-custom-branding-logo` and `hermes-ext-custom-branding-favicon`
-- does not call WebUI HTTP APIs (`webui_api.read/write` are empty)
-- does not navigate the WebUI (`webui_navigation: false`)
+- does not call Desktop HTTP APIs (`webui_api.read/write` are empty)
+- does not navigate the Desktop (`webui_navigation: false`)
 - does not access cookies
 - does not contact loopback or external network services (`network_external:
   false` — the image never leaves the browser)
