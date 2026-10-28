@@ -1,12 +1,12 @@
 # Typography
 
 Typography lets users choose curated fonts, role-based presets, and browser-local
-font files for the Hermes WebUI interface, conversations, and code. It adds a
+font files for the Desktop interface, conversations, and code. It adds a
 **Typography** button to the WebUI rail.
 
 ## 中文说明
 
-本扩展可为 Hermes WebUI 的界面、对话和代码分别选择字体，并在侧边栏添加
+本扩展可为 Desktop 的界面、对话和代码分别选择字体，并在侧边栏添加
 「字体」按钮。面板提供精选 Google Fonts、按角色划分的预设，以及仅在浏览器
 本地保存的字体导入。
 
@@ -17,7 +17,7 @@ font files for the Hermes WebUI interface, conversations, and code. It adds a
 
 ## Install for local testing
 
-From a Hermes WebUI checkout, point the manifest-bundle loader at this entry:
+From a Desktop app checkout, point the manifest-bundle loader at this entry:
 
 ```bash
 cd /path/to/hermes-webui
@@ -134,7 +134,7 @@ records.
 
 ## Disable and uninstall
 
-Disable Typography by restarting Hermes WebUI without the extension directory or
+Disable Typography by restarting Desktop without the extension directory or
 manifest environment variables. Uninstall it by removing the local
 `extensions/typography/` entry (or removing it from the installed extension
 set). Browser site-data controls remove the selection and the

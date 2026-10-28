@@ -1,6 +1,6 @@
 # Session Export to PDF
 
-Session Export to PDF is a trusted local Hermes WebUI extension that lets you
+Session Export to PDF is a trusted local Desktop extension that lets you
 export the current conversation to a clean **PDF** (via the browser's print
 dialog, with a print-styled layout) or **copy it as Markdown**. It adds an export
 button to the app titlebar — or to the left rail on the redesigned banner-less
@@ -8,7 +8,7 @@ homepage, where the titlebar is collapsed.
 
 ## 中文说明
 
-本扩展为 Hermes WebUI 增加一个导出按钮（经典布局在标题栏，无横幅首页在左侧栏），
+本扩展为 Desktop 增加一个导出按钮（经典布局在标题栏，无横幅首页在左侧栏），
 仅在打开对话时显示。点击后可选择：
 
 - **导出为 PDF**：把已渲染的对话克隆到一个离屏打印容器，并用作用域限定的
@@ -44,7 +44,7 @@ of that idea (routed to extensions to keep core lean).
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/session-export-pdf.js + .css
   -> titlebar/rail button -> menu -> clone #messages rows into #hwxPrintRoot
@@ -81,7 +81,7 @@ Also on `window.HermesSessionExportExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/session-export-pdf/`
 directory. The extension stores nothing.
 

@@ -1,6 +1,6 @@
 # External App Tab
 
-External App Tab is a trusted local Hermes WebUI extension with two modes,
+External App Tab is a trusted local Desktop extension with two modes,
 one rail tab. **Workspace files is the default mode**; External URL is the
 opt-in alternative (switch it in **Configure**):
 
@@ -128,7 +128,7 @@ export HERMES_WEBUI_CSP_FRAME_EXTRA="https://your-app.example.com"
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/external-app-tab.js + .css
   -> rail button -> full-area overlay
@@ -184,7 +184,7 @@ Also on `window.HermesExternalAppTabExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/external-app-tab/`
 directory. Config lives in the native Settings → Extensions store on supported
 core builds; older builds use the legacy `hermes-ext-external-app` localStorage

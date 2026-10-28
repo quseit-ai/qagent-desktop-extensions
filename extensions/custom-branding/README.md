@@ -1,13 +1,13 @@
 # Custom Branding
 
-Custom Branding is a trusted local Hermes WebUI extension that lets you
+Custom Branding is a trusted local Desktop extension that lets you
 white-label the app chrome with **your own logo and favicon**. The Hermes
 titlebar mark, the empty-state hero logo, and the browser-tab favicon are all
 swapped for images of your choice.
 
 ## 中文说明
 
-本扩展用你自己的标志和网站图标替换 Hermes WebUI 的品牌标识：标题栏标志、
+本扩展用你自己的标志和网站图标替换 Desktop 的品牌标识：标题栏标志、
 空状态页大图标，以及浏览器标签页图标都会换成你上传的图片。
 
 - **使用方法**：点击标题栏左侧的标志打开选择器。
@@ -48,7 +48,7 @@ validation/downscale approach preserves @gavinssr's original design intent
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/custom-branding.js + .css
   -> swaps .app-titlebar-icon SVG + .empty-logo SVG for an <img> when a logo is set
@@ -87,7 +87,7 @@ Also exposed on `window.HermesCustomBrandingExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/custom-branding/`
 directory. Your images live under the `hermes-ext-custom-branding-logo` and
 `hermes-ext-custom-branding-favicon` localStorage keys.

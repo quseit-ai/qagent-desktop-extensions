@@ -1,8 +1,8 @@
 {
   "id": "desktop-companion",
   "name": "Desktop Companion",
-  "description": "Trusted local desktop companion for Hermes WebUI. Ships a WebUI adapter, a loopback sidecar protocol, and a native desktop pet host. 适用于 Hermes WebUI 的可信本地桌面伴侣：提供 WebUI 适配器、回环 sidecar 协议与原生桌面宠物宿主。",
-  "version": "0.2.0",
+  "description": "Trusted local desktop companion for Desktop. Ships a WebUI adapter, a loopback sidecar protocol, and a native desktop pet host. 适用于 Desktop 的可信本地桌面伴侣：提供 WebUI 适配器、回环 sidecar 协议与原生桌面宠物宿主。",
+  "version": "0.2.1",
   "author": "franksong2702",
   "homepage": "https://github.com/franksong2702/hermes-webui-desktop-companion",
   "assets": {

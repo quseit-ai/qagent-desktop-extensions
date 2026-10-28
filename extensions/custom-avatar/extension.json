@@ -2,7 +2,7 @@
   "id": "custom-avatar",
   "name": "Custom Assistant Avatar",
   "description": "Give the assistant a custom avatar image in the chat transcript. Click any assistant avatar badge to upload or clear an image; it's downscaled and stored locally and re-applied as the transcript re-renders. 在聊天记录中为助手设置自定义头像：点击助手头像徽章即可上传或清除图片，图片会压缩后保存在本地，并在消息重新渲染后自动恢复。",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [

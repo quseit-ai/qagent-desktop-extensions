@@ -1,6 +1,6 @@
 # Profile Avatars
 
-Profile Avatars is a Hermes WebUI extension that gives every profile its own
+Profile Avatars is a Desktop extension that gives every profile its own
 avatar image and renders it everywhere the profile appears. Avatars are stored
 **server-side** (a loopback sidecar with SQLite), so one upload syncs across
 all your devices and browsers — and each image is downloaded **once per page
@@ -44,7 +44,7 @@ load** into a shared in-memory object URL. Nothing is written to
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> assets/avatars.js     render + observers (chips, badges, session rows)
   -> assets/avatars.css    avatar primitive + manager styles
 WebUI sidecar proxy (after consent)
@@ -57,7 +57,7 @@ Reads (same-origin WebUI API): /api/profiles (roster + active),
 
 ## Supported WebUI version / API surface
 
-Requires a Hermes WebUI build that contains the `token-v1` sidecar-proxy
+Requires a Desktop build that contains the `token-v1` sidecar-proxy
 contract (core [nesquena/hermes-webui#6331](https://github.com/nesquena/hermes-webui/pull/6331),
 first shipped in `exp-v0.52.129`). An older build has no per-extension sidecar
 token, so every protected sidecar call fails closed. A stable-channel minimum

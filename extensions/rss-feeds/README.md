@@ -1,13 +1,13 @@
 # RSS Feeds
 
-RSS Feeds is a Hermes WebUI extension that adds a full RSS/Atom reader to the
+RSS Feeds is a Desktop extension that adds a full RSS/Atom reader to the
 WebUI: a two-pane overlay with categorized subscriptions in the sidebar and
 entries on the right — plus keyword filtering, full-text search, cross-device
 read tracking, and optional AI summaries.
 
 ## 中文说明
 
-RSS Feeds 是一个 Hermes WebUI 扩展，为界面加入完整的 RSS/Atom 阅读器：
+RSS Feeds 是一个 Desktop 扩展，为界面加入完整的 RSS/Atom 阅读器：
 侧边栏按分类管理订阅源，右侧显示文章条目。主要功能：
 
 - **订阅管理**：添加、编辑、删除订阅源，并按分类分组。
@@ -38,7 +38,7 @@ RSS Feeds 是一个 Hermes WebUI 扩展，为界面加入完整的 RSS/Atom 阅�
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> assets/feeds-inject.js   builds the overlay + titlebar/rail launcher
   -> assets/feeds.js          all reader logic (fetch via the sidecar proxy)
   -> assets/feeds.css         self-contained styles (host CSS vars only)

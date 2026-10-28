@@ -1,6 +1,6 @@
 # Skin Pack
 
-Skin Pack is a trusted local Hermes WebUI extension that adds a set of popular
+Skin Pack is a trusted local Desktop extension that adds a set of popular
 editor-inspired color themes to the **native Settings → Appearance** skin
 picker. Core keeps its built-in skin list deliberately curated; this extension
 covers the long tail of "I want my editor's theme."
@@ -43,7 +43,7 @@ simply unavailable; nothing errors).
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/skin-pack.js
   -> window.registerHermesSkin({...}) x6
@@ -70,7 +70,7 @@ picker.
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/skin-pack/`
 directory. If one of these themes was selected, switch to another skin in
 Appearance first (a removed skin falls back to the default).

@@ -2,7 +2,7 @@
   "id": "message-pins",
   "name": "Message Pins",
   "description": "Pin individual messages in a conversation. Adds a pin button to each message, a header popover listing pinned messages with click-to-jump, and a small badge with the pin count. Pins persist locally per session. 在对话中固定个别消息：为每条消息添加固定按钮，右上角入口列出已固定消息并可点击跳转，同时显示固定数量徽标；固定记录按会话保存在本地。",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [

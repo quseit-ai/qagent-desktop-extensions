@@ -2,7 +2,7 @@
   "extensions": [
     {
       "id": "desktop-companion",
-      "name": "Hermes WebUI Desktop Companion",
+      "name": "Desktop Companion",
       "scripts": ["assets/companion-adapter.js"],
       "stylesheets": [],
       "sidecar": {

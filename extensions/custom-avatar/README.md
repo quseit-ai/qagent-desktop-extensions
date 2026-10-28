@@ -1,6 +1,6 @@
 # Custom Assistant Avatar
 
-Custom Assistant Avatar is a trusted local Hermes WebUI extension that lets you
+Custom Assistant Avatar is a trusted local Desktop extension that lets you
 give the assistant a custom avatar image in the chat transcript. The assistant's
 role badge is normally a single-letter glyph; this swaps in an image of your
 choice.
@@ -29,7 +29,7 @@ choice.
 
 ## Scope note (why assistant-only)
 
-The Hermes WebUI deliberately renders **no avatar on user messages** — user
+The Desktop app deliberately renders **no avatar on user messages** — user
 turns are right-aligned bubbles where position identifies the sender, so there is
 no user-side avatar slot in the DOM to customize. This extension customizes the
 **assistant** avatar badge, which is the avatar element that actually exists.
@@ -42,7 +42,7 @@ the personalization layer rather than fixing a non-present bug.)
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/custom-avatar.js + .css
   -> swaps .role-icon.assistant glyph for an <img> when an avatar is set
@@ -79,7 +79,7 @@ Also exposed on `window.HermesCustomAvatarExtension`:
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/custom-avatar/`
 directory. Your avatar lives under the `hermes-ext-assistant-avatar` localStorage
 key.

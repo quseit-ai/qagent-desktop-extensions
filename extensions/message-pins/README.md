@@ -1,6 +1,6 @@
 # Message Pins
 
-Message Pins is a trusted local Hermes WebUI extension that lets you pin
+Message Pins is a trusted local Desktop extension that lets you pin
 individual messages in a conversation. It adds a pin button to each message, a
 header popover that lists your pinned messages with click-to-jump, and a small
 badge showing the pin count. Pins are saved locally in your browser, per
@@ -33,7 +33,7 @@ session.
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/message-pins.js
   -> /extensions/assets/message-pins.css
@@ -56,7 +56,7 @@ It does not require `loopback-sidecar` or the sidecar proxy.
 
 ## Install For Local Testing
 
-Start Hermes WebUI with this extension directory:
+Start Desktop with this extension directory:
 
 ```bash
 cd /path/to/hermes-webui
@@ -83,7 +83,7 @@ This entry can be browsed and installed from Settings -> Extensions.
 
 ## Disable And Uninstall
 
-To disable the WebUI extension, restart Hermes WebUI without:
+To disable the WebUI extension, restart Desktop without:
 
 ```text
 HERMES_WEBUI_EXTENSION_DIR
@@ -101,7 +101,7 @@ localStorage. Clearing that key (or your site data) removes all saved pins.
 
 ## Trust And Permissions
 
-This is trusted local code. The injected JavaScript runs in the Hermes WebUI
+This is trusted local code. The injected JavaScript runs in the Desktop app's
 browser origin and can use the logged-in browser session.
 
 Current disclosed behavior:
@@ -135,7 +135,7 @@ Required WebUI surface:
 - message rows carrying `data-msg-idx` (and, where available, `data-raw-text`
   and `data-session-id`), inside `#messages` / `.messages-shell`
 
-This entry targets Hermes WebUI builds that render message rows with
+This entry targets Desktop builds that render message rows with
 `data-msg-idx` and the `.msg-actions` hover bar. The compatibility requirement is
 better described as the manifest bundle plus the message-row DOM surface above.
 

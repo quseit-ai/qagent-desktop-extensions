@@ -1,6 +1,6 @@
 # Model Favorites
 
-Model Favorites is a trusted local Hermes WebUI extension that lets you star the
+Model Favorites is a trusted local Desktop extension that lets you star the
 models you use most in the composer model picker. Favorited models are promoted
 to a **★ Favorites** group at the top of the dropdown for one-click switching.
 
@@ -27,7 +27,7 @@ WebUI 的语言设置，简体中文环境下自动显示中文。
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/model-favorites.js + .css
   -> decorates #composerModelDropdown .model-opt rows with a star
@@ -55,7 +55,7 @@ the Favorites group at the top.
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST`, or remove the `extensions/model-favorites/`
 directory. Your favorites live under the `hermes-ext-model-favorites` localStorage
 key.

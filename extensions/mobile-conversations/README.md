@@ -1,6 +1,6 @@
 # Mobile Conversations Button
 
-Mobile Conversations Button is a trusted local Hermes WebUI extension that adds
+Mobile Conversations Button is a trusted local Desktop extension that adds
 a phone-only floating **Conversations** button near the chat composer. It opens
 the existing mobile conversations drawer, then stays in the same floating
 position as an **X** above the open drawer so it can be closed again. It also
@@ -30,7 +30,7 @@ provides a long-press shortcuts menu for common conversation navigation actions.
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/mobile-conversations.js
   -> /extensions/assets/mobile-conversations.css
@@ -51,7 +51,7 @@ It does not require `loopback-sidecar` or the sidecar proxy.
 
 ## Install For Local Testing
 
-Start Hermes WebUI with this extension directory:
+Start Desktop with this extension directory:
 
 ```bash
 cd /path/to/hermes-webui
@@ -66,7 +66,7 @@ The runtime `manifest.json` injects:
     {
       "id": "mobile-conversations",
       "name": "Mobile Conversations Button",
-      "description": "Phone-only floating Conversations button and shortcut menu for Hermes WebUI.",
+      "description": "Phone-only floating Conversations button and shortcut menu for Desktop.",
       "scripts": ["assets/mobile-conversations.js"],
       "stylesheets": ["assets/mobile-conversations.css"]
     }
@@ -76,7 +76,7 @@ The runtime `manifest.json` injects:
 
 ## Disable And Uninstall
 
-To disable the WebUI extension, restart Hermes WebUI without:
+To disable the WebUI extension, restart Desktop without:
 
 ```text
 HERMES_WEBUI_EXTENSION_DIR
@@ -91,7 +91,7 @@ or remove the entry from the aggregate manifest that points at it.
 
 ## Trust And Permissions
 
-This is trusted local code. The injected JavaScript runs in the Hermes WebUI
+This is trusted local code. The injected JavaScript runs in the Desktop app's
 browser origin and can use the logged-in browser session.
 
 Current disclosed behavior:
@@ -123,7 +123,7 @@ Required WebUI surface:
 - existing browser hooks for mobile drawer/session/scroll behavior where
   available; the extension has DOM fallbacks for older builds
 
-The source local extension was tested against Hermes WebUI versions at or after
+The source local extension was tested against Desktop versions at or after
 `0.51.545`. The compatibility requirement is better described as the manifest
 bundle plus the mobile sidebar/browser-hook surfaces listed above.
 

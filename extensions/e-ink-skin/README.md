@@ -1,6 +1,6 @@
 # E-Ink Skin
 
-E-Ink Skin is a trusted local Hermes WebUI extension that adds a
+E-Ink Skin is a trusted local Desktop extension that adds a
 maximum-contrast, near-monochrome light skin tuned for **e-ink displays**
 (Kindle, Boox, reMarkable, and similar). It registers into the native
 **Settings → Appearance** skin picker, so you select it exactly like a built-in
@@ -36,7 +36,7 @@ Once that capability ships, the skin registers automatically on load.
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/e-ink-skin.js
   -> window.registerHermesSkin({ name:'E-Ink', scheme:'light', tokens:{...} })
@@ -55,7 +55,7 @@ It does not require `loopback-sidecar` or sidecar proxy support.
 
 ## Install For Local Testing
 
-Start Hermes WebUI with this extension directory:
+Start Desktop with this extension directory:
 
 ```bash
 cd /path/to/hermes-webui
@@ -66,7 +66,7 @@ Then open Settings → Appearance and pick **E-Ink** from the skin picker.
 
 ## Disable And Uninstall
 
-Restart Hermes WebUI without `HERMES_WEBUI_EXTENSION_DIR` /
+Restart Desktop without `HERMES_WEBUI_EXTENSION_DIR` /
 `HERMES_WEBUI_EXTENSION_MANIFEST` (etc.), or remove the
 `extensions/e-ink-skin/` directory from the local extensions checkout. If E-Ink
 was the selected skin, switch to another skin in Appearance first (a removed
@@ -74,7 +74,7 @@ skin falls back to the default).
 
 ## Trust And Permissions
 
-This is trusted local code. The injected JavaScript runs in the Hermes WebUI
+This is trusted local code. The injected JavaScript runs in the Desktop app's
 browser origin.
 
 Current disclosed behavior:

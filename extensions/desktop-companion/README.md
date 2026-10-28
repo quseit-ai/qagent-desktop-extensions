@@ -1,12 +1,12 @@
 # Desktop Companion
 
-Desktop Companion is a trusted local companion extension for Hermes WebUI. It
+Desktop Companion is a trusted local companion extension for Desktop. It
 watches session attention state, forwards lightweight snapshots to a local
 loopback sidecar, and executes trusted local desktop-pet commands in the
 authenticated WebUI browser session. It does not render a browser pet or WebUI
 overlay.
 
-This entry is the first sidecar-class extension candidate for the Hermes WebUI
+This entry is the first sidecar-class extension candidate for the Desktop
 extension library. It keeps the WebUI-facing assets in this repository and keeps
 the sidecar/native host source in:
 
@@ -17,7 +17,7 @@ https://github.com/franksong2702/hermes-webui-desktop-companion
 ## Current Shape
 
 ```text
-Hermes WebUI page
+Desktop page
   -> manifest-bundled extension assets
   -> /extensions/assets/companion-adapter.js
   -> http://127.0.0.1:17787 loopback sidecar
@@ -36,11 +36,11 @@ executes inside the authenticated WebUI origin.
 
 The bundled `assets/pets/` resources are consumed by the native desktop pet
 host through the sidecar/source project. They are not a browser overlay and do
-not mean Hermes WebUI core renders a pet inside the page.
+not mean Desktop core renders a pet inside the page.
 
 ## 中文说明
 
-本扩展为 Hermes WebUI 提供可信的本地桌面伴侣桥接：它监听会话的关注状态，
+本扩展为 Desktop 提供可信的本地桌面伴侣桥接：它监听会话的关注状态，
 把轻量快照转发给本机回环 sidecar（`http://127.0.0.1:17787`），并在已认证的
 WebUI 浏览器会话中执行受信任的桌面宠物命令。它不会在网页内渲染宠物或覆盖层；
 单独的 WebUI 适配器只是浏览器桥接，桌面宠物需要 sidecar 与原生宿主程序。
@@ -63,7 +63,7 @@ same-origin proxy requires the external runtime to implement the language-neutra
 
 ## Install From Gallery
 
-In Hermes WebUI, open Settings -> Extensions -> Gallery and install
+In the Desktop app, open Settings -> Extensions -> Gallery and install
 Desktop Companion.
 
 Gallery install enables the WebUI bridge only. To show and use the desktop pet,
@@ -81,7 +81,7 @@ which starts with the same command for an existing local clone.
 
 ## Install For Local Testing
 
-Start Hermes WebUI with this extension directory:
+Start Desktop with this extension directory:
 
 ```bash
 cd /path/to/hermes-webui
@@ -110,7 +110,7 @@ npm run desktop:dev
 
 ## Disable And Uninstall
 
-To disable the WebUI extension, restart Hermes WebUI without:
+To disable the WebUI extension, restart Desktop without:
 
 ```text
 HERMES_WEBUI_EXTENSION_DIR
@@ -125,7 +125,7 @@ processes are stopped.
 
 ## Trust And Permissions
 
-This is trusted local code. The injected adapter runs in the Hermes WebUI
+This is trusted local code. The injected adapter runs in the Desktop app's
 browser origin and can use the logged-in browser session.
 
 Current disclosed behavior:
@@ -136,7 +136,7 @@ Current disclosed behavior:
   `/api/approval/pending` and `/api/clarify/pending`
 - writes authenticated WebUI APIs for desktop-pet commands:
   `/api/session/draft`, `/api/approval/respond`, and `/api/clarify/respond`
-- reads guarded Hermes WebUI browser globals for live session state while no
+- reads guarded Desktop browser globals for live session state while no
   formal extension runtime API exists (`S`, `_allSessions`, `INFLIGHT`,
   `_currentPanel`, `switchPanel`, `_saveComposerDraftNow`, and `send`)
 - reads existing WebUI localStorage keys for viewed/unread session state
@@ -186,7 +186,7 @@ Expected response shape:
   "ok": true,
   "status": "ok",
   "service": "hermes-webui-desktop-companion",
-  "name": "Hermes WebUI Desktop Companion",
+  "name": "Desktop Companion",
   "version": "0.1.0",
   "sidecar": {
     "type": "loopback",
@@ -195,7 +195,7 @@ Expected response shape:
 }
 ```
 
-The sidecar metadata is descriptive. It does not imply that Hermes WebUI core
+The sidecar metadata is descriptive. It does not imply that Desktop core
 can install, auto-start, proxy, or manage the native process yet.
 
 ## Compatibility
@@ -259,7 +259,7 @@ Manual verification should confirm:
 - Gallery installation is available for the WebUI adapter; the external Desktop
   Companion application and sidecar still require their own installation.
 - WebUI settings do not yet manage sidecar lifecycle.
-- Hermes WebUI core's consent-gated sidecar proxy is shipped, but this external
+- Desktop core's consent-gated sidecar proxy is shipped, but this external
   runtime remains explicitly `legacy` and its adapter still uses direct loopback.
   Moving it to the proxy requires the external runtime to adopt `token-v1`.
 - The native host source is linked, not vendored, in this extension entry.
