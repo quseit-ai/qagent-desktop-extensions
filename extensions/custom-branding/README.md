@@ -5,6 +5,19 @@ white-label the app chrome with **your own logo and favicon**. The Hermes
 titlebar mark, the empty-state hero logo, and the browser-tab favicon are all
 swapped for images of your choice.
 
+## 中文说明
+
+本扩展用你自己的标志和网站图标替换 Hermes WebUI 的品牌标识：标题栏标志、
+空状态页大图标，以及浏览器标签页图标都会换成你上传的图片。
+
+- **使用方法**：点击标题栏左侧的标志打开选择器。
+- **标志（Logo）**：替换标题栏和空状态页的标志，建议尺寸不超过 256px。
+- **网站图标（Favicon）**：替换浏览器标签页图标，建议尺寸不超过 64px。
+- **按钮**：「上传… / 更换…」「移除」；仅支持 PNG / JPEG / WebP 图片。
+- 图片在浏览器内压缩后存入 `localStorage`，不会上传到任何服务器；点击「移除」
+  即可恢复 Hermes 默认图标。
+- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+
 ## What It Does
 
 - Click the titlebar logo (`.app-titlebar-icon`) to open a small picker:

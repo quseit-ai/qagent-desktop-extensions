@@ -5,6 +5,13 @@ editor-inspired color themes to the **native Settings → Appearance** skin
 picker. Core keeps its built-in skin list deliberately curated; this extension
 covers the long tail of "I want my editor's theme."
 
+## 中文说明
+
+- 为系统“设置 → 外观”的皮肤选择器添加一组受主流编辑器启发的深色配色主题。
+- 包含 Dracula、Gruvbox、One Dark、Tokyo Night、Rosé Pine 和 Solarized Dark。
+- 每个主题都是一套完整的深色调色板，而非仅修改强调色。
+- 通过核心的主题注册能力注册；较旧版本的 WebUI 不支持时会静默停用。
+
 ## Themes
 
 - **Dracula**

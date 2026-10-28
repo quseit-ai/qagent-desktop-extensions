@@ -3,7 +3,7 @@
     {
       "id": "session-export-pdf",
       "name": "Session Export to PDF",
-      "description": "Export the current conversation to PDF (print) or copy it as Markdown.",
+      "description": "Export the current conversation to PDF (print) or copy it as Markdown. 将当前对话导出为 PDF（打印）或复制为 Markdown。",
       "scripts": [
         "assets/session-export-pdf.js"
       ],

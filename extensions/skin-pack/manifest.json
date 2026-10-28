@@ -3,7 +3,7 @@
     {
       "id": "skin-pack",
       "name": "Skin Pack",
-      "description": "Popular editor-inspired color themes that register into the native Appearance skin picker.",
+      "description": "Popular editor-inspired color themes that register into the native Appearance skin picker. 一组受主流编辑器启发的配色主题，可在系统外观选择器中选择。",
       "scripts": [
         "assets/skin-pack.js"
       ],

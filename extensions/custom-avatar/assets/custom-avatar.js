@@ -24,6 +24,66 @@
   const MAX_BYTES = 96 * 1024;                          // refuse images that won't downscale small enough
   const APPLIED_FLAG = 'hwxAvatar';
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      dialogTitle: 'Assistant avatar',
+      clickToSet: 'Click to set a custom assistant avatar',
+      upload: 'Upload image…',
+      change: 'Change image…',
+      remove: 'Remove avatar',
+      processing: 'Processing…',
+      altAvatar: 'assistant avatar',
+      errNotImage: 'Not an image file.',
+      errTooLarge: 'Image too large (max 8 MB before downscale).',
+      errRead: 'Could not read the file.',
+      errDecode: 'Could not decode the image.',
+      errTooSmall: 'Image could not be reduced small enough.',
+      errProcess: 'Image processing failed.',
+    },
+    zh: {
+      dialogTitle: '助手头像',
+      clickToSet: '点击设置自定义助手头像',
+      upload: '上传图片…',
+      change: '更换图片…',
+      remove: '移除头像',
+      processing: '处理中…',
+      altAvatar: '助手头像',
+      errNotImage: '不是图片文件。',
+      errTooLarge: '图片过大（压缩前上限 8 MB）。',
+      errRead: '无法读取文件。',
+      errDecode: '无法解码该图片。',
+      errTooSmall: '图片无法压缩到足够小。',
+      errProcess: '图片处理失败。',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
   let observer = null;
   let picker = null;
 
@@ -55,7 +115,7 @@
         if (!img) {
           img = document.createElement('img');
           img.className = 'hwx-avatar-img';
-          img.alt = 'assistant avatar';
+          img.alt = t('altAvatar');
           icon.appendChild(img);
         }
         img.src = dataUrl;
@@ -76,10 +136,12 @@
   }
 
   function wireClick(icon) {
+    // Refresh the tooltip on every apply pass so a locale switch is reflected
+    // on the next render; the click wiring itself only needs to happen once.
+    icon.title = t('clickToSet');
     if (icon.dataset.hwxAvatarWired) return;
     icon.dataset.hwxAvatarWired = '1';
     icon.style.cursor = 'pointer';
-    icon.title = 'Click to set a custom assistant avatar';
     icon.addEventListener('click', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
@@ -94,13 +156,13 @@
 
   // ── image handling: downscale to a small square data-URL ─────────────────
   function downscaleToDataUrl(file, cb) {
-    if (!file || !/^image\//.test(file.type)) { cb(null, 'Not an image file.'); return; }
-    if (file.size > 8 * 1024 * 1024) { cb(null, 'Image too large (max 8 MB before downscale).'); return; }
+    if (!file || !/^image\//.test(file.type)) { cb(null, t('errNotImage')); return; }
+    if (file.size > 8 * 1024 * 1024) { cb(null, t('errTooLarge')); return; }
     const reader = new FileReader();
-    reader.onerror = () => cb(null, 'Could not read the file.');
+    reader.onerror = () => cb(null, t('errRead'));
     reader.onload = () => {
       const img = new Image();
-      img.onerror = () => cb(null, 'Could not decode the image.');
+      img.onerror = () => cb(null, t('errDecode'));
       img.onload = () => {
         try {
           const side = Math.min(MAX_DIM, Math.max(img.width, img.height));
@@ -113,9 +175,9 @@
           ctx.drawImage(img, (MAX_DIM - w) / 2, (MAX_DIM - h) / 2, w, h);
           let out = canvas.toDataURL('image/png');
           if (out.length > MAX_BYTES) out = canvas.toDataURL('image/jpeg', 0.85);
-          if (out.length > MAX_BYTES) { cb(null, 'Image could not be reduced small enough.'); return; }
+          if (out.length > MAX_BYTES) { cb(null, t('errTooSmall')); return; }
           cb(out, null);
-        } catch (e) { cb(null, 'Image processing failed.'); }
+        } catch (e) { cb(null, t('errProcess')); }
       };
       img.src = reader.result;
     };
@@ -136,17 +198,17 @@
     picker = document.createElement('div');
     picker.className = 'hwx-avatar-picker';
     picker.setAttribute('role', 'dialog');
-    picker.setAttribute('aria-label', 'Assistant avatar');
+    picker.setAttribute('aria-label', t('dialogTitle'));
 
     const title = document.createElement('div');
     title.className = 'hwx-avatar-picker-title';
-    title.textContent = 'Assistant avatar';
+    title.textContent = t('dialogTitle');
     picker.appendChild(title);
 
     const fileBtn = document.createElement('button');
     fileBtn.type = 'button';
     fileBtn.className = 'hwx-avatar-btn';
-    fileBtn.textContent = getAvatar() ? 'Change image…' : 'Upload image…';
+    fileBtn.textContent = t(getAvatar() ? 'change' : 'upload');
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/png,image/jpeg,image/gif,image/webp';
@@ -155,7 +217,7 @@
     input.addEventListener('change', () => {
       const f = input.files && input.files[0];
       if (!f) return;
-      setStatus('Processing…');
+      setStatus(t('processing'));
       downscaleToDataUrl(f, (dataUrl, err) => {
         if (err) { setStatus(err); return; }
         setAvatar(dataUrl);
@@ -169,7 +231,7 @@
       const clearBtn = document.createElement('button');
       clearBtn.type = 'button';
       clearBtn.className = 'hwx-avatar-btn hwx-avatar-btn--clear';
-      clearBtn.textContent = 'Remove avatar';
+      clearBtn.textContent = t('remove');
       clearBtn.addEventListener('click', () => { setAvatar(''); closePicker(); });
       picker.appendChild(clearBtn);
     }

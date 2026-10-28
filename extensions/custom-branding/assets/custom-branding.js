@@ -35,6 +35,82 @@
   const LOGO_MAX_BYTES = 512 * 1024;   // refuse logos that won't downscale small enough
   const FAVICON_MAX_BYTES = 128 * 1024;// refuse favicons that won't downscale small enough
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      title: 'Custom Branding',
+      logoLabel: 'Logo',
+      faviconLabel: 'Favicon',
+      defaultLabel: 'Default',
+      upload: 'Upload…',
+      change: 'Change…',
+      remove: 'Remove',
+      processing: 'Processing…',
+      applied: 'Applied.',
+      storageFull: 'Couldn’t save — storage full.',
+      previewAlt: '{0} preview',
+      clickToSet: 'Click to set a custom logo / favicon',
+      ariaSet: 'Set a custom logo or favicon',
+      altCustomLogo: 'Custom logo',
+      errNotImage: 'Not an image file.',
+      errUnsupportedType: 'Only PNG, JPEG, or WebP images are supported.',
+      errTooLarge: 'Image too large (max 8 MB before downscale).',
+      errRead: 'Could not read the file.',
+      errDecode: 'Could not decode the image.',
+      errTooSmall: 'Image could not be reduced small enough.',
+      errProcess: 'Image processing failed.',
+    },
+    zh: {
+      title: '自定义品牌',
+      logoLabel: '标志',
+      faviconLabel: '网站图标',
+      defaultLabel: '默认',
+      upload: '上传…',
+      change: '更换…',
+      remove: '移除',
+      processing: '处理中…',
+      applied: '已应用。',
+      storageFull: '无法保存——存储空间已满。',
+      previewAlt: '{0}预览',
+      clickToSet: '点击设置自定义标志 / 网站图标',
+      ariaSet: '设置自定义标志或网站图标',
+      altCustomLogo: '自定义标志',
+      errNotImage: '不是图片文件。',
+      errUnsupportedType: '仅支持 PNG、JPEG 或 WebP 图片。',
+      errTooLarge: '图片过大（压缩前上限 8 MB）。',
+      errRead: '无法读取文件。',
+      errDecode: '无法解码该图片。',
+      errTooSmall: '图片无法压缩到足够小。',
+      errProcess: '图片处理失败。',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
   // Titlebar logo container + empty-state hero logo container.
   const LOGO_CONTAINERS = [
     { sel: '.app-titlebar-icon', size: 'titlebar' },
@@ -114,7 +190,7 @@
         if (!img) {
           img = document.createElement('img');
           img.className = 'hwx-branding-logo-img hwx-branding-logo-' + sizeKind;
-          img.alt = 'Custom logo';
+          img.alt = t('altCustomLogo');
           container.appendChild(img);
         }
         img.src = dataUrl;
@@ -188,17 +264,17 @@
 
   // ── image handling: downscale to a small data-URL (aspect preserved) ───────
   function downscaleToDataUrl(file, maxDim, maxBytes, cb) {
-    if (!file || !/^image\//.test(file.type)) { cb(null, 'Not an image file.'); return; }
+    if (!file || !/^image\//.test(file.type)) { cb(null, t('errNotImage')); return; }
     if (!/^image\/(png|jpeg|jpg|webp)$/.test(file.type)) {
-      cb(null, 'Only PNG, JPEG, or WebP images are supported.');
+      cb(null, t('errUnsupportedType'));
       return;
     }
-    if (file.size > 8 * 1024 * 1024) { cb(null, 'Image too large (max 8 MB before downscale).'); return; }
+    if (file.size > 8 * 1024 * 1024) { cb(null, t('errTooLarge')); return; }
     const reader = new FileReader();
-    reader.onerror = () => cb(null, 'Could not read the file.');
+    reader.onerror = () => cb(null, t('errRead'));
     reader.onload = () => {
       const img = new Image();
-      img.onerror = () => cb(null, 'Could not decode the image.');
+      img.onerror = () => cb(null, t('errDecode'));
       img.onload = () => {
         try {
           const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
@@ -210,9 +286,9 @@
           ctx.drawImage(img, 0, 0, w, h);
           let out = canvas.toDataURL('image/png');
           if (out.length > maxBytes) out = canvas.toDataURL('image/jpeg', 0.85);
-          if (out.length > maxBytes) { cb(null, 'Image could not be reduced small enough.'); return; }
+          if (out.length > maxBytes) { cb(null, t('errTooSmall')); return; }
           cb(out, null);
-        } catch (e) { cb(null, 'Image processing failed.'); }
+        } catch (e) { cb(null, t('errProcess')); }
       };
       img.src = reader.result;
     };
@@ -250,14 +326,14 @@
     if (currentValue && isDataImage(currentValue)) {
       const pimg = document.createElement('img');
       pimg.src = currentValue;
-      pimg.alt = labelText + ' preview';
+      pimg.alt = tf('previewAlt', labelText);
       preview.appendChild(pimg);
       previewRow.appendChild(preview);
     } else {
       previewRow.appendChild(preview);
       const none = document.createElement('span');
       none.className = 'hwx-branding-preview-none';
-      none.textContent = 'Default';
+      none.textContent = t('defaultLabel');
       previewRow.appendChild(none);
     }
     section.appendChild(previewRow);
@@ -270,13 +346,13 @@
     const uploadBtn = document.createElement('button');
     uploadBtn.type = 'button';
     uploadBtn.className = 'hwx-branding-btn';
-    uploadBtn.textContent = currentValue ? 'Change…' : 'Upload…';
+    uploadBtn.textContent = t(currentValue ? 'change' : 'upload');
     uploadBtn.addEventListener('click', () => input.click());
 
     input.addEventListener('change', () => {
       const f = input.files && input.files[0];
       if (!f) return;
-      setStatus('Processing…');
+      setStatus(t('processing'));
       downscaleToDataUrl(f, maxDim, maxBytes, (dataUrl, err) => {
         if (err) { setStatus(err); return; }
         const ok = (kind === 'favicon') ? setFavicon(dataUrl) : setLogo(dataUrl);
@@ -284,7 +360,7 @@
         // restores focus to the first control, so set the message AFTER it —
         // otherwise the honest quota-fail status is erased before paint.
         rebuildPicker();
-        setStatus(ok ? 'Applied.' : 'Couldn’t save — storage full.');
+        setStatus(ok ? t('applied') : t('storageFull'));
       });
     });
 
@@ -295,7 +371,7 @@
       const clearBtn = document.createElement('button');
       clearBtn.type = 'button';
       clearBtn.className = 'hwx-branding-btn hwx-branding-btn--clear';
-      clearBtn.textContent = 'Remove';
+      clearBtn.textContent = t('remove');
       clearBtn.addEventListener('click', () => {
         if (kind === 'favicon') setFavicon(''); else setLogo('');
         rebuildPicker();
@@ -311,11 +387,11 @@
 
     const title = document.createElement('div');
     title.className = 'hwx-branding-title';
-    title.textContent = 'Custom Branding';
+    title.textContent = t('title');
     frag.appendChild(title);
 
-    frag.appendChild(makeSection('Logo', getLogo(), 'logo', LOGO_MAX_DIM, LOGO_MAX_BYTES));
-    frag.appendChild(makeSection('Favicon', getFavicon(), 'favicon', FAVICON_MAX_DIM, FAVICON_MAX_BYTES));
+    frag.appendChild(makeSection(t('logoLabel'), getLogo(), 'logo', LOGO_MAX_DIM, LOGO_MAX_BYTES));
+    frag.appendChild(makeSection(t('faviconLabel'), getFavicon(), 'favicon', FAVICON_MAX_DIM, FAVICON_MAX_BYTES));
 
     const status = document.createElement('div');
     status.className = 'hwx-branding-status';
@@ -349,7 +425,7 @@
     // Light-dismiss popover (outside-click / Esc closes it); we don't trap Tab,
     // so don't claim aria-modal — that would tell a screen reader focus is
     // trapped when it isn't.
-    picker.setAttribute('aria-label', 'Custom Branding');
+    picker.setAttribute('aria-label', t('title'));
     picker.setAttribute('tabindex', '-1');
     picker.appendChild(buildPickerBody());
     document.body.appendChild(picker);
@@ -381,7 +457,12 @@
   }
 
   function wireClick(container) {
-    if (!container || container.dataset.hwxBrandingWired) return;
+    if (!container) return;
+    // Refresh the tooltip / a11y label on every apply pass so a locale switch
+    // is reflected on the next render; the click wiring only runs once.
+    container.title = t('clickToSet');
+    container.setAttribute('aria-label', t('ariaSet'));
+    if (container.dataset.hwxBrandingWired) return;
     container.dataset.hwxBrandingWired = '1';
     container.style.cursor = 'pointer';
     // The titlebar is a PWA drag region (core .app-titlebar sets
@@ -390,13 +471,11 @@
     // never opens (core does the same for its own titlebar buttons).
     container.style.setProperty('-webkit-app-region', 'no-drag');
     container.style.setProperty('app-region', 'no-drag');
-    container.title = 'Click to set a custom logo / favicon';
     // a11y: the core mark is aria-hidden with no keyboard role. Make our edit
     // affordance reachable by keyboard + screen readers once we own the click.
     container.removeAttribute('aria-hidden');
     if (!container.hasAttribute('role')) container.setAttribute('role', 'button');
     if (!container.hasAttribute('tabindex')) container.setAttribute('tabindex', '0');
-    container.setAttribute('aria-label', 'Set a custom logo or favicon');
     const open = (ev) => { ev.preventDefault(); ev.stopPropagation(); openPicker(container); };
     container.addEventListener('click', open);
     container.addEventListener('keydown', (ev) => {

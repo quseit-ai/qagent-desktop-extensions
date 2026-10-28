@@ -32,6 +32,56 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      pinTool: 'Pin tool',
+      unpinTool: 'Unpin tool',
+      pinnedTools: 'Pinned tools',
+      draftUsing: 'Draft a request using {0}',
+      unpin: 'Unpin',
+      draftWithServer: 'Use the {0} tool (on the {1} server) to: ',
+      draftNoServer: 'Use the {0} tool to: ',
+      drafted: 'Drafted a request for "{0}" — review and send',
+    },
+    zh: {
+      pinTool: '固定工具',
+      unpinTool: '取消固定工具',
+      pinnedTools: '已固定的工具',
+      draftUsing: '使用 {0} 起草请求',
+      unpin: '取消固定',
+      draftWithServer: '使用 {0} 工具（{1} 服务器）来：',
+      draftNoServer: '使用 {0} 工具来：',
+      drafted: '已起草针对“{0}”的请求 — 请检查后发送',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
   function toolKey(server, name) { return (server || 'unknown') + '::' + (name || ''); }
 
   function loadPins() {
@@ -83,8 +133,10 @@
   function draftPrompt(tool) {
     const input = $('msg');
     if (!input) return;
-    const server = tool.server ? ' (on the ' + tool.server + ' server)' : '';
-    const draft = 'Use the ' + (tool.name || 'tool') + ' tool' + server + ' to: ';
+    const name = tool.name || 'tool';
+    const draft = tool.server
+      ? tf('draftWithServer', name, tool.server)
+      : tf('draftNoServer', name);
     // switch to chat so the composer is visible
     if (typeof window.switchPanel === 'function') {
       try { window.switchPanel('chat'); } catch (_) {}
@@ -96,7 +148,7 @@
     try { input.selectionStart = input.selectionEnd = input.value.length; } catch (_) {}
     // let the composer enable its send button / autosize
     input.dispatchEvent(new Event('input', { bubbles: true }));
-    toast('Drafted a request for "' + (tool.name || 'tool') + '" — review and send');
+    toast(tf('drafted', name));
   }
 
   // ── the pinned-tools strip (top of the MCP Tools section) ────────────────
@@ -122,33 +174,35 @@
       const list = $('mcpToolList');
       section.insertBefore(strip, list);
     }
-    let html = '<div class="hwx-mcp-strip-title">\u2605 Pinned tools</div><div class="hwx-mcp-chips">';
-    pinned.forEach((t, i) => {
+    let html = '<div class="hwx-mcp-strip-title">\u2605 ' + escapeHtml(t('pinnedTools')) +
+      '</div><div class="hwx-mcp-chips">';
+    pinned.forEach((tool, i) => {
       html += '<span class="hwx-mcp-chip" data-i="' + i + '" role="button" tabindex="0" ' +
-        'title="Draft a request using ' + escapeHtml(t.name) + '">' +
-        '<span class="hwx-mcp-chip-name">' + escapeHtml(t.name) + '</span>' +
-        '<span class="hwx-mcp-chip-server">' + escapeHtml(t.server || '') + '</span>' +
-        '<button type="button" class="hwx-mcp-chip-x" data-i="' + i + '" aria-label="Unpin" title="Unpin">\u00d7</button>' +
+        'title="' + tf('draftUsing', escapeHtml(tool.name)) + '">' +
+        '<span class="hwx-mcp-chip-name">' + escapeHtml(tool.name) + '</span>' +
+        '<span class="hwx-mcp-chip-server">' + escapeHtml(tool.server || '') + '</span>' +
+        '<button type="button" class="hwx-mcp-chip-x" data-i="' + i + '" aria-label="' +
+        escapeHtml(t('unpin')) + '" title="' + escapeHtml(t('unpin')) + '">\u00d7</button>' +
         '</span>';
     });
     html += '</div>';
     strip.innerHTML = html;
     // wire chips
     strip.querySelectorAll('.hwx-mcp-chip').forEach((chip) => {
-      const t = pinned[parseInt(chip.dataset.i, 10)];
+      const tool = pinned[parseInt(chip.dataset.i, 10)];
       chip.addEventListener('click', (e) => {
         if (e.target.closest('.hwx-mcp-chip-x')) return;
-        draftPrompt(t);
+        draftPrompt(tool);
       });
       chip.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); draftPrompt(t); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); draftPrompt(tool); }
       });
     });
     strip.querySelectorAll('.hwx-mcp-chip-x').forEach((x) => {
-      const t = pinned[parseInt(x.dataset.i, 10)];
+      const tool = pinned[parseInt(x.dataset.i, 10)];
       x.addEventListener('click', (e) => {
         e.preventDefault(); e.stopPropagation();
-        togglePin(t.server, t.name);
+        togglePin(tool.server, tool.name);
       });
     });
   }
@@ -173,7 +227,7 @@
         head.appendChild(star);
       }
       star.classList.toggle('hwx-mcp-star--on', pinned);
-      star.title = pinned ? 'Unpin tool' : 'Pin tool';
+      star.title = t(pinned ? 'unpinTool' : 'pinTool');
       star.setAttribute('aria-label', star.title);
       star.setAttribute('aria-pressed', pinned ? 'true' : 'false');
       star.innerHTML = starSvg(pinned);
@@ -197,11 +251,11 @@
 
   // ── toast ─────────────────────────────────────────────────────────────────
   function toast(msg) {
-    const t = document.createElement('div');
-    t.className = 'hwx-mcp-toast'; t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.classList.add('hwx-mcp-toast--in'), 10);
-    setTimeout(() => { t.classList.remove('hwx-mcp-toast--in'); setTimeout(() => t.remove(), 250); }, 2400);
+    const el = document.createElement('div');
+    el.className = 'hwx-mcp-toast'; el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.classList.add('hwx-mcp-toast--in'), 10);
+    setTimeout(() => { el.classList.remove('hwx-mcp-toast--in'); setTimeout(() => el.remove(), 250); }, 2400);
   }
 
   // ── observe the MCP tool list re-rendering (pagination/search/panel open) ──

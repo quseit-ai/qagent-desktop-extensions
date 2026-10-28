@@ -3,7 +3,7 @@
     {
       "id": "custom-branding",
       "name": "Custom Branding",
-      "description": "White-label the Hermes WebUI chrome with your own logo and favicon.",
+      "description": "White-label the Hermes WebUI chrome with your own logo and favicon. 用自定义标志和网站图标替换 Hermes WebUI 的界面品牌标识。",
       "scripts": [
         "assets/custom-branding.js"
       ],

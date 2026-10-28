@@ -11,6 +11,13 @@ themes" by @Michaelyklam), which was declined for core on curation grounds —
 custom user themes are exactly the kind of opt-in, local personalization the
 extension system is for.
 
+## 中文说明
+
+- 在侧边栏添加一个按钮，打开主题创建器面板，可自定义背景、面板、文本、强调色、边框和消息气泡等颜色。
+- 支持上传背景图片，并提供“玻璃不透明度”和“模糊强度”滑块，实时预览毛玻璃效果。
+- 点击“实时预览”可即时查看效果，“停止预览”可恢复之前的皮肤。
+- 保存的自定义主题会出现在系统“设置 → 外观”的皮肤选择器中；所有数据仅保存在本地浏览器。
+
 ## What It Does
 
 - Adds a rail button that opens the Theme Creator panel.

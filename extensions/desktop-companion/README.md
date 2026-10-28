@@ -38,6 +38,15 @@ The bundled `assets/pets/` resources are consumed by the native desktop pet
 host through the sidecar/source project. They are not a browser overlay and do
 not mean Hermes WebUI core renders a pet inside the page.
 
+## 中文说明
+
+本扩展为 Hermes WebUI 提供可信的本地桌面伴侣桥接：它监听会话的关注状态，
+把轻量快照转发给本机回环 sidecar（`http://127.0.0.1:17787`），并在已认证的
+WebUI 浏览器会话中执行受信任的桌面宠物命令。它不会在网页内渲染宠物或覆盖层；
+单独的 WebUI 适配器只是浏览器桥接，桌面宠物需要 sidecar 与原生宿主程序。
+桌面宠物上显示的会话状态文案（如「Hermes 正在工作」「可以查看了」）会跟随
+WebUI 的中英文语言设置切换。
+
 ## Capabilities
 
 This entry declares only capabilities already available to extension entries:

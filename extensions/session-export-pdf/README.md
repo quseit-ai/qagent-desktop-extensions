@@ -6,6 +6,18 @@ dialog, with a print-styled layout) or **copy it as Markdown**. It adds an expor
 button to the app titlebar — or to the left rail on the redesigned banner-less
 homepage, where the titlebar is collapsed.
 
+## 中文说明
+
+本扩展为 Hermes WebUI 增加一个导出按钮（经典布局在标题栏，无横幅首页在左侧栏），
+仅在打开对话时显示。点击后可选择：
+
+- **导出为 PDF**：把已渲染的对话克隆到一个离屏打印容器，并用作用域限定的
+  `@media print` 样式调用浏览器打印对话框，因此保存的 PDF 只包含对话本身。
+- **复制为 Markdown**：把对话复制为 `# 标题` 加 `## 你` / `## 助手` 分节。
+
+全程在浏览器内完成，不需要后端、不内置 PDF 库、不访问网络。按钮提示、菜单、
+导出提示与导出文档中的角色文案都会跟随 WebUI 的中英文语言设置切换。
+
 ## What It Does
 
 - Adds an export button to the app titlebar (next to Reload) on classic builds,

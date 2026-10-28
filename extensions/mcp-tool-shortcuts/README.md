@@ -5,6 +5,15 @@ frequently-used MCP tools** and get a one-click strip that **drafts a
 ready-to-send natural-language tool request into the composer**. It **never
 auto-executes** a tool — it only inserts a prompt you review and send.
 
+## 中文说明
+
+本扩展让你在「设置 → MCP 工具」中固定常用工具：每个工具行都有固定按钮，
+已固定的工具会出现在该区域顶部的「★ 已固定的工具」快捷条中。点击快捷条
+会在输入框中起草一段自然语言请求（绝不自动执行工具），切换到聊天后即可
+检查并发送。固定记录保存在浏览器本地，并会与当前配置文件的实时工具列表
+进行校验。界面文案（包括起草的请求语）会跟随 WebUI 的语言设置，简体中文
+环境下自动显示中文。
+
 ## What It Does
 
 - In **Settings → MCP Tools**, each tool row gets a **pin star**.

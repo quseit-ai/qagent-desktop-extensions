@@ -4,6 +4,14 @@ Model Favorites is a trusted local Hermes WebUI extension that lets you star the
 models you use most in the composer model picker. Favorited models are promoted
 to a **★ Favorites** group at the top of the dropdown for one-click switching.
 
+## 中文说明
+
+本扩展让你在输入框的模型选择器中收藏常用模型：每个模型行都有关注（星标）
+按钮，收藏的模型会提升到下拉列表顶部的「★ 收藏」分组，点击即可切换。
+同一个模型 ID 在不同提供商下视为不同的收藏项；收藏保存在浏览器本地
+（`localStorage`，键：`hermes-ext-model-favorites`）。界面文案会跟随
+WebUI 的语言设置，简体中文环境下自动显示中文。
+
 ## What It Does
 
 - Adds a star toggle to each model row in the composer model picker (visible on

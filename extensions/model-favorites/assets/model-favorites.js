@@ -31,6 +31,39 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      addFav: 'Add to favorites',
+      removeFav: 'Remove from favorites',
+      favoritesLabel: 'Favorites',
+    },
+    zh: {
+      addFav: '加入收藏',
+      removeFav: '从收藏中移除',
+      favoritesLabel: '收藏',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
   // ── persistence ──────────────────────────────────────────────────────────
   function loadFavs() {
     try {
@@ -107,7 +140,7 @@
     btn.type = 'button';
     btn.className = 'hwx-fav-star' + (fav ? ' hwx-fav-star--on' : '');
     btn.dataset[STAR_FLAG] = '1';
-    btn.title = fav ? 'Remove from favorites' : 'Add to favorites';
+    btn.title = t(fav ? 'removeFav' : 'addFav');
     btn.setAttribute('aria-label', btn.title);
     btn.setAttribute('aria-pressed', fav ? 'true' : 'false');
     btn.innerHTML = starSvg(fav);
@@ -132,7 +165,7 @@
 
     const heading = document.createElement('div');
     heading.className = 'model-group hwx-fav-heading';
-    heading.textContent = '\u2605 Favorites';
+    heading.textContent = '\u2605 ' + t('favoritesLabel');
     wrap.appendChild(heading);
 
     const body = document.createElement('div');
@@ -207,7 +240,7 @@
           // mutations that can feed an observer loop. (Codex gate, PR #23.)
           star.classList.toggle('hwx-fav-star--on', fav);
           star.setAttribute('aria-pressed', fav ? 'true' : 'false');
-          star.title = fav ? 'Remove from favorites' : 'Add to favorites';
+          star.title = t(fav ? 'removeFav' : 'addFav');
           star.innerHTML = starSvg(fav);
         }
       }

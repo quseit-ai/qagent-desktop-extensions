@@ -5,6 +5,573 @@
 // active chat so token usage flows through normal chat accounting.
 
 (function () {
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang'. Extension bundles can't register into core's dictionary,
+  // so keep a small local table and follow the page language. Read live (no
+  // cache) so a locale switch is picked up on the next render without reload.
+  const RSS_I18N = (() => {
+    const STR = {
+      en: {
+        // shared
+        cancel: 'Cancel',
+        save: 'Save',
+        delete: 'Delete',
+        add: 'Add',
+        close: 'Close',
+        loading: 'Loading…',
+        all: 'All',
+        menu: 'Menu',
+        dismiss: 'Dismiss',
+        off: 'Off',
+        show: 'Show',
+        filter: 'Filter',
+        done: 'Done',
+        select: 'Select',
+        test: 'Test',
+        showFeeds: 'Show feeds',
+        // units / relative time
+        uSec: 's',
+        uMin: 'm',
+        uHour: 'h',
+        uDay: 'd',
+        agoSuffix: '{0} ago',
+        nextWithin: 'Next: within {0}',
+        agoAndNext: '{0} ago · {1}',
+        agoCountdown: '{0} ago · {1}',
+        // card actions
+        summarizeArticle: 'Summarize this article',
+        summarizeTitle: 'Summarize (free/local)',
+        shareArticleAria: 'Share this article',
+        shareArticleLink: 'Share article link',
+        articleActions: 'Article actions',
+        actionsTitle: 'Actions — summarize or share',
+        // statuses
+        statusNever: 'never fetched',
+        statusOk: 'ok',
+        // sidebar toolbar
+        failedLoadFeeds: 'Failed to load feeds: {0}',
+        kwCountOne: '{0} keyword',
+        kwCountMany: '{0} keywords',
+        editKeywords: 'Edit keywords',
+        autoLabel: 'Auto: {0}',
+        autoOffLabel: 'Auto: Off',
+        searchPlaceholder: 'Search articles…',
+        searchAllFeeds: 'Search all feeds',
+        clear: 'Clear',
+        clearSearch: 'Clear search text',
+        filterByKeywords: 'Filter by saved keywords',
+        filterOn: 'Filter ON',
+        filterOff: 'Filter OFF',
+        editKeywordsList: 'Edit keywords list',
+        autoRefreshInterval: 'Auto-refresh interval',
+        showHideRead: 'Show/hide read entries',
+        hideRead: 'Hide read',
+        showRead: 'Show read',
+        autoRefreshCountdown: 'Auto-refresh countdown',
+        refreshingEllipsis: 'Refreshing…',
+        // sidebar nav
+        jumpToFeed: 'Jump to feed',
+        navAllFeeds: 'All feeds ({0})',
+        navClicked: 'Clicked ({0})',
+        navSummaries: 'Summaries ({0})',
+        navAllCategory: 'All {0} ({1})',
+        allFeeds: 'All feeds',
+        clickedArticlesOne: '{0} clicked article',
+        clickedArticlesMany: '{0} clicked articles',
+        clicked: '★ Clicked',
+        summaryCountOne: '{0} summary',
+        summaryCountMany: '{0} summaries',
+        summaryJobsRunning: '{0} summary job(s) running',
+        summaries: '🧠 Summaries',
+        editFeed: 'Edit feed',
+        editFeedNamed: 'Edit {0}',
+        deleteFeed: 'Delete feed',
+        deleteFeedNamed: 'Delete {0}',
+        showArticlesMentioning: 'Show all articles mentioning “{0}”',
+        searchTitle: 'Search: “{0}”{1}',
+        inNamed: ' in {0}',
+        markAllIn: 'Mark all in {0}',
+        // empty states / grouped views
+        noEntries: 'No entries.',
+        noEntriesFiltered: 'Filter is ON and matches nothing. Toggle Filter OFF in the sidebar, or edit your keywords.',
+        noEntriesRefresh: 'Click <em>Refresh all</em> in the panel header (~10s for 42 feeds).',
+        sourcesEntries: '{0} sources · {1} entries',
+        entryCount: '{0} entries',
+        filteredSuffix: ' (filtered)',
+        expandAll: 'Expand all',
+        expand: 'Expand',
+        collapseAll: 'Collapse all',
+        collapse: 'Collapse',
+        filterPillOn: 'Keyword filter ON — tap to turn off',
+        filterPillOff: 'Keyword filter OFF — tap to turn on',
+        readHidden: ' · {0} read hidden',
+        // rotating all-feeds headings
+        ww1: 'All feeds — what fresh chaos is this?',
+        ww2: 'The news, now with extra plot twists',
+        ww3: 'Breaking: everything, all at once',
+        ww4: 'Reality\'s latest patch notes',
+        ww5: 'Today in Humanity: bold choices, mixed results',
+        ww6: 'Global headlines — buckle up',
+        ww7: 'The world, lightly on fire as usual',
+        ww8: 'Hot takes, cold facts, lukewarm governments',
+        ww9: 'Democracy: still buffering…',
+        ww10: 'Today\'s forecast: chaos, chance of memes',
+        ww11: 'What could possibly go wrong? (a list)',
+        ww12: 'The planet\'s group chat is popping off',
+        ww13: 'Spoiler: it’s complicated',
+        ww14: 'Doomscroll responsibly',
+        ww15: 'Politicians said things. Again.',
+        // feed view
+        feedNumber: 'Feed #{0}',
+        noEntriesForFeed: 'No entries for this feed.',
+        lastFetchFailed: 'Last fetch failed: <code>{0}</code> &mdash; {1}',
+        tryRefresh: 'Try <em>Refresh all</em>.',
+        // selection / pagination
+        deleting: 'Deleting…',
+        selectedCount: '{0} selected',
+        deleteSelected: '🗑 Delete selected',
+        prevPage: '‹ Prev',
+        nextPage: 'Next ›',
+        // clicked view
+        clickedHistoryTitle: 'Clicked Articles & Artifacts',
+        clickedSearchTitle: 'Clicked: “{0}”',
+        couldntLoadRead: 'Couldn\'t load read history.',
+        noClickedMatch: 'No clicked articles match “{0}”.',
+        noReadYet: 'No read articles yet.',
+        noReadYetHint: 'Open an article title and it\'ll be saved here.',
+        readKeeping: '{0} read · keeping last {1}',
+        openNamed: 'Open {0}',
+        readLabel: 'Read',
+        // settings popup
+        summaryModel: 'Summary model',
+        saveTest: 'Save &amp; test',
+        backend: 'Backend',
+        checkingEllipsis: 'checking…',
+        editLocalModel: 'Edit local model ▸',
+        hideLocalModel: 'Hide local model ▾',
+        ollamaModel: 'Ollama model',
+        ollamaPort: 'Ollama port',
+        rssSettings: 'RSS settings',
+        entriesPerPage: 'Entries per page',
+        keepReadHistory: 'Keep read history',
+        all500: 'All (500)',
+        backendAuto: 'Auto (local → cloud)',
+        backendLocal: 'Local (ollama)',
+        backendOpenRouter: 'OpenRouter free',
+        backendGemini: 'Gemini free',
+        notInstalled: ' (not installed)',
+        ollamaUp: 'ollama up',
+        ollamaNotReachable: 'ollama not reachable on :{0}',
+        modelNotInstalledOllama: ' · <span class="bad">model not installed on ollama</span>',
+        modelInstalled: ' · model installed',
+        apiKeyOk: '{0} API key ✓',
+        apiKeyMissing: '{0} API key ✗ missing',
+        noBackend: 'no backend available (ollama down, no API keys)',
+        nowArrow: 'now → {0}',
+        chainLine: 'chain: local ({0}) → OpenRouter → Gemini',
+        testingSaves: 'Testing… (saves this config first)',
+        testWorks: '✓ works — used {0}',
+        testFailedPrefix: '✗ {0}',
+        failedWord: 'failed',
+        unknownWord: 'unknown',
+        testUnavailable: 'test result unavailable',
+        testTimedOut: 'test timed out',
+        validationTimedOut: 'validation timed out',
+        unreachable: 'unreachable',
+        filterToggleFailed: 'Filter toggle failed: {0}',
+        // auto-fetch modal
+        autoFetchInterval: 'Auto-fetch interval',
+        every15: 'Every 15 minutes',
+        every30: 'Every 30 minutes',
+        everyHour: 'Every hour',
+        every3h: 'Every 3 hours',
+        every6h: 'Every 6 hours',
+        every12h: 'Every 12 hours',
+        every24h: 'Every 24 hours',
+        autoFetchHint: 'The server refreshes all enabled feeds in the background at this interval. Works while this browser tab is closed. The "Refresh all" button still works on-demand independent of this setting. Set to <strong>Off</strong> to disable.',
+        saveFailed: 'Save failed: {0}',
+        // keyword editor
+        filterKeywords: 'Filter keywords',
+        keywordsHint: 'Keep entries whose title or summary matches <strong>any</strong> keyword (case-insensitive). Paste a comma-separated list to add many at once.',
+        currentKeywords: 'Current keywords',
+        addKeyword: 'Add keyword',
+        keywordsPlaceholder: 'politics, iran, crypto, …',
+        noKeywordsYet: 'No keywords yet — filter is OFF by default.',
+        removeNamed: 'Remove {0}',
+        alreadyInList: 'Already in list: {0}',
+        addedSkippedOne: 'Added {0}, skipped {1} duplicate: {2}',
+        addedSkippedMany: 'Added {0}, skipped {1} duplicates: {2}',
+        // feed form
+        name: 'Name',
+        namePlaceholder: 'e.g. BBC News',
+        urlLabel: 'URL',
+        category: 'Category',
+        addNewCategory: '+ Add new category…',
+        newCategoryPlaceholder: 'New category name (e.g. 💻 Tech & AI)',
+        newCategoryAria: 'New category name',
+        enabled: 'Enabled',
+        addFeed: 'Add feed',
+        pickCategory: 'Pick a category, or type a name after choosing "+ Add new category…".',
+        nameUrlRequired: 'Name and URL are required.',
+        feedOkOne: '✓ Feed OK — {0} entry fetched',
+        feedOkMany: '✓ Feed OK — {0} entries fetched',
+        validatingFeed: 'Validating feed…',
+        feedCheckFailed: 'Feed check failed: {0}',
+        editFeedTitle: 'Edit feed',
+        deleteFeedQuestion: 'Delete feed?',
+        deleteFeedMessage: 'Delete "{0}" and all {1} stored entries? This cannot be undone.',
+        deleteFailed: 'Delete failed: {0}',
+        // refresh
+        refreshFeedsMsg: 'Refreshing feeds…',
+        refreshingFeeds: 'Refreshing {0}/{1} feeds…',
+        refreshSummary: '{0}/{1} feeds · {2} new',
+        refreshFailedSuffix: ' · {0} failed',
+        refreshStatusUnavailable: 'Refresh status unavailable',
+        refreshTimedOut: 'Refresh timed out',
+        refreshFailed: 'Refresh failed: {0}',
+        failNoEntries: 'no entries / malformed feed',
+        failNotFound: 'feed not found',
+        failError: 'error',
+        feedFallback: 'feed',
+        failedFeedsTitle: 'Show failed feeds',
+        failedFeedsOne: '⚠ {0} feed failed to refresh',
+        failedFeedsMany: '⚠ {0} feeds failed to refresh',
+        // summaries
+        summarizingNamed: 'Summarizing “{0}” — find it in 🧠 Summaries',
+        summarizeFailed: 'Summarize failed: {0}',
+        summaryReady: 'Summary ready — in 🧠 Summaries',
+        sourceLabel: 'Source: {0}',
+        sourcesLabel: 'Sources:',
+        articleFallback: 'article',
+        summariesTitle: 'Summaries',
+        summariesSearchTitle: 'Summaries: “{0}”',
+        noSummariesMatch: 'No summaries match “{0}”.',
+        noSummariesYet: 'No summaries yet.',
+        noSummariesHint: 'Open the ⋯ menu on any article (or the header Summarize) and pick ✦ — the digest runs on the local model and lands here.',
+        runningSuffix: ' · {0} running',
+        itemsCount: '{0} items · ',
+        loadingEllipsis: 'Loading…',
+        summaryFailed: 'Summary failed: {0}',
+        summarizingEllipsis: 'Summarizing…',
+        noSummary: 'No summary.',
+        deleteSummary: 'Delete summary',
+        deleteBtn: '🗑 Delete',
+        rerunTitle: 'Re-run this summary (replaces it)',
+        rerun: '↻ Rerun',
+        copyTitle: 'Copy summary text',
+        copy: '⧉ Copy',
+        copied: '✓ Copied',
+        copyFailedShort: '✗ Failed',
+        rerunning: '↻ Rerunning…',
+        rerunningToast: 'Re-running summary…',
+        rerunFailed: 'Rerun failed: {0}',
+        articleFallbackCap: 'Article',
+        // share / summarize popup
+        shareArticleTitle: 'Share article',
+        linkCopied: '✓ Link copied',
+        copyFailedSelect: 'Copy failed — select & ⌘C',
+        copyLink: 'Copy link',
+        email: 'Email',
+        selectAtLeastOne: 'Select at least one feed to summarize.',
+        noFeedsToSummarize: 'No feeds to summarize.',
+        summarizeFeeds: 'Summarize feeds',
+        filterOnNote: 'Filter ON — only entries matching your keywords will be summarized.',
+        summarizeSelected: 'Summarize selected',
+      },
+      zh: {
+        // shared
+        cancel: '取消',
+        save: '保存',
+        delete: '删除',
+        add: '添加',
+        close: '关闭',
+        loading: '加载中…',
+        all: '全部',
+        menu: '菜单',
+        dismiss: '忽略',
+        off: '关闭',
+        show: '显示',
+        filter: '过滤',
+        done: '完成',
+        select: '选择',
+        test: '测试',
+        showFeeds: '显示的订阅源',
+        // units / relative time
+        uSec: '秒',
+        uMin: '分',
+        uHour: '小时',
+        uDay: '天',
+        agoSuffix: '{0}前',
+        nextWithin: '下次：{0}内',
+        agoAndNext: '{0}前 · {1}',
+        agoCountdown: '{0}前 · {1}',
+        // card actions
+        summarizeArticle: '总结本文',
+        summarizeTitle: '总结（免费/本地）',
+        shareArticleAria: '分享本文',
+        shareArticleLink: '分享文章链接',
+        articleActions: '文章操作',
+        actionsTitle: '操作 — 总结或分享',
+        // statuses
+        statusNever: '从未抓取',
+        statusOk: '正常',
+        // sidebar toolbar
+        failedLoadFeeds: '加载订阅源失败：{0}',
+        kwCountOne: '{0} 个关键词',
+        kwCountMany: '{0} 个关键词',
+        editKeywords: '编辑关键词',
+        autoLabel: '自动：{0}',
+        autoOffLabel: '自动：关闭',
+        searchPlaceholder: '搜索文章…',
+        searchAllFeeds: '搜索所有订阅源',
+        clear: '清除',
+        clearSearch: '清除搜索内容',
+        filterByKeywords: '按已保存的关键词过滤',
+        filterOn: '过滤开',
+        filterOff: '过滤关',
+        editKeywordsList: '编辑关键词列表',
+        autoRefreshInterval: '自动刷新间隔',
+        showHideRead: '显示/隐藏已读条目',
+        hideRead: '隐藏已读',
+        showRead: '显示已读',
+        autoRefreshCountdown: '自动刷新倒计时',
+        refreshingEllipsis: '正在刷新…',
+        // sidebar nav
+        jumpToFeed: '跳转到订阅源',
+        navAllFeeds: '全部订阅源（{0}）',
+        navClicked: '已点击（{0}）',
+        navSummaries: '摘要（{0}）',
+        navAllCategory: '全部 {0}（{1}）',
+        allFeeds: '全部订阅源',
+        clickedArticlesOne: '{0} 篇已点击文章',
+        clickedArticlesMany: '{0} 篇已点击文章',
+        clicked: '★ 已点击',
+        summaryCountOne: '{0} 篇摘要',
+        summaryCountMany: '{0} 篇摘要',
+        summaryJobsRunning: '{0} 个摘要任务正在运行',
+        summaries: '🧠 摘要',
+        editFeed: '编辑订阅源',
+        editFeedNamed: '编辑 {0}',
+        deleteFeed: '删除订阅源',
+        deleteFeedNamed: '删除 {0}',
+        showArticlesMentioning: '显示所有提到“{0}”的文章',
+        searchTitle: '搜索：“{0}”{1}',
+        inNamed: '（{0}）',
+        markAllIn: '标记 {0} 中的全部',
+        // empty states / grouped views
+        noEntries: '没有条目。',
+        noEntriesFiltered: '过滤已开启但没有匹配项。请在侧边栏关闭过滤，或编辑关键词。',
+        noEntriesRefresh: '点击面板顶部的<em>全部刷新</em>（42 个订阅源约需 10 秒）。',
+        sourcesEntries: '{0} 个来源 · {1} 个条目',
+        entryCount: '{0} 个条目',
+        filteredSuffix: '（已过滤）',
+        expandAll: '全部展开',
+        expand: '展开',
+        collapseAll: '全部收起',
+        collapse: '收起',
+        filterPillOn: '关键词过滤已开启 — 点击关闭',
+        filterPillOff: '关键词过滤已关闭 — 点击开启',
+        readHidden: ' · 已隐藏 {0} 篇已读',
+        // rotating all-feeds headings
+        ww1: '全部订阅源 — 这又是什么新乱子？',
+        ww2: '新闻，附赠更多剧情反转',
+        ww3: '突发：所有事情同时发生',
+        ww4: '现实世界最新补丁说明',
+        ww5: '今日人类：大胆选择，结果参差',
+        ww6: '全球头条 — 系好安全带',
+        ww7: '世界一如既往地微微着火',
+        ww8: '热门观点、冰冷事实、不温不火的政府',
+        ww9: '民主：仍在缓冲…',
+        ww10: '今日预报：混乱，可能有梗',
+        ww11: '还能出什么岔子？（清单）',
+        ww12: '地球的群聊炸开了锅',
+        ww13: '剧透：很复杂',
+        ww14: '请负责任地刷末日新闻',
+        ww15: '政客又发言了。',
+        // feed view
+        feedNumber: '订阅源 #{0}',
+        noEntriesForFeed: '该订阅源没有条目。',
+        lastFetchFailed: '上次抓取失败：<code>{0}</code> &mdash; {1}',
+        tryRefresh: '试试<em>全部刷新</em>。',
+        // selection / pagination
+        deleting: '正在删除…',
+        selectedCount: '已选择 {0} 项',
+        deleteSelected: '🗑 删除所选',
+        prevPage: '‹ 上一页',
+        nextPage: '下一页 ›',
+        // clicked view
+        clickedHistoryTitle: '已点击的文章与内容',
+        clickedSearchTitle: '已点击：“{0}”',
+        couldntLoadRead: '无法加载阅读历史。',
+        noClickedMatch: '没有匹配“{0}”的已点击文章。',
+        noReadYet: '还没有已读文章。',
+        noReadYetHint: '打开一篇文章标题后，它会保存到这里。',
+        readKeeping: '已读 {0} 篇 · 保留最近 {1} 篇',
+        openNamed: '打开 {0}',
+        readLabel: '已读',
+        // settings popup
+        summaryModel: '摘要模型',
+        saveTest: '保存并测试',
+        backend: '后端',
+        checkingEllipsis: '检查中…',
+        editLocalModel: '编辑本地模型 ▸',
+        hideLocalModel: '隐藏本地模型 ▾',
+        ollamaModel: 'Ollama 模型',
+        ollamaPort: 'Ollama 端口',
+        rssSettings: 'RSS 设置',
+        entriesPerPage: '每页条目数',
+        keepReadHistory: '保留阅读历史',
+        all500: '全部（500）',
+        backendAuto: '自动（本地 → 云端）',
+        backendLocal: '本地（ollama）',
+        backendOpenRouter: 'OpenRouter 免费',
+        backendGemini: 'Gemini 免费',
+        notInstalled: '（未安装）',
+        ollamaUp: 'ollama 在线',
+        ollamaNotReachable: '无法连接 :{0} 上的 ollama',
+        modelNotInstalledOllama: ' · <span class="bad">ollama 上未安装该模型</span>',
+        modelInstalled: ' · 模型已安装',
+        apiKeyOk: '{0} API 密钥 ✓',
+        apiKeyMissing: '{0} API 密钥 ✗ 缺失',
+        noBackend: '没有可用的后端（ollama 离线，且无 API 密钥）',
+        nowArrow: '当前 → {0}',
+        chainLine: '链路：本地（{0}）→ OpenRouter → Gemini',
+        testingSaves: '测试中…（会先保存此配置）',
+        testWorks: '✓ 可用 — 使用了 {0}',
+        testFailedPrefix: '✗ {0}',
+        failedWord: '失败',
+        unknownWord: '未知',
+        testUnavailable: '测试结果不可用',
+        testTimedOut: '测试超时',
+        validationTimedOut: '验证超时',
+        unreachable: '无法访问',
+        filterToggleFailed: '切换过滤失败：{0}',
+        // auto-fetch modal
+        autoFetchInterval: '自动抓取间隔',
+        every15: '每 15 分钟',
+        every30: '每 30 分钟',
+        everyHour: '每小时',
+        every3h: '每 3 小时',
+        every6h: '每 6 小时',
+        every12h: '每 12 小时',
+        every24h: '每 24 小时',
+        autoFetchHint: '服务器会按此间隔在后台刷新所有已启用的订阅源；即使关闭此浏览器标签页也会继续。“全部刷新”按钮仍可随时手动刷新，不受此设置影响。设为<strong>关闭</strong>即可禁用。',
+        saveFailed: '保存失败：{0}',
+        // keyword editor
+        filterKeywords: '过滤关键词',
+        keywordsHint: '仅保留标题或摘要匹配<strong>任意</strong>关键词的条目（不区分大小写）。可粘贴逗号分隔的列表一次添加多个。',
+        currentKeywords: '当前关键词',
+        addKeyword: '添加关键词',
+        keywordsPlaceholder: 'politics, iran, crypto, …',
+        noKeywordsYet: '还没有关键词 — 过滤默认关闭。',
+        removeNamed: '移除 {0}',
+        alreadyInList: '已在列表中：{0}',
+        addedSkippedOne: '已添加 {0} 个，跳过 {1} 个重复：{2}',
+        addedSkippedMany: '已添加 {0} 个，跳过 {1} 个重复：{2}',
+        // feed form
+        name: '名称',
+        namePlaceholder: '例如 BBC News',
+        urlLabel: 'URL',
+        category: '分类',
+        addNewCategory: '+ 添加新分类…',
+        newCategoryPlaceholder: '新分类名称（例如 💻 科技与 AI）',
+        newCategoryAria: '新分类名称',
+        enabled: '已启用',
+        addFeed: '添加订阅源',
+        pickCategory: '请选择一个分类，或选择“+ 添加新分类…”后输入名称。',
+        nameUrlRequired: '名称和 URL 为必填项。',
+        feedOkOne: '✓ 订阅源正常 — 已抓取 {0} 个条目',
+        feedOkMany: '✓ 订阅源正常 — 已抓取 {0} 个条目',
+        validatingFeed: '正在验证订阅源…',
+        feedCheckFailed: '订阅源检查失败：{0}',
+        editFeedTitle: '编辑订阅源',
+        deleteFeedQuestion: '删除订阅源？',
+        deleteFeedMessage: '删除“{0}”及其全部 {1} 个已存条目？此操作无法撤销。',
+        deleteFailed: '删除失败：{0}',
+        // refresh
+        refreshFeedsMsg: '正在刷新订阅源…',
+        refreshingFeeds: '正在刷新 {0}/{1} 个订阅源…',
+        refreshSummary: '{0}/{1} 个订阅源 · 新增 {2} 条',
+        refreshFailedSuffix: ' · {0} 个失败',
+        refreshStatusUnavailable: '无法获取刷新状态',
+        refreshTimedOut: '刷新超时',
+        refreshFailed: '刷新失败：{0}',
+        failNoEntries: '没有条目 / 订阅源格式错误',
+        failNotFound: '未找到订阅源',
+        failError: '错误',
+        feedFallback: '订阅源',
+        failedFeedsTitle: '显示失败的订阅源',
+        failedFeedsOne: '⚠ {0} 个订阅源刷新失败',
+        failedFeedsMany: '⚠ {0} 个订阅源刷新失败',
+        // summaries
+        summarizingNamed: '正在总结“{0}” — 可在 🧠 摘要中找到',
+        summarizeFailed: '总结失败：{0}',
+        summaryReady: '摘要已就绪 — 位于 🧠 摘要',
+        sourceLabel: '来源：{0}',
+        sourcesLabel: '来源：',
+        articleFallback: '文章',
+        summariesTitle: '摘要',
+        summariesSearchTitle: '摘要：“{0}”',
+        noSummariesMatch: '没有匹配“{0}”的摘要。',
+        noSummariesYet: '还没有摘要。',
+        noSummariesHint: '打开任意文章的 ⋯ 菜单（或顶部的“总结”）并选择 ✦ — 摘要会在本地模型上运行并显示在这里。',
+        runningSuffix: ' · {0} 个运行中',
+        itemsCount: '{0} 项 · ',
+        loadingEllipsis: '加载中…',
+        summaryFailed: '摘要失败：{0}',
+        summarizingEllipsis: '正在总结…',
+        noSummary: '暂无摘要。',
+        deleteSummary: '删除摘要',
+        deleteBtn: '🗑 删除',
+        rerunTitle: '重新运行此摘要（会替换原摘要）',
+        rerun: '↻ 重新运行',
+        copyTitle: '复制摘要文本',
+        copy: '⧉ 复制',
+        copied: '✓ 已复制',
+        copyFailedShort: '✗ 失败',
+        rerunning: '↻ 正在重新运行…',
+        rerunningToast: '正在重新运行摘要…',
+        rerunFailed: '重新运行失败：{0}',
+        articleFallbackCap: '文章',
+        // share / summarize popup
+        shareArticleTitle: '分享文章',
+        linkCopied: '✓ 链接已复制',
+        copyFailedSelect: '复制失败 — 请选择后按 ⌘C',
+        copyLink: '复制链接',
+        email: '邮件',
+        selectAtLeastOne: '请至少选择一个订阅源进行总结。',
+        noFeedsToSummarize: '没有可总结的订阅源。',
+        summarizeFeeds: '总结订阅源',
+        filterOnNote: '过滤已开启 — 只会总结匹配关键词的条目。',
+        summarizeSelected: '总结所选',
+      },
+    };
+
+    function isZh() {
+      let v = '';
+      try { v = String(document.documentElement.lang || ''); } catch (_) {}
+      if (!/^zh/i.test(v)) {
+        try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+      }
+      return /^zh/i.test(v);
+    }
+
+    function t(key) {
+      const table = isZh() ? STR.zh : STR.en;
+      return (table && table[key]) || STR.en[key] || key;
+    }
+
+    // {0}, {1}, … substitution for messages carrying runtime values.
+    function tf(key, ...args) {
+      let out = t(key);
+      args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+      return out;
+    }
+
+    return { t, tf };
+  })();
+
   let _feeds = [];
   let _settings = { keywords: [], filter_enabled: false };
   let _activeFeedId = null;
@@ -39,25 +606,12 @@
 
   // rotating header for the all-feeds view — a short, dryly
   // funny line instead of a static "All feeds". Picked fresh on each render.
-  const _WORLDWIDE_TITLES = [
-    'All feeds — what fresh chaos is this?',
-    'The news, now with extra plot twists',
-    'Breaking: everything, all at once',
-    "Reality's latest patch notes",
-    'Today in Humanity: bold choices, mixed results',
-    'Global headlines — buckle up',
-    'The world, lightly on fire as usual',
-    'Hot takes, cold facts, lukewarm governments',
-    'Democracy: still buffering…',
-    "Today's forecast: chaos, chance of memes",
-    "What could possibly go wrong? (a list)",
-    "The planet's group chat is popping off",
-    'Spoiler: it’s complicated',
-    'Doomscroll responsibly',
-    'Politicians said things. Again.',
+  const _WORLDWIDE_TITLE_KEYS = [
+    'ww1', 'ww2', 'ww3', 'ww4', 'ww5', 'ww6', 'ww7', 'ww8',
+    'ww9', 'ww10', 'ww11', 'ww12', 'ww13', 'ww14', 'ww15',
   ];
   function _worldWideTitle() {
-    return _WORLDWIDE_TITLES[Math.floor(Math.random() * _WORLDWIDE_TITLES.length)];
+    return RSS_I18N.t(_WORLDWIDE_TITLE_KEYS[Math.floor(Math.random() * _WORLDWIDE_TITLE_KEYS.length)]);
   }
 
   function _loadReadIds() {
@@ -164,14 +718,14 @@
       `<div class="mc-feed-act-row">` +
         `<button type="button" class="mc-feed-entry-summarize-btn mc-feed-act-item" ` +
           `onclick="event.stopPropagation(); mcMarkEntryRead(${e.id}); mcSummarizeEntry(${e.id}); mcCloseEntryActions();" ` +
-          `aria-label="Summarize this article" title="Summarize (free/local)">✦</button>` +
+          `aria-label="${RSS_I18N.t('summarizeArticle')}" title="${RSS_I18N.t('summarizeTitle')}">✦</button>` +
         `<button type="button" class="mc-feed-entry-summarize-btn mc-feed-act-item" ` +
           `onclick="event.stopPropagation(); mcShareEntry(${e.id});" ` +
-          `aria-label="Share this article" title="Share article link">⤴</button>` +
+          `aria-label="${RSS_I18N.t('shareArticleAria')}" title="${RSS_I18N.t('shareArticleLink')}">⤴</button>` +
       `</div>` +
       `<button type="button" class="mc-feed-entry-summarize-btn mc-feed-act-toggle" ` +
         `onclick="event.stopPropagation(); mcToggleEntryActions(${e.id});" ` +
-        `aria-label="Article actions" aria-haspopup="true" title="Actions — summarize or share">⋯</button>` +
+        `aria-label="${RSS_I18N.t('articleActions')}" aria-haspopup="true" title="${RSS_I18N.t('actionsTitle')}">⋯</button>` +
     `</div>`;
   }
 
@@ -191,15 +745,15 @@
   function fmtAgo(ts) {
     if (!ts) return '—';
     const sec = Math.max(0, Math.floor(Date.now() / 1000 - ts));
-    if (sec < 60) return sec + 's';
-    if (sec < 3600) return Math.floor(sec / 60) + 'm';
-    if (sec < 86400) return Math.floor(sec / 3600) + 'h';
-    if (sec < 86400 * 7) return Math.floor(sec / 86400) + 'd';
+    if (sec < 60) return sec + RSS_I18N.t('uSec');
+    if (sec < 3600) return Math.floor(sec / 60) + RSS_I18N.t('uMin');
+    if (sec < 86400) return Math.floor(sec / 3600) + RSS_I18N.t('uHour');
+    if (sec < 86400 * 7) return Math.floor(sec / 86400) + RSS_I18N.t('uDay');
     return new Date(ts * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
   function _statusGlyph(feed) {
-    if (!feed.last_status) return { cls: 'never', label: 'never fetched' };
-    if (feed.last_status === 'ok' || feed.last_status === 'ok_with_warnings') return { cls: 'ok', label: 'ok' };
+    if (!feed.last_status) return { cls: 'never', label: RSS_I18N.t('statusNever') };
+    if (feed.last_status === 'ok' || feed.last_status === 'ok_with_warnings') return { cls: 'ok', label: RSS_I18N.t('statusOk') };
     return { cls: 'err', label: feed.last_status };
   }
 
@@ -214,7 +768,7 @@
       <div class="mc-feed-modal">
         <header class="mc-feed-modal-head">
           <span>${esc(title)}</span>
-          <button type="button" class="mc-feed-modal-close" onclick="mcFeedsCloseModal()" aria-label="Close">×</button>
+          <button type="button" class="mc-feed-modal-close" onclick="mcFeedsCloseModal()" aria-label="${RSS_I18N.t('close')}">×</button>
         </header>
         <div class="mc-feed-modal-body">${contentHTML}</div>
       </div>`;
@@ -263,7 +817,7 @@
       _feeds = Array.isArray(data.feeds) ? data.feeds : [];
       if (data.settings) _settings = data.settings;
     } catch (e) {
-      if (sidebar) sidebar.innerHTML = `<div class="mc-feeds-error">Failed to load feeds: ${esc(e.message)}</div>`;
+      if (sidebar) sidebar.innerHTML = `<div class="mc-feeds-error">${RSS_I18N.tf('failedLoadFeeds', esc(e.message))}</div>`;
       return;
     }
     await _loadSummaryMeta();
@@ -290,13 +844,13 @@
   function _renderSidebarToolbar(sidebar) {
     const totalEntries = _feeds.reduce((s, f) => s + (f.entry_count || 0), 0);
     const kwLabel = _settings.keywords.length
-      ? `${_settings.keywords.length} keyword${_settings.keywords.length === 1 ? '' : 's'}`
-      : 'Edit keywords';
+      ? RSS_I18N.tf(_settings.keywords.length === 1 ? 'kwCountOne' : 'kwCountMany', _settings.keywords.length)
+      : RSS_I18N.t('editKeywords');
     const filterPressed = _settings.filter_enabled ? 'is-active' : '';
 
     // auto-fetch label + status (e.g. "Auto: 30m" / "Auto: Off")
     const afm = Number(_settings.auto_fetch_minutes || 0);
-    const autoLabel = afm > 0 ? `Auto: ${_fmtMinutes(afm)}` : 'Auto: Off';
+    const autoLabel = afm > 0 ? RSS_I18N.tf('autoLabel', _fmtMinutes(afm)) : RSS_I18N.t('autoOffLabel');
     const autoPressed = afm > 0 ? 'is-active' : '';
     const autoStatus = _autoFetchStatusLine(_settings.auto_fetch_last_at, afm);
 
@@ -311,35 +865,35 @@
       <div class="mc-feed-search-wrap${(_searchOpen || _searchQuery) ? ' is-open' : ''}">
         <span class="mc-feed-search-icon" aria-hidden="true">🔍</span>
         <input type="search" id="mcFeedSearch" class="mc-feed-search-input"
-               placeholder="Search articles…" value="${esc(_searchQuery)}"
+               placeholder="${RSS_I18N.t('searchPlaceholder')}" value="${esc(_searchQuery)}"
                autocomplete="off" spellcheck="false"
                oninput="mcFeedSearchInput(event)" onkeydown="mcFeedSearchKey(event)"
-               title="Search all feeds">
-        <button type="button" class="mc-feed-search-clear" onclick="mcClearSearchInput()" title="Clear" aria-label="Clear search text"${(_searchOpen || _searchQuery) && (_searchQuery) ? '' : ' hidden'}>✕</button>
+               title="${RSS_I18N.t('searchAllFeeds')}">
+        <button type="button" class="mc-feed-search-clear" onclick="mcClearSearchInput()" title="${RSS_I18N.t('clear')}" aria-label="${RSS_I18N.t('clearSearch')}"${(_searchOpen || _searchQuery) && (_searchQuery) ? '' : ' hidden'}>✕</button>
       </div>
       <div class="mc-feed-tools${_toolsOpen ? ' is-open' : ''}" id="mcFeedTools">
       <button type="button" class="mc-feed-tool-btn ${filterPressed}" onclick="mcToggleFilter()"
-              title="Filter by saved keywords"
+              title="${RSS_I18N.t('filterByKeywords')}"
               aria-pressed="${_settings.filter_enabled ? 'true' : 'false'}">
         <span class="mc-feed-filter-icon">⌕</span>
-        <span>${_settings.filter_enabled ? 'Filter ON' : 'Filter OFF'}</span>
+        <span>${_settings.filter_enabled ? RSS_I18N.t('filterOn') : RSS_I18N.t('filterOff')}</span>
       </button>
-      <button type="button" class="mc-feed-tool-btn mc-feed-tool-btn-small" onclick="mcEditKeywords()" title="Edit keywords list">
+      <button type="button" class="mc-feed-tool-btn mc-feed-tool-btn-small" onclick="mcEditKeywords()" title="${RSS_I18N.t('editKeywordsList')}">
         ${esc(kwLabel)}
       </button>
       <button type="button" class="mc-feed-tool-btn ${autoPressed}" onclick="mcOpenAutoFetchPicker()"
-              title="Auto-refresh interval"
+              title="${RSS_I18N.t('autoRefreshInterval')}"
               aria-pressed="${afm > 0 ? 'true' : 'false'}">
         <span class="mc-feed-filter-icon">↻</span>
         <span>${esc(autoLabel)}</span>
       </button>
       <button type="button" class="mc-feed-tool-btn ${_readVisibility === 'hide' ? 'is-active' : ''}" onclick="mcToggleReadVisibility()"
-              title="Show/hide read entries"
+              title="${RSS_I18N.t('showHideRead')}"
               aria-pressed="${_readVisibility === 'hide' ? 'true' : 'false'}">
         <span class="mc-feed-filter-icon">${_readVisibility === 'hide' ? '◐' : '○'}</span>
-        <span>${_readVisibility === 'hide' ? 'Hide read' : 'Show read'}</span>
+        <span>${_readVisibility === 'hide' ? RSS_I18N.t('hideRead') : RSS_I18N.t('showRead')}</span>
       </button>
-      ${afm > 0 ? `<div class="mc-feed-tool-status mc-feed-timer" data-feed-timer title="Auto-refresh countdown">${esc(autoStatus)}</div>` : ''}
+      ${afm > 0 ? `<div class="mc-feed-tool-status mc-feed-timer" data-feed-timer title="${RSS_I18N.t('autoRefreshCountdown')}">${esc(autoStatus)}</div>` : ''}
       </div>
     `;
     sidebar.innerHTML = '';
@@ -386,26 +940,26 @@
 
   function _fmtMinutes(m) {
     m = Number(m) || 0;
-    if (m <= 0) return 'Off';
-    if (m < 60) return m + 'm';
-    if (m < 1440) return (m / 60) + 'h';
-    return (m / 1440) + 'd';
+    if (m <= 0) return RSS_I18N.t('off');
+    if (m < 60) return m + RSS_I18N.t('uMin');
+    if (m < 1440) return (m / 60) + RSS_I18N.t('uHour');
+    return (m / 1440) + RSS_I18N.t('uDay');
   }
 
   function _autoFetchStatusLine(lastAt, intervalMin) {
     if (!intervalMin || intervalMin <= 0) return '';
     const now = Math.floor(Date.now() / 1000);
-    if (!lastAt || lastAt <= 0) return 'Next: within ' + intervalMin + 'm';
+    if (!lastAt || lastAt <= 0) return RSS_I18N.tf('nextWithin', _fmtMinutes(intervalMin));
     const ago = Math.max(0, now - Math.floor(lastAt));
     const next = Math.max(0, intervalMin * 60 - ago);
-    return `${_fmtAgo(ago)} ago · ${_fmtAgo(next)}`;
+    return RSS_I18N.tf('agoAndNext', _fmtAgo(ago), _fmtAgo(next));
   }
 
   function _fmtAgo(sec) {
     sec = Math.max(0, Math.floor(Number(sec) || 0));
-    if (sec < 60) return sec + 's';
-    if (sec < 3600) return Math.floor(sec / 60) + 'm';
-    return Math.floor(sec / 3600) + 'h ' + Math.floor((sec % 3600) / 60) + 'm';
+    if (sec < 60) return sec + RSS_I18N.t('uSec');
+    if (sec < 3600) return Math.floor(sec / 60) + RSS_I18N.t('uMin');
+    return Math.floor(sec / 3600) + RSS_I18N.t('uHour') + ' ' + Math.floor((sec % 3600) / 60) + RSS_I18N.t('uMin');
   }
 
   // live auto-refresh countdown. A single 1s interval updates every
@@ -428,13 +982,13 @@
     const afm = Number(_settings.auto_fetch_minutes || 0);
     if (!afm || afm <= 0) return { text: '', expired: false, off: true, pct: 0 };
     const lastAt = Number(_settings.auto_fetch_last_at || 0);
-    if (!lastAt || lastAt <= 0) return { text: `Next: within ${_fmtMinutes(afm)}`, expired: false, pct: 0 };
+    if (!lastAt || lastAt <= 0) return { text: RSS_I18N.tf('nextWithin', _fmtMinutes(afm)), expired: false, pct: 0 };
     const total = afm * 60;
     const ago = Math.max(0, Math.floor(Date.now() / 1000) - Math.floor(lastAt));
     const remaining = total - ago;
     const pct = Math.max(0, Math.min(100, (ago / total) * 100));
-    if (remaining <= 0) return { text: 'Refreshing…', expired: true, pct: 100 };
-    return { text: `${_fmtAgo(ago)} ago · ${_fmtCountdown(remaining)}`, expired: false, pct };
+    if (remaining <= 0) return { text: RSS_I18N.t('refreshingEllipsis'), expired: true, pct: 100 };
+    return { text: RSS_I18N.tf('agoCountdown', _fmtAgo(ago), _fmtCountdown(remaining)), expired: false, pct };
   }
 
   function _tickFeedTimer() {
@@ -516,34 +1070,34 @@
     const opt = (v, label) =>
       `<option value="${esc(v)}"${v === current ? ' selected' : ''}>${esc(label)}</option>`;
     let nav = `<div class="mc-feed-nav mc-m-only">` +
-      `<select id="mcFeedNav" class="mc-feed-nav-select" aria-label="Jump to feed" onchange="mcFeedNavChange(this.value)">` +
-      opt('all', `🌐 All feeds (${totalEntries})`) +
-      opt('clicked', `★ Clicked (${_clickedCount})`) +
-      opt('summaries', `🧠 Summaries (${_summaryTotal})`);
+      `<select id="mcFeedNav" class="mc-feed-nav-select" aria-label="${RSS_I18N.t('jumpToFeed')}" onchange="mcFeedNavChange(this.value)">` +
+      opt('all', `🌐 ${RSS_I18N.tf('navAllFeeds', totalEntries)}`) +
+      opt('clicked', `★ ${RSS_I18N.tf('navClicked', _clickedCount)}`) +
+      opt('summaries', `🧠 ${RSS_I18N.tf('navSummaries', _summaryTotal)}`);
     for (const cat of cats) {
       const items = byCategory[cat];
       const catTotal = items.reduce((s, f) => s + (f.entry_count || 0), 0);
       nav += `<optgroup label="${esc(_categoryIcon(cat) + ' ' + cat)}">` +
-        opt('cat:' + cat, `All ${cat} (${catTotal})`) +
+        opt('cat:' + cat, RSS_I18N.tf('navAllCategory', cat, catTotal)) +
         items.map(f => opt('feed:' + f.id, `${f.name} (${f.entry_count || 0})`)).join('') +
         `</optgroup>`;
     }
     nav += `</select><span class="mc-feed-nav-caret" aria-hidden="true">▾</span></div>`;
     let html = '';
     html += `<button type="button" class="mc-feed-sidebar-row mc-feed-all-row ${(_activeFeedId === null && !_activeCategory && !_readView) ? 'is-active' : ''}" onclick="mcSelectFeed(null)">` +
-      `<span class="mc-feed-row-name">All feeds</span>` +
+      `<span class="mc-feed-row-name">${RSS_I18N.t('allFeeds')}</span>` +
       `<span class="mc-feed-count">${totalEntries}</span></button>`;
     const clickedBadge = _clickedCount > 0
-      ? `<span class="mc-feed-count" title="${_clickedCount} clicked article${_clickedCount === 1 ? '' : 's'}">${_clickedCount}</span>` : '';
+      ? `<span class="mc-feed-count" title="${RSS_I18N.tf(_clickedCount === 1 ? 'clickedArticlesOne' : 'clickedArticlesMany', _clickedCount)}">${_clickedCount}</span>` : '';
     html += `<button type="button" class="mc-feed-sidebar-row mc-feed-read-row ${_readView ? 'is-active' : ''}" onclick="mcSelectRead()">` +
-      `<span class="mc-feed-row-name">★ Clicked</span>${clickedBadge}</button>`;
+      `<span class="mc-feed-row-name">${RSS_I18N.t('clicked')}</span>${clickedBadge}</button>`;
     const totalBadge = _summaryTotal > 0
-      ? `<span class="mc-feed-count" title="${_summaryTotal} summar${_summaryTotal === 1 ? 'y' : 'ies'}">${_summaryTotal}</span>` : '';
+      ? `<span class="mc-feed-count" title="${RSS_I18N.tf(_summaryTotal === 1 ? 'summaryCountOne' : 'summaryCountMany', _summaryTotal)}">${_summaryTotal}</span>` : '';
     const sBadge = _summaryRunning > 0
-      ? `<span class="mc-feed-count mc-feed-count-live" title="${_summaryRunning} summary job(s) running">⏳ ${_summaryRunning}</span>`
+      ? `<span class="mc-feed-count mc-feed-count-live" title="${RSS_I18N.tf('summaryJobsRunning', _summaryRunning)}">⏳ ${_summaryRunning}</span>`
       : '';
     html += `<button type="button" class="mc-feed-sidebar-row mc-feed-summaries-row ${_summaryView ? 'is-active' : ''}" onclick="mcSelectSummaries()">` +
-      `<span class="mc-feed-row-name">🧠 Summaries</span>${totalBadge}${sBadge}</button>`;
+      `<span class="mc-feed-row-name">${RSS_I18N.t('summaries')}</span>${totalBadge}${sBadge}</button>`;
     for (const cat of cats) {
       const items = byCategory[cat];
       const catTotal = items.reduce((s, f) => s + (f.entry_count || 0), 0);
@@ -563,8 +1117,8 @@
             `<span class="mc-feed-count">${f.entry_count || 0}</span>` +
           `</button>` +
           `<div class="mc-feed-sidebar-feed-actions">` +
-            `<button type="button" class="mc-feed-row-act" onclick="mcEditFeed(${f.id})" title="Edit feed" aria-label="Edit ${esc(f.name)}">✎</button>` +
-            `<button type="button" class="mc-feed-row-act mc-feed-row-act-danger" onclick="mcDeleteFeed(${f.id})" title="Delete feed" aria-label="Delete ${esc(f.name)}">🗑</button>` +
+            `<button type="button" class="mc-feed-row-act" onclick="mcEditFeed(${f.id})" title="${RSS_I18N.t('editFeed')}" aria-label="${RSS_I18N.tf('editFeedNamed', esc(f.name))}">✎</button>` +
+            `<button type="button" class="mc-feed-row-act mc-feed-row-act-danger" onclick="mcDeleteFeed(${f.id})" title="${RSS_I18N.t('deleteFeed')}" aria-label="${RSS_I18N.tf('deleteFeedNamed', esc(f.name))}">🗑</button>` +
           `</div></div>`;
       }
       html += `</div>`;
@@ -613,7 +1167,7 @@
     // consistency outweighs the redundancy.
     const source = e.feed_name ? `<span class="mc-feed-entry-source" title="${esc(e.feed_name)}">${esc(e.feed_name)}</span>` : '';
     const kwChips = matched.map(k =>
-      `<button type="button" class="mc-feed-kw-chip" data-mc-kw="${_attr(k)}" title="Show all articles mentioning “${esc(k)}”">${esc(k)}</button>`).join('');
+      `<button type="button" class="mc-feed-kw-chip" data-mc-kw="${_attr(k)}" title="${RSS_I18N.tf('showArticlesMentioning', esc(k))}">${esc(k)}</button>`).join('');
     // read-tracking. Clicking the title link or the Summarize icon
     // marks the entry as read so it's visually de-prioritized on later
     // fetches. State persists in localStorage; capped at 5000 IDs with
@@ -706,10 +1260,10 @@
     if (!body) return;
     if (!entries.length) {
       body.innerHTML = `<div class="mc-feeds-empty">
-        <strong>No entries.</strong><br>
+        <strong>${RSS_I18N.t('noEntries')}</strong><br>
         ${_settings.filter_enabled
-            ? 'Filter is ON and matches nothing. Toggle Filter OFF in the sidebar, or edit your keywords.'
-            : 'Click <em>Refresh all</em> in the panel header (~10s for 42 feeds).'}
+            ? RSS_I18N.t('noEntriesFiltered')
+            : RSS_I18N.t('noEntriesRefresh')}
       </div>`;
       return;
     }
@@ -727,13 +1281,13 @@
     // Row 2 — meta: auto-refresh countdown + source/entry count (sits below the title).
     const afm = Number(_settings.auto_fetch_minutes || 0);
     const timerHtml = afm > 0
-      ? `<span class="mc-feeds-timer" data-feed-timer title="Auto-refresh countdown">${esc(_autoFetchStatusLine(_settings.auto_fetch_last_at, afm))}</span>`
+      ? `<span class="mc-feeds-timer" data-feed-timer title="${RSS_I18N.t('autoRefreshCountdown')}">${esc(_autoFetchStatusLine(_settings.auto_fetch_last_at, afm))}</span>`
       : '';
     // Meta + controls live in ONE wrapper so on mobile they stick to the top
     // of the scroll area while reading (timer / counts / Expand / Collapse /
     // Filtered always visible).
     html += `<div class="mc-feed-view-sticky">`;
-    const countsText = `${groups.length} sources · ${entries.length} entries${subtitle ? ' · ' + subtitle : ''}`;
+    const countsText = `${RSS_I18N.tf('sourcesEntries', groups.length, entries.length)}${subtitle ? ' · ' + subtitle : ''}`;
     const sideCounts = document.getElementById('mcFeedSideCounts');
     if (sideCounts) sideCounts.textContent = countsText;
     html += `<div class="mc-feed-meta-row">${timerHtml}` +
@@ -743,10 +1297,10 @@
     _setControlsBar(hasControls);
     if (hasControls) {
       html += `<div class="mc-feed-group-controls">
-        <button type="button" class="mc-btn-sm" onclick="mcExpandAll()"><span class="mc-btn-full">Expand all</span><span class="mc-btn-short">Expand</span></button>
-        <button type="button" class="mc-btn-sm" onclick="mcCollapseAll()"><span class="mc-btn-full">Collapse all</span><span class="mc-btn-short">Collapse</span></button>
-        <button type="button" class="mc-feed-filter-pill ${_settings.filter_enabled ? 'is-on' : 'is-off'}" onclick="mcToggleFilter()" aria-pressed="${_settings.filter_enabled ? 'true' : 'false'}" title="${_settings.filter_enabled ? 'Keyword filter ON — tap to turn off' : 'Keyword filter OFF — tap to turn on'}">Filter</button>
-        <button type="button" class="hx-feeds-burger hx-feeds-burger-bar mc-m-only" onclick="mcToggleActionMenu()" aria-label="Menu"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <button type="button" class="mc-btn-sm" onclick="mcExpandAll()"><span class="mc-btn-full">${RSS_I18N.t('expandAll')}</span><span class="mc-btn-short">${RSS_I18N.t('expand')}</span></button>
+        <button type="button" class="mc-btn-sm" onclick="mcCollapseAll()"><span class="mc-btn-full">${RSS_I18N.t('collapseAll')}</span><span class="mc-btn-short">${RSS_I18N.t('collapse')}</span></button>
+        <button type="button" class="mc-feed-filter-pill ${_settings.filter_enabled ? 'is-on' : 'is-off'}" onclick="mcToggleFilter()" aria-pressed="${_settings.filter_enabled ? 'true' : 'false'}" title="${_settings.filter_enabled ? RSS_I18N.t('filterPillOn') : RSS_I18N.t('filterPillOff')}">${RSS_I18N.t('filter')}</button>
+        <button type="button" class="hx-feeds-burger hx-feeds-burger-bar mc-m-only" onclick="mcToggleActionMenu()" aria-label="${RSS_I18N.t('menu')}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       </div>`;
     }
     html += `</div>`;
@@ -782,7 +1336,7 @@
   function _readSubtitleSuffix(total, visible) {
     if (_readVisibility !== 'hide') return '';
     const hidden = total - visible;
-    return hidden > 0 ? ` · ${hidden} read hidden` : '';
+    return hidden > 0 ? RSS_I18N.tf('readHidden', hidden) : '';
   }
 
   async function renderAllEntries() {
@@ -807,7 +1361,7 @@
       const all = await fetchEntries({ category, limit: 200 });
       const entries = _filterRead(all);
       _renderGroupedEntries(category,
-        `${entries.length} entries${_settings.filter_enabled ? ' (filtered)' : ''}${_readSubtitleSuffix(all.length, entries.length)}`,
+        `${RSS_I18N.tf('entryCount', entries.length)}${_settings.filter_enabled ? RSS_I18N.t('filteredSuffix') : ''}${_readSubtitleSuffix(all.length, entries.length)}`,
         entries, true, `<span class="mc-feeds-title-emoji">${_categoryIcon(category)}</span>`);
     } catch (e) {
       $('feedsViewBody').innerHTML = `<div class="mc-feeds-error">${esc(e.message)}</div>`;
@@ -817,7 +1371,7 @@
   async function renderFeedView(feedId) {
     _searchTerms = [];
     const f = _feeds.find(x => x.id === feedId);
-    const title = f ? f.name : ('Feed #' + feedId);
+    const title = f ? f.name : RSS_I18N.tf('feedNumber', feedId);
     const subtitle = f ? f.url : '';
     try {
       const all = await fetchEntries({ feed_id: feedId, limit: 200 });
@@ -829,10 +1383,10 @@
       if (!body) return;
       if (!entries.length) {
         body.innerHTML = `<div class="mc-feeds-empty">
-          <strong>No entries for this feed.</strong><br>
+          <strong>${RSS_I18N.t('noEntriesForFeed')}</strong><br>
           ${f && f.last_status && f.last_status !== 'ok' && f.last_status !== 'ok_with_warnings'
-            ? `Last fetch failed: <code>${esc(f.last_status)}</code> &mdash; ${esc(f.last_error || '')}`
-            : 'Try <em>Refresh all</em>.'}
+            ? RSS_I18N.tf('lastFetchFailed', esc(f.last_status), esc(f.last_error || ''))
+            : RSS_I18N.t('tryRefresh')}
         </div>`;
         return;
       }
@@ -991,10 +1545,10 @@
       if (_activeFeedId !== null) {
         params.feed_id = _activeFeedId;
         const f = _feeds.find(x => x.id === _activeFeedId);
-        scopeLabel = f ? ` in ${f.name}` : '';
+        scopeLabel = f ? RSS_I18N.tf('inNamed', f.name) : '';
       } else if (_activeCategory) {
         params.category = _activeCategory;
-        scopeLabel = ` in ${_activeCategory}`;
+        scopeLabel = RSS_I18N.tf('inNamed', _activeCategory);
       }
       const qs = new URLSearchParams(params);
       const r = await fetch('/api/extensions/rss-feeds/sidecar/api/feeds/entries?' + qs.toString(), { credentials: 'same-origin' });
@@ -1004,7 +1558,7 @@
       // Count lives only in the meta bar below (as "N entries") — don't also
       // pass it as the title subtitle, or it shows twice.
       _renderGroupedEntries(
-        `Search: “${query}”${scopeLabel}`,
+        RSS_I18N.tf('searchTitle', query, scopeLabel),
         '',
         entries, true, '<span class="mc-feeds-title-emoji">🔍</span>');
     } catch (e) {
@@ -1035,13 +1589,13 @@
     if (row) row.classList.toggle('is-selected', _selIds.has(id));
     if (el && el.type === 'checkbox') el.checked = _selIds.has(id);
     else { const cb = row && row.querySelector('.mc-sel-cb'); if (cb) cb.checked = _selIds.has(id); }
-    const c = $('mcSelCount'); if (c) c.textContent = _selIds.size + ' selected';
+    const c = $('mcSelCount'); if (c) c.textContent = RSS_I18N.tf('selectedCount', _selIds.size);
     const d = $('mcSelDelBtn'); if (d) d.disabled = _selIds.size === 0;
   };
   window.mcSelDeleteSelected = async () => {
     if (!_selIds.size) return;
     const ids = [..._selIds];
-    const d = $('mcSelDelBtn'); if (d) { d.disabled = true; d.textContent = 'Deleting…'; }
+    const d = $('mcSelDelBtn'); if (d) { d.disabled = true; d.textContent = RSS_I18N.t('deleting'); }
     if (_summaryView) {
       for (const id of ids) {
         try { await fetch('/api/extensions/rss-feeds/sidecar/api/feeds/summaries/' + id, { method: 'DELETE', credentials: 'same-origin' }); } catch (_) {}
@@ -1060,16 +1614,16 @@
     _rerenderActiveView();
   };
   function _selectBtnHtml() {
-    return `<button type="button" class="mc-sel-select-btn mc-d-only" onclick="mcToggleSelectMode()">${_selMode ? 'Done' : 'Select'}</button>`;
+    return `<button type="button" class="mc-sel-select-btn mc-d-only" onclick="mcToggleSelectMode()">${_selMode ? RSS_I18N.t('done') : RSS_I18N.t('select')}</button>`;
   }
   function _selBarHtml() {
     if (!_selMode) return '';
-    return `<div class="mc-sel-bar"><span class="mc-sel-count" id="mcSelCount">${_selIds.size} selected</span>` +
-      `<button type="button" class="mc-btn-sm mc-btn-sm-danger" id="mcSelDelBtn" onclick="mcSelDeleteSelected()"${_selIds.size ? '' : ' disabled'}>🗑 Delete selected</button>` +
-      `<button type="button" class="mc-btn-sm" onclick="mcToggleSelectMode()">Cancel</button></div>`;
+    return `<div class="mc-sel-bar"><span class="mc-sel-count" id="mcSelCount">${RSS_I18N.tf('selectedCount', _selIds.size)}</span>` +
+      `<button type="button" class="mc-btn-sm mc-btn-sm-danger" id="mcSelDelBtn" onclick="mcSelDeleteSelected()"${_selIds.size ? '' : ' disabled'}>${RSS_I18N.t('deleteSelected')}</button>` +
+      `<button type="button" class="mc-btn-sm" onclick="mcToggleSelectMode()">${RSS_I18N.t('cancel')}</button></div>`;
   }
   function _selCbHtml(id) {
-    return _selMode ? `<input type="checkbox" class="mc-sel-cb" ${_selIds.has(id) ? 'checked' : ''} onclick="event.stopPropagation(); mcSelToggle(${id}, this)" aria-label="Select">` : '';
+    return _selMode ? `<input type="checkbox" class="mc-sel-cb" ${_selIds.has(id) ? 'checked' : ''} onclick="event.stopPropagation(); mcSelToggle(${id}, this)" aria-label="${RSS_I18N.t('select')}">` : '';
   }
   window.mcSetPageSize = (view, v) => {
     _pageSizes[view] = parseInt(v, 10) || 20;
@@ -1080,7 +1634,7 @@
   window.mcClickedGoPage = (n) => { _clickedPage = n; renderReadEntries(); };
   window.mcSumGoPage = (n) => { _sumPage = n; renderSummariesView(); };
   function _pageSizeSelect(view) {
-    return `<label class="mc-page-size-wrap">Show
+    return `<label class="mc-page-size-wrap">${RSS_I18N.t('show')}
       <select class="mc-page-size" onchange="mcSetPageSize('${view}', this.value)">
         ${[10, 20, 50, 100].map(n => `<option value="${n}"${n === _pageSizes[view] ? ' selected' : ''}>${n}</option>`).join('')}
       </select></label>`;
@@ -1099,9 +1653,9 @@
       prev = n;
     }
     return `<div class="mc-pager">
-      <button type="button" class="mc-pager-nav" ${page <= 1 ? 'disabled' : `onclick="${goFn}(${page - 1})"`}>‹ Prev</button>
+      <button type="button" class="mc-pager-nav" ${page <= 1 ? 'disabled' : `onclick="${goFn}(${page - 1})"`}>${RSS_I18N.t('prevPage')}</button>
       ${btns}
-      <button type="button" class="mc-pager-nav" ${page >= pages ? 'disabled' : `onclick="${goFn}(${page + 1})"`}>Next ›</button>
+      <button type="button" class="mc-pager-nav" ${page >= pages ? 'disabled' : `onclick="${goFn}(${page + 1})"`}>${RSS_I18N.t('nextPage')}</button>
     </div>`;
   }
   function _pageSlice(list, page, view) {
@@ -1118,7 +1672,7 @@
       let b = r.querySelector('.mc-swipe-del-btn');
       if (!b) {
         b = document.createElement('button');
-        b.type = 'button'; b.className = 'mc-swipe-del-btn'; b.textContent = 'Delete';
+        b.type = 'button'; b.className = 'mc-swipe-del-btn'; b.textContent = RSS_I18N.t('delete');
         b.addEventListener('click', (ev) => {
           ev.stopPropagation(); ev.preventDefault();
           r.style.transition = 'transform .18s ease, opacity .18s ease';
@@ -1182,7 +1736,7 @@
 
   async function renderReadEntries() {
     _searchTerms = [];
-    _setViewHeader(_searchQuery ? `Clicked: “${_searchQuery}”` : 'Clicked Articles & Artifacts', '', '<span class="mc-feeds-title-emoji">📌</span>');
+    _setViewHeader(_searchQuery ? RSS_I18N.tf('clickedSearchTitle', _searchQuery) : RSS_I18N.t('clickedHistoryTitle'), '', '<span class="mc-feeds-title-emoji">📌</span>');
     _setControlsBar(false);
     const body = $('feedsViewBody');
     if (!body) return;
@@ -1194,21 +1748,21 @@
       if (!r.ok) throw new Error('HTTP ' + r.status);
       entries = (await r.json()).entries || [];
     } catch (e) {
-      body.innerHTML = '<div class="mc-feeds-empty"><strong>Couldn\'t load read history.</strong></div>';
+      body.innerHTML = `<div class="mc-feeds-empty"><strong>${RSS_I18N.t('couldntLoadRead')}</strong></div>`;
       return;
     }
     if (!entries.length) {
       body.innerHTML = _searchQuery
-        ? `<div class="mc-feeds-empty"><strong>No clicked articles match “${esc(_searchQuery)}”.</strong></div>`
-        : '<div class="mc-feeds-empty"><strong>No read articles yet.</strong><br>Open an article title and it\'ll be saved here.</div>';
+        ? `<div class="mc-feeds-empty"><strong>${RSS_I18N.tf('noClickedMatch', esc(_searchQuery))}</strong></div>`
+        : `<div class="mc-feeds-empty"><strong>${RSS_I18N.t('noReadYet')}</strong><br>${RSS_I18N.t('noReadYetHint')}</div>`;
       return;
     }
     const pages = Math.max(1, Math.ceil(entries.length / _pageSizes.clicked));
     if (_clickedPage > pages) _clickedPage = pages;
     const scEl = document.getElementById('mcFeedSideCounts');
-    if (scEl) scEl.textContent = `${entries.length} read · keeping last ${retain}`;
+    if (scEl) scEl.textContent = RSS_I18N.tf('readKeeping', entries.length, retain);
     body.innerHTML =
-      `<div class="mc-feed-view-sticky"><div class="mc-feed-meta-row"><span class="mc-feed-group-count">${entries.length} read · keeping last ${retain}</span>${_selectBtnHtml()}${_pageSizeSelect('clicked')}</div>${_selBarHtml()}</div>` +
+      `<div class="mc-feed-view-sticky"><div class="mc-feed-meta-row"><span class="mc-feed-group-count">${RSS_I18N.tf('readKeeping', entries.length, retain)}</span>${_selectBtnHtml()}${_pageSizeSelect('clicked')}</div>${_selBarHtml()}</div>` +
       `<div class="mc-read-list">` + _pageSlice(entries, _clickedPage, 'clicked').map(_renderReadRow).join('') + `</div>` +
       _pagerHtml(entries.length, _clickedPage, 'mcClickedGoPage', 'clicked');
     // Swipe a row left to remove it from Clicked (marks the entry unread).
@@ -1292,13 +1846,13 @@
       `<div class="mc-read-main">` +
         `<a class="mc-read-title" href="${_attr(_safeUrl(e.link))}" target="_blank" rel="noopener noreferrer" onclick="mcMarkEntryRead(${e.id})">${esc(e.title)}</a>` +
         `<div class="mc-read-meta">` +
-          `<button type="button" class="mc-read-agency" onclick="mcSelectFeed(${e.feed_id})" title="Open ${esc(e.feed_name)}">${esc(e.feed_name)}</button>` +
+          `<button type="button" class="mc-read-agency" onclick="mcSelectFeed(${e.feed_id})" title="${RSS_I18N.tf('openNamed', esc(e.feed_name))}">${esc(e.feed_name)}</button>` +
           (_summarizedIds.has(e.id) ? _entrySummaryToggle(e.id) : '') +
           (when ? `<span class="mc-read-when">${esc(when)}</span>` : '') +
         `</div>` +
         (_summarizedIds.has(e.id) ? _entrySummaryBodyEl(e.id) : '') +
       `</div>` +
-      `<div class="mc-read-side"><span class="mc-read-check" title="Read">✓</span><div class="mc-read-actions">${_actionsCluster(e)}</div></div>` +
+      `<div class="mc-read-side"><span class="mc-read-check" title="${RSS_I18N.t('readLabel')}">✓</span><div class="mc-read-actions">${_actionsCluster(e)}</div></div>` +
     `</div>`;
   }
 
@@ -1330,7 +1884,7 @@
       ).join('');
       return `<div class="mc-cat-group" data-cat="${esc(cat)}">` +
         `<div class="mc-cat-head">` +
-          `<input type="checkbox" class="mc-cat-check" ${allOn ? 'checked' : ''} aria-label="Mark all in ${esc(cat)}">` +
+          `<input type="checkbox" class="mc-cat-check" ${allOn ? 'checked' : ''} aria-label="${RSS_I18N.tf('markAllIn', esc(cat))}">` +
           `<button type="button" class="mc-cat-toggle" onclick="mcToggleCatGroup(this)">` +
             `<span class="mc-cat-caret" aria-hidden="true">▸</span>` +
             `<span class="mc-cat-emoji" aria-hidden="true">${_categoryIcon(cat)}</span>` +
@@ -1400,39 +1954,39 @@
     const allVisible = vf.length === 0;   // [] = all agencies
     const epp = Number(_settings.entries_per_page) || 100;
     const retain = Number(_settings.read_retain) || 200;
-    const eppOpts = [25, 50, 100, 200, 500].map(n => `<option value="${n}" ${n === epp ? 'selected' : ''}>${n === 500 ? 'All (500)' : n}</option>`).join('');
+    const eppOpts = [25, 50, 100, 200, 500].map(n => `<option value="${n}" ${n === epp ? 'selected' : ''}>${n === 500 ? RSS_I18N.t('all500') : n}</option>`).join('');
     // Summary model config (local ollama / free cloud fallbacks).
     // Compact: one live status line (which backend/model would run NOW, up/down)
     // from GET summary-status; edit fields collapsed by default.
     const sc = Object.assign({ backend: 'auto', ollama_model: 'qwen2.5:14b', local_port: 11434 }, _settings.summary_config || {});
-    const bOpts = [['auto', 'Auto (local → cloud)'], ['local', 'Local (ollama)'], ['openrouter', 'OpenRouter free'], ['gemini', 'Gemini free']]
+    const bOpts = [['auto', RSS_I18N.t('backendAuto')], ['local', RSS_I18N.t('backendLocal')], ['openrouter', RSS_I18N.t('backendOpenRouter')], ['gemini', RSS_I18N.t('backendGemini')]]
       .map(([v, l]) => `<option value="${v}" ${sc.backend === v ? 'selected' : ''}>${l}</option>`).join('');
     const summaryHtml =
-      `<div class="mc-summarize-popup-head" style="border-top:1px solid var(--border);border-bottom:none;margin-top:4px"><span>Summary model</span>` +
-        `<button type="button" class="mc-btn-sm" onclick="mcTestSummaryModel(this)" title="Save &amp; test">Test</button></div>` +
-      `<div class="mc-fs-row"><label for="mcFsSummBackend">Backend</label><select id="mcFsSummBackend" onchange="mcFsSummChanged()">${bOpts}</select></div>` +
-      `<div id="mcFsSummStatus" class="mc-fs-summ-status">checking…</div>` +
+      `<div class="mc-summarize-popup-head" style="border-top:1px solid var(--border);border-bottom:none;margin-top:4px"><span>${RSS_I18N.t('summaryModel')}</span>` +
+        `<button type="button" class="mc-btn-sm" onclick="mcTestSummaryModel(this)" title="${RSS_I18N.t('saveTest')}">${RSS_I18N.t('test')}</button></div>` +
+      `<div class="mc-fs-row"><label for="mcFsSummBackend">${RSS_I18N.t('backend')}</label><select id="mcFsSummBackend" onchange="mcFsSummChanged()">${bOpts}</select></div>` +
+      `<div id="mcFsSummStatus" class="mc-fs-summ-status">${RSS_I18N.t('checkingEllipsis')}</div>` +
       `<div id="mcFsSummTest" class="mc-fs-summ-test" style="display:none"></div>` +
-      `<span id="mcFsSummEdit" class="mc-fs-summ-edit" onclick="mcFsSummEditToggle()" style="display:none">Edit local model ▸</span>` +
+      `<span id="mcFsSummEdit" class="mc-fs-summ-edit" onclick="mcFsSummEditToggle()" style="display:none">${RSS_I18N.t('editLocalModel')}</span>` +
       `<div id="mcFsSummLocal" style="display:none">` +
-        `<div class="mc-fs-row"><label for="mcFsSummModel">Ollama model</label><select id="mcFsSummModel" style="width:150px" onchange="mcFsSummChanged()"><option value="${esc(sc.ollama_model || 'qwen2.5:14b')}" selected>${esc(sc.ollama_model || 'qwen2.5:14b')}</option></select></div>` +
-        `<div class="mc-fs-row"><label for="mcFsSummLport">Ollama port</label><input id="mcFsSummLport" type="number" value="${sc.local_port || 11434}" style="width:70px" oninput="mcFsSummChanged()"></div>` +
+        `<div class="mc-fs-row"><label for="mcFsSummModel">${RSS_I18N.t('ollamaModel')}</label><select id="mcFsSummModel" style="width:150px" onchange="mcFsSummChanged()"><option value="${esc(sc.ollama_model || 'qwen2.5:14b')}" selected>${esc(sc.ollama_model || 'qwen2.5:14b')}</option></select></div>` +
+        `<div class="mc-fs-row"><label for="mcFsSummLport">${RSS_I18N.t('ollamaPort')}</label><input id="mcFsSummLport" type="number" value="${sc.local_port || 11434}" style="width:70px" oninput="mcFsSummChanged()"></div>` +
       `</div>`;
     const pop = document.createElement('div');
     pop.id = 'mcFeedSettingsPopup';
     pop.className = 'mc-summarize-popup mc-feed-settings-popup';
     pop.innerHTML =
-      `<div class="mc-summarize-popup-head"><span>RSS settings</span></div>` +
-      `<div class="mc-fs-row"><label for="mcFsEpp">Entries per page</label><select id="mcFsEpp">${eppOpts}</select></div>` +
-      `<div class="mc-fs-row"><label for="mcFsRetain">Keep read history</label><input type="number" id="mcFsRetain" min="10" max="2000" value="${retain}"></div>` +
+      `<div class="mc-summarize-popup-head"><span>${RSS_I18N.t('rssSettings')}</span></div>` +
+      `<div class="mc-fs-row"><label for="mcFsEpp">${RSS_I18N.t('entriesPerPage')}</label><select id="mcFsEpp">${eppOpts}</select></div>` +
+      `<div class="mc-fs-row"><label for="mcFsRetain">${RSS_I18N.t('keepReadHistory')}</label><input type="number" id="mcFsRetain" min="10" max="2000" value="${retain}"></div>` +
       summaryHtml +
-      `<div class="mc-summarize-popup-head" style="border-top:1px solid var(--border);border-bottom:none;margin-top:4px"><span>Show feeds</span>` +
-        `<label class="mc-summarize-all"><input type="checkbox" id="mcFsAllAg" ${allVisible ? 'checked' : ''}> All</label></div>` +
+      `<div class="mc-summarize-popup-head" style="border-top:1px solid var(--border);border-bottom:none;margin-top:4px"><span>${RSS_I18N.t('showFeeds')}</span>` +
+        `<label class="mc-summarize-all"><input type="checkbox" id="mcFsAllAg" ${allVisible ? 'checked' : ''}> ${RSS_I18N.t('all')}</label></div>` +
       `<div class="mc-summarize-list">` +
         _renderCatGroupedList(feeds, 'mc-fs-feed', f => allVisible || vf.includes(f.id)) +
       `</div>` +
-      `<div class="mc-summarize-actions"><button type="button" class="mc-btn-sm" onclick="mcCloseFeedSettings()">Cancel</button>` +
-        `<button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveFeedSettings()">Save</button></div>`;
+      `<div class="mc-summarize-actions"><button type="button" class="mc-btn-sm" onclick="mcCloseFeedSettings()">${RSS_I18N.t('cancel')}</button>` +
+        `<button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveFeedSettings()">${RSS_I18N.t('save')}</button></div>`;
     document.body.appendChild(pop);
     _placeFeedsPopup(pop, (e && e.target && e.target.closest('button')) || $('feedsGearBtnM') || $('feedsSettingsBtn'));
     const allAg = document.getElementById('mcFsAllAg');
@@ -1474,14 +2028,14 @@
     const opts = models.slice();
     if (cur && !opts.includes(cur)) opts.unshift(cur);
     sel.innerHTML = opts.map(m =>
-      `<option value="${esc(m)}" ${m === cur ? 'selected' : ''}>${esc(m)}${models.includes(m) ? '' : ' (not installed)'}</option>`
+      `<option value="${esc(m)}" ${m === cur ? 'selected' : ''}>${esc(m)}${models.includes(m) ? '' : RSS_I18N.t('notInstalled')}</option>`
     ).join('');
   }
   function _renderSummStatus() {
     const el = document.getElementById('mcFsSummStatus');
     if (!el) return;
     const st = _summStatus;
-    if (!st) { el.innerHTML = '<span class="mc-fs-summ-dot"></span>checking…'; return; }
+    if (!st) { el.innerHTML = `<span class="mc-fs-summ-dot"></span>${RSS_I18N.t('checkingEllipsis')}`; return; }
     // Model value comes from the form field (live while editing); reachability
     // flags come from the probe of the SAVED config.
     const $v = (id) => { const n = document.getElementById(id); return n ? n.value : null; };
@@ -1490,14 +2044,14 @@
     const dot = (c) => `<span class="mc-fs-summ-dot ${c}"></span>`;
     const localLine = () => {
       let state, cls;
-      if (st.local.port_open) { state = 'ollama up'; cls = 'ok'; }
-      else { state = `ollama not reachable on :${st.local.local_port}`; cls = 'bad'; }
+      if (st.local.port_open) { state = RSS_I18N.t('ollamaUp'); cls = 'ok'; }
+      else { state = RSS_I18N.tf('ollamaNotReachable', st.local.local_port); cls = 'bad'; }
       let extra = '';
-      if (st.local.port_open && st.local.model_present === false) extra = ' · <span class="bad">model not installed on ollama</span>';
-      else if (st.local.port_open && st.local.model_present === true) extra = ' · model installed';
+      if (st.local.port_open && st.local.model_present === false) extra = RSS_I18N.t('modelNotInstalledOllama');
+      else if (st.local.port_open && st.local.model_present === true) extra = RSS_I18N.t('modelInstalled');
       return `${dot(cls)}<b>${esc(model)}</b> · ${state}${extra}`;
     };
-    const keyLine = (o, name) => `${dot(o.key ? 'ok' : 'bad')}<b>${esc(o.model)}</b> · ${name} API key ${o.key ? '✓' : '✗ missing'}`;
+    const keyLine = (o, name) => `${dot(o.key ? 'ok' : 'bad')}<b>${esc(o.model)}</b> · ${o.key ? RSS_I18N.tf('apiKeyOk', name) : RSS_I18N.tf('apiKeyMissing', name)}`;
     if (sel === 'local') el.innerHTML = localLine();
     else if (sel === 'openrouter') el.innerHTML = keyLine(st.openrouter, 'OpenRouter');
     else if (sel === 'gemini') el.innerHTML = keyLine(st.gemini, 'Gemini');
@@ -1507,9 +2061,9 @@
       if (a.backend === 'local') first = localLine();
       else if (a.backend === 'openrouter') first = keyLine(st.openrouter, 'OpenRouter');
       else if (a.backend === 'gemini') first = keyLine(st.gemini, 'Gemini');
-      else first = `${dot('bad')}no backend available (ollama down, no API keys)`;
-      el.innerHTML = `<div>now → ${first}</div>` +
-        `<div class="mc-fs-summ-chain">chain: local (${esc(model)}) → OpenRouter → Gemini</div>`;
+      else first = `${dot('bad')}${RSS_I18N.t('noBackend')}`;
+      el.innerHTML = `<div>${RSS_I18N.tf('nowArrow', first)}</div>` +
+        `<div class="mc-fs-summ-chain">${RSS_I18N.tf('chainLine', esc(model))}</div>`;
     }
   }
   window.mcFsSummChanged = () => {
@@ -1520,7 +2074,7 @@
     if (edit) edit.style.display = isLocal ? 'block' : 'none';
     if (fields && !isLocal) {
       fields.style.display = 'none';
-      if (edit) edit.textContent = 'Edit local model ▸';
+      if (edit) edit.textContent = RSS_I18N.t('editLocalModel');
     }
     _renderSummStatus();
   };
@@ -1530,7 +2084,7 @@
     if (!fields) return;
     const open = fields.style.display !== 'none';
     fields.style.display = open ? 'none' : 'block';
-    if (edit) edit.textContent = open ? 'Edit local model ▸' : 'Hide local model ▾';
+    if (edit) edit.textContent = open ? RSS_I18N.t('editLocalModel') : RSS_I18N.t('hideLocalModel');
     if (!open) _fillSummModels();   // fields just revealed → ensure dropdown is populated
   };
   // Persist the entered summary config, then run a 1-word test through it.
@@ -1538,7 +2092,7 @@
     const out = document.getElementById('mcFsSummTest');
     const sc = _readSummaryConfig();
     if (btn) btn.disabled = true;
-    if (out) { out.style.display = 'block'; out.textContent = 'Testing… (saves this config first)'; out.style.color = 'var(--muted)'; }
+    if (out) { out.style.display = 'block'; out.textContent = RSS_I18N.t('testingSaves'); out.style.color = 'var(--muted)'; }
     try {
       const rs = await fetch('/api/extensions/rss-feeds/sidecar/api/feeds/settings', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1560,9 +2114,9 @@
           fetch(tbase + '/summary-test-status' + tq, { credentials: 'same-origin' })
             .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
             .then(s => {
-              if (s.unknown) return reject(new Error('test result unavailable'));
+              if (s.unknown) return reject(new Error(RSS_I18N.t('testUnavailable')));
               if (s.running) {
-                if (++n > 180) return reject(new Error('test timed out'));  // ~4.5min
+                if (++n > 180) return reject(new Error(RSS_I18N.t('testTimedOut')));  // ~4.5min
                 setTimeout(tick, 1500); return;
               }
               resolve(s);
@@ -1571,7 +2125,7 @@
         };
         setTimeout(tick, 600);
       });
-      if (out) { out.textContent = d.ok ? ('✓ works — used ' + d.model) : ('✗ ' + (d.error || 'failed')); out.style.color = d.ok ? 'var(--success, #3fb950)' : 'var(--error, #ff7b7b)'; }
+      if (out) { out.textContent = d.ok ? RSS_I18N.tf('testWorks', d.model) : RSS_I18N.tf('testFailedPrefix', (d.error || RSS_I18N.t('failedWord'))); out.style.color = d.ok ? 'var(--success, #3fb950)' : 'var(--error, #ff7b7b)'; }
     } catch (e) {
       if (out) { out.textContent = '✗ ' + e.message; out.style.color = 'var(--error, #ff7b7b)'; }
     } finally { if (btn) btn.disabled = false; _loadSummStatus(); }
@@ -1613,7 +2167,7 @@
       _settings = await r.json();
       await loadFeedsPanel();
     } catch (e) {
-      _showModalErr('Filter toggle failed: ' + e.message);
+      _showModalErr(RSS_I18N.tf('filterToggleFailed', e.message));
     }
   };
 
@@ -1627,30 +2181,28 @@
   window.mcOpenAutoFetchPicker = () => {
     const cur = Number(_settings.auto_fetch_minutes || 0);
     const opts = [
-      { v: 0,    label: 'Off' },
-      { v: 15,   label: 'Every 15 minutes' },
-      { v: 30,   label: 'Every 30 minutes' },
-      { v: 60,   label: 'Every hour' },
-      { v: 180,  label: 'Every 3 hours' },
-      { v: 360,  label: 'Every 6 hours' },
-      { v: 720,  label: 'Every 12 hours' },
-      { v: 1440, label: 'Every 24 hours' },
+      { v: 0,    label: RSS_I18N.t('off') },
+      { v: 15,   label: RSS_I18N.t('every15') },
+      { v: 30,   label: RSS_I18N.t('every30') },
+      { v: 60,   label: RSS_I18N.t('everyHour') },
+      { v: 180,  label: RSS_I18N.t('every3h') },
+      { v: 360,  label: RSS_I18N.t('every6h') },
+      { v: 720,  label: RSS_I18N.t('every12h') },
+      { v: 1440, label: RSS_I18N.t('every24h') },
     ];
     const rows = opts.map(o => `
       <label class="mc-auto-fetch-row ${cur === o.v ? 'is-selected' : ''}">
         <input type="radio" name="mcAutoFetch" value="${o.v}" ${cur === o.v ? 'checked' : ''}>
         <span>${esc(o.label)}</span>
       </label>`).join('');
-    _openModal('Auto-fetch interval', `
+    _openModal(RSS_I18N.t('autoFetchInterval'), `
       <p class="mc-feed-modal-hint">
-        The server refreshes all enabled feeds in the background at this interval.
-        Works while this browser tab is closed. The "Refresh all" button still works
-        on-demand independent of this setting. Set to <strong>Off</strong> to disable.
+        ${RSS_I18N.t('autoFetchHint')}
       </p>
       <div class="mc-auto-fetch-list">${rows}</div>
       <div class="mc-feed-modal-actions">
-        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">Cancel</button>
-        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveAutoFetch()">Save</button>
+        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">${RSS_I18N.t('cancel')}</button>
+        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveAutoFetch()">${RSS_I18N.t('save')}</button>
       </div>`);
   };
 
@@ -1670,7 +2222,7 @@
       _closeModal();
       await loadFeedsPanel();
     } catch (e) {
-      alert('Save failed: ' + e.message);
+      alert(RSS_I18N.tf('saveFailed', e.message));
     }
   };
 
@@ -1684,24 +2236,23 @@
 
   window.mcEditKeywords = () => {
     _kwDraft = [...(_settings.keywords || [])];
-    _openModal('Filter keywords', `
+    _openModal(RSS_I18N.t('filterKeywords'), `
       <p class="mc-feed-modal-hint">
-        Keep entries whose title or summary matches <strong>any</strong> keyword
-        (case-insensitive). Paste a comma-separated list to add many at once.
+        ${RSS_I18N.t('keywordsHint')}
       </p>
-      <label class="mc-feed-modal-label">Current keywords</label>
+      <label class="mc-feed-modal-label">${RSS_I18N.t('currentKeywords')}</label>
       <div id="mcKwChips" class="mc-kw-chips"></div>
-      <label class="mc-feed-modal-label" for="mcKwInput">Add keyword</label>
+      <label class="mc-feed-modal-label" for="mcKwInput">${RSS_I18N.t('addKeyword')}</label>
       <div class="mc-kw-add-row">
         <input id="mcKwInput" type="text" class="mc-feed-modal-input mc-kw-add-input"
-               placeholder="politics, iran, crypto, …"
+               placeholder="${RSS_I18N.t('keywordsPlaceholder')}"
                onkeydown="if(event.key==='Enter'){event.preventDefault();mcAddKeyword();}">
-        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcAddKeyword()">Add</button>
+        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcAddKeyword()">${RSS_I18N.t('add')}</button>
       </div>
       <div id="mcKwNotice" class="mc-feed-modal-hint mc-kw-notice" hidden></div>
       <div class="mc-feed-modal-actions">
-        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">Cancel</button>
-        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveKeywords()">Save</button>
+        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">${RSS_I18N.t('cancel')}</button>
+        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveKeywords()">${RSS_I18N.t('save')}</button>
       </div>`);
     _renderKwChips();
   };
@@ -1710,13 +2261,13 @@
     const box = $('mcKwChips');
     if (!box) return;
     if (!_kwDraft.length) {
-      box.innerHTML = '<div class="mc-kw-empty">No keywords yet — filter is OFF by default.</div>';
+      box.innerHTML = `<div class="mc-kw-empty">${RSS_I18N.t('noKeywordsYet')}</div>`;
       return;
     }
     box.innerHTML = _kwDraft.map((kw, i) =>
       `<span class="mc-kw-chip-edit">
         <span class="mc-kw-chip-text">${esc(kw)}</span>
-        <button type="button" class="mc-kw-chip-x" aria-label="Remove ${esc(kw)}"
+        <button type="button" class="mc-kw-chip-x" aria-label="${RSS_I18N.tf('removeNamed', esc(kw))}"
                 onclick="mcRemoveKeyword(${i})">×</button>
       </span>`).join('');
   }
@@ -1755,9 +2306,9 @@
     input.value = '';
     _renderKwChips();
     if (dupes.length && !added.length) {
-      _showKwNotice(`Already in list: ${dupes.join(', ')}`, 'warn');
+      _showKwNotice(RSS_I18N.tf('alreadyInList', dupes.join(', ')), 'warn');
     } else if (dupes.length) {
-      _showKwNotice(`Added ${added.length}, skipped ${dupes.length} duplicate${dupes.length === 1 ? '' : 's'}: ${dupes.join(', ')}`, 'warn');
+      _showKwNotice(RSS_I18N.tf(dupes.length === 1 ? 'addedSkippedOne' : 'addedSkippedMany', added.length, dupes.length, dupes.join(', ')), 'warn');
     }
     input.focus();
   };
@@ -1800,7 +2351,7 @@
       _closeModal();
       await loadFeedsPanel();
     } catch (e) {
-      _showModalErr('Save failed: ' + e.message);
+      _showModalErr(RSS_I18N.tf('saveFailed', e.message));
     }
   };
 
@@ -1825,24 +2376,24 @@
       `<option value="${esc(c)}"${c === currentCat ? ' selected' : ''}>${esc(c)}</option>`
     ).join('');
     return `
-      <label class="mc-feed-modal-label">Name</label>
-      <input id="mcFeedName" type="text" class="mc-feed-modal-input" value="${esc(f.name)}" placeholder="e.g. BBC News">
-      <label class="mc-feed-modal-label">URL</label>
+      <label class="mc-feed-modal-label">${RSS_I18N.t('name')}</label>
+      <input id="mcFeedName" type="text" class="mc-feed-modal-input" value="${esc(f.name)}" placeholder="${RSS_I18N.t('namePlaceholder')}">
+      <label class="mc-feed-modal-label">${RSS_I18N.t('urlLabel')}</label>
       <input id="mcFeedUrl" type="url" class="mc-feed-modal-input" value="${esc(f.url)}" placeholder="https://example.com/rss.xml">
-      <label class="mc-feed-modal-label" for="mcFeedCat">Category</label>
+      <label class="mc-feed-modal-label" for="mcFeedCat">${RSS_I18N.t('category')}</label>
       <select id="mcFeedCat" class="mc-feed-modal-input" onchange="mcCategorySelectChanged()">
         ${options}
-        <option value="__new__"${noCat ? ' selected' : ''}>+ Add new category…</option>
+        <option value="__new__"${noCat ? ' selected' : ''}>${RSS_I18N.t('addNewCategory')}</option>
       </select>
       <div id="mcFeedCatNewRow" class="mc-feed-modal-cat-new-row"${noCat ? '' : ' hidden'}>
         <input id="mcFeedCatNew" type="text" class="mc-feed-modal-input"
-               placeholder="New category name (e.g. 💻 Tech & AI)"
-               aria-label="New category name">
+               placeholder="${RSS_I18N.t('newCategoryPlaceholder')}"
+               aria-label="${RSS_I18N.t('newCategoryAria')}">
       </div>
       <div class="mc-feed-modal-grid">
         <label class="mc-feed-modal-check">
           <input id="mcFeedEnabled" type="checkbox" ${f.enabled ? 'checked' : ''}>
-          Enabled
+          ${RSS_I18N.t('enabled')}
         </label>
       </div>
       <div id="mcFeedErr" class="mc-feed-modal-err" hidden></div>`;
@@ -1876,17 +2427,17 @@
   }
 
   window.mcOpenAddFeed = () => {
-    _openModal('Add feed', _feedFormHTML(null) + `
+    _openModal(RSS_I18N.t('addFeed'), _feedFormHTML(null) + `
       <div class="mc-feed-modal-actions">
-        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">Cancel</button>
-        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveNewFeed()">Add</button>
+        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">${RSS_I18N.t('cancel')}</button>
+        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveNewFeed()">${RSS_I18N.t('add')}</button>
       </div>`);
   };
 
   window.mcSaveNewFeed = async () => {
     const cat = _readSelectedCategory();
     if (!cat) {
-      _showModalErr('Pick a category, or type a name after choosing "+ Add new category…".');
+      _showModalErr(RSS_I18N.t('pickCategory'));
       return;
     }
     const payload = {
@@ -1896,7 +2447,7 @@
       enabled: $('mcFeedEnabled').checked,
     };
     if (!payload.name || !payload.url) {
-      _showModalErr('Name and URL are required.');
+      _showModalErr(RSS_I18N.t('nameUrlRequired'));
       return;
     }
     try {
@@ -1914,29 +2465,29 @@
       // validates in the background — poll add-status for the outcome.
       if (created && created.check) {
         _closeModal();
-        _summaryToast(`✓ Feed OK — ${created.check.new_entries} entr${created.check.new_entries === 1 ? 'y' : 'ies'} fetched`);
+        _summaryToast(RSS_I18N.tf(created.check.new_entries === 1 ? 'feedOkOne' : 'feedOkMany', created.check.new_entries));
         await loadFeedsPanel();
         return;
       }
       const fid = created && created.id;
       if (!fid) { _closeModal(); await loadFeedsPanel(); return; }
-      _showModalErr('Validating feed…');
+      _showModalErr(RSS_I18N.t('validatingFeed'));
       const result = await new Promise((resolve, reject) => {
         let n = 0;
         const tick = () => {
           fetch(base + '/add-status?id=' + encodeURIComponent(fid), { credentials: 'same-origin' })
             .then(rr => rr.ok ? rr.json() : Promise.reject(new Error('HTTP ' + rr.status)))
             .then(s => {
-              if (s.validating) { if (++n > 60) return reject(new Error('validation timed out')); setTimeout(tick, 1000); return; }
+              if (s.validating) { if (++n > 60) return reject(new Error(RSS_I18N.t('validationTimedOut'))); setTimeout(tick, 1000); return; }
               resolve(s);
             })
             .catch(reject);
         };
         setTimeout(tick, 500);
       });
-      if (!result.ok) { _showModalErr('Feed check failed: ' + (result.error || 'unreachable')); return; }
+      if (!result.ok) { _showModalErr(RSS_I18N.tf('feedCheckFailed', (result.error || RSS_I18N.t('unreachable')))); return; }
       _closeModal();
-      _summaryToast(`✓ Feed OK — ${result.new_entries} entr${result.new_entries === 1 ? 'y' : 'ies'} fetched`);
+      _summaryToast(RSS_I18N.tf(result.new_entries === 1 ? 'feedOkOne' : 'feedOkMany', result.new_entries));
       await loadFeedsPanel();
     } catch (e) {
       _showModalErr(e.message);
@@ -1946,17 +2497,17 @@
   window.mcEditFeed = (id) => {
     const f = _feeds.find(x => x.id === id);
     if (!f) return;
-    _openModal('Edit feed', _feedFormHTML(f) + `
+    _openModal(RSS_I18N.t('editFeedTitle'), _feedFormHTML(f) + `
       <div class="mc-feed-modal-actions">
-        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">Cancel</button>
-        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveEditFeed(${id})">Save</button>
+        <button type="button" class="mc-btn-sm" onclick="mcFeedsCloseModal()">${RSS_I18N.t('cancel')}</button>
+        <button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcSaveEditFeed(${id})">${RSS_I18N.t('save')}</button>
       </div>`);
   };
 
   window.mcSaveEditFeed = async (id) => {
     const cat = _readSelectedCategory();
     if (!cat) {
-      _showModalErr('Pick a category, or type a name after choosing "+ Add new category…".');
+      _showModalErr(RSS_I18N.t('pickCategory'));
       return;
     }
     const payload = {
@@ -1966,7 +2517,7 @@
       enabled: $('mcFeedEnabled').checked,
     };
     if (!payload.name || !payload.url) {
-      _showModalErr('Name and URL are required.');
+      _showModalErr(RSS_I18N.t('nameUrlRequired'));
       return;
     }
     try {
@@ -1991,9 +2542,9 @@
     // window-level dialog is forbidden by
     // tests/test_sprint33.py::test_no_native_confirm_calls_remain_in_static_js.
     const _ok = await showConfirmDialog({
-      title: 'Delete feed?',
-      message: `Delete "${f.name}" and all ${f.entry_count || 0} stored entries? This cannot be undone.`,
-      confirmLabel: 'Delete',
+      title: RSS_I18N.t('deleteFeedQuestion'),
+      message: RSS_I18N.tf('deleteFeedMessage', f.name, f.entry_count || 0),
+      confirmLabel: RSS_I18N.t('delete'),
       danger: true,
       focusCancel: true,
     });
@@ -2004,7 +2555,7 @@
       if (_activeFeedId === id) _activeFeedId = null;
       await loadFeedsPanel();
     } catch (e) {
-      _showModalErr('Delete failed: ' + e.message);
+      _showModalErr(RSS_I18N.tf('deleteFailed', e.message));
     }
   };
 
@@ -2028,7 +2579,7 @@
   // shows honest numbers ("18/42 feeds · 43%") without the jumpy/stall feel of a raw
   // count bar.
   const _feedProgress = {
-    raf: null, pct: 0, target: 0, fill: null, label: null, el: null, msg: 'Refreshing feeds…',
+    raf: null, pct: 0, target: 0, fill: null, label: null, el: null, msg: RSS_I18N.t('refreshFeedsMsg'),
     start() {
       this.stop();
       const body = $('feedsViewBody');
@@ -2051,7 +2602,7 @@
     setProgress(done, total) {
       if (!total) return;
       this.target = Math.min(96, (done / total) * 100);
-      this.msg = `Refreshing ${done}/${total} feeds…`;
+      this.msg = RSS_I18N.tf('refreshingFeeds', done, total);
     },
     _paint() {
       if (this.fill) this.fill.style.width = this.pct.toFixed(1) + '%';
@@ -2103,7 +2654,7 @@
         const totalNew = oks.reduce((s, x) => s + (x.new_entries || 0), 0);
         const fails = results.filter(x => !String(x.status).startsWith('ok'))
           .map(x => ({ name: x.feed_name || ('feed #' + (x.feed_id || '?')), status: x.status, error: x.error || '' }));
-        finish(true, `${oks.length}/${results.length} feeds · ${totalNew} new` + (fails.length ? ` · ${fails.length} failed` : ''), fails);
+        finish(true, RSS_I18N.tf('refreshSummary', oks.length, results.length, totalNew) + (fails.length ? RSS_I18N.tf('refreshFailedSuffix', fails.length) : ''), fails);
       };
       let _polls = 0;
       // Poll ONLY our own job by id, so a refresh started elsewhere can't have its
@@ -2113,23 +2664,23 @@
         fetch(base + '/refresh-status' + q, { credentials: 'same-origin' })
           .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
           .then(d => {
-            if (d.unknown) { finish(false, 'Refresh status unavailable'); return; }
+            if (d.unknown) { finish(false, RSS_I18N.t('refreshStatusUnavailable')); return; }
             if (typeof d.total === 'number' && d.total > 0) _feedProgress.setProgress(d.done || 0, d.total);
             if (d.running) {
               // Safety valve: ~5 min of polling (200 × 1.5s) then give up cleanly.
-              if (++_polls > 200) { finish(false, 'Refresh timed out'); return; }
+              if (++_polls > 200) { finish(false, RSS_I18N.t('refreshTimedOut')); return; }
               setTimeout(() => poll(jobId), 1500);
               return;
             }
-            if (d.error) { finish(false, 'Refresh failed: ' + d.error); return; }
+            if (d.error) { finish(false, RSS_I18N.tf('refreshFailed', d.error)); return; }
             summarize(Array.isArray(d.results) ? d.results : []);
           })
-          .catch(e => finish(false, 'Refresh failed: ' + e.message));
+          .catch(e => finish(false, RSS_I18N.tf('refreshFailed', e.message)));
       };
       fetch(base + '/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'same-origin' })
         .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
         .then(d => { const jid = d && typeof d.id === 'number' ? d.id : undefined; setTimeout(() => poll(jid), 800); })
-        .catch(e => finish(false, 'Refresh failed: ' + e.message));
+        .catch(e => finish(false, RSS_I18N.tf('refreshFailed', e.message)));
     });
   }
 
@@ -2138,11 +2689,11 @@
   function _failReason(f) {
     const s = String(f.status || '');
     if (s.indexOf('http_') === 0) return s.replace('http_', 'HTTP ');
-    if (s === 'no_entries') return 'no entries / malformed feed';
-    if (s === 'not_found') return 'feed not found';
-    if (s === 'exception') return (String(f.error || '').split(':')[0]) || 'error';
-    if (s === 'error') return (String(f.error || '').slice(0, 60)) || 'error';
-    return s || 'error';
+    if (s === 'no_entries') return RSS_I18N.t('failNoEntries');
+    if (s === 'not_found') return RSS_I18N.t('failNotFound');
+    if (s === 'exception') return (String(f.error || '').split(':')[0]) || RSS_I18N.t('failError');
+    if (s === 'error') return (String(f.error || '').slice(0, 60)) || RSS_I18N.t('failError');
+    return s || RSS_I18N.t('failError');
   }
   function _showFeedFailures(fails) {
     const old = document.getElementById('mcFeedFailures');
@@ -2152,7 +2703,7 @@
     if (!body || !body.parentNode) return;
     const rows = fails.map(f =>
       `<div class="mc-feed-fail-row">` +
-        `<span class="mc-feed-fail-name" title="${esc(f.name || 'feed')}">${esc(f.name || 'feed')}</span>` +
+        `<span class="mc-feed-fail-name" title="${esc(f.name || RSS_I18N.t('feedFallback'))}">${esc(f.name || RSS_I18N.t('feedFallback'))}</span>` +
         `<span class="mc-feed-fail-reason" title="${esc(String(f.error || f.status || ''))}">${esc(_failReason(f))}</span>` +
       `</div>`).join('');
     const wrap = document.createElement('div');
@@ -2160,10 +2711,10 @@
     wrap.id = 'mcFeedFailures';
     wrap.classList.add('is-collapsed');   // header-only until tapped
     wrap.innerHTML =
-      `<div class="mc-feed-fail-head" role="button" tabindex="0" title="Show failed feeds"
+      `<div class="mc-feed-fail-head" role="button" tabindex="0" title="${RSS_I18N.t('failedFeedsTitle')}"
             onclick="if(!event.target.closest('.mc-feed-fail-close')){this.closest('.mc-feed-failures').classList.toggle('is-collapsed');}">` +
-        `<span class="mc-feed-fail-title"><span class="mc-feed-fail-caret" aria-hidden="true">▸</span> ⚠ ${fails.length} feed${fails.length > 1 ? 's' : ''} failed to refresh</span>` +
-        `<button type="button" class="mc-feed-fail-close" title="Dismiss" aria-label="Dismiss" onclick="this.closest('.mc-feed-failures').remove()">✕</button>` +
+        `<span class="mc-feed-fail-title"><span class="mc-feed-fail-caret" aria-hidden="true">▸</span> ${RSS_I18N.tf(fails.length > 1 ? 'failedFeedsMany' : 'failedFeedsOne', fails.length)}</span>` +
+        `<button type="button" class="mc-feed-fail-close" title="${RSS_I18N.t('dismiss')}" aria-label="${RSS_I18N.t('dismiss')}" onclick="this.closest('.mc-feed-failures').remove()">✕</button>` +
       `</div>` +
       `<div class="mc-feed-fail-list">${rows}</div>`;
     body.parentNode.insertBefore(wrap, body);
@@ -2192,12 +2743,12 @@
       });
       if (!r.ok) throw new Error(((await r.json()).error) || ('HTTP ' + r.status));
       const data = await r.json();
-      _summaryToast(`Summarizing “${data.title || 'feed'}” — find it in 🧠 Summaries`);
+      _summaryToast(RSS_I18N.tf('summarizingNamed', data.title || RSS_I18N.t('feedFallback')));
       await refreshSidebar();           // server already shows the running row → badge updates
       _startSummaryPoll();              // poll until it (and any other) finishes
       if (_summaryView) renderSummariesView();
     } catch (e) {
-      _summaryToast('Summarize failed: ' + e.message, true);
+      _summaryToast(RSS_I18N.tf('summarizeFailed', e.message), true);
     } finally {
       if (btn) btn.classList.remove('mc-feed-spinning');
     }
@@ -2233,7 +2784,7 @@
       if (_summaryRunning === 0) {
         clearInterval(_summaryPoll); _summaryPoll = null;
         if (prevRunning > 0) {
-          _summaryToast('Summary ready — in 🧠 Summaries');
+          _summaryToast(RSS_I18N.t('summaryReady'));
           _decorateSummarizedCards();   // surface inline expanders on visible cards
           refreshSidebar();             // refresh Summaries/Clicked count badges
         }
@@ -2295,11 +2846,11 @@
     // _safeUrl sanitizes on read: legacy rows may hold javascript:/data: links
     // (older writes didn't validate scheme), so gate every stored link here.
     const link = (s) => `<a href="${_attr(_safeUrl(s.link))}" target="_blank" rel="noopener noreferrer">` +
-      `${esc(s.feed || '?')}: ${esc(s.title || 'article')}</a>`;
+      `${esc(s.feed || '?')}: ${esc(s.title || RSS_I18N.t('articleFallback'))}</a>`;
     if (list.length === 1) {
-      return `<div class="mc-summary-source">Source: ${link(list[0])}</div>`;
+      return `<div class="mc-summary-source">${RSS_I18N.tf('sourceLabel', link(list[0]))}</div>`;
     }
-    return `<div class="mc-summary-source"><span class="mc-summary-source-label">Sources:</span>` +
+    return `<div class="mc-summary-source"><span class="mc-summary-source-label">${RSS_I18N.t('sourcesLabel')}</span>` +
       `<ul>${list.map(s => `<li>${link(s)}</li>`).join('')}</ul></div>`;
   }
 
@@ -2312,7 +2863,7 @@
 
   async function renderSummariesView() {
     _searchTerms = [];
-    _setViewHeader(_searchQuery ? `Summaries: “${_searchQuery}”` : 'Summaries', '', '<span class="mc-feeds-title-emoji">🧠</span>');
+    _setViewHeader(_searchQuery ? RSS_I18N.tf('summariesSearchTitle', _searchQuery) : RSS_I18N.t('summariesTitle'), '', '<span class="mc-feeds-title-emoji">🧠</span>');
     _setControlsBar(false);
     const body = $('feedsViewBody');
     if (!body) return;
@@ -2336,12 +2887,11 @@
     }
     if (!list.length) {
       if (_searchQuery) {
-        body.innerHTML = `<div class="mc-feeds-empty"><strong>No summaries match “${esc(_searchQuery)}”.</strong></div>`;
+        body.innerHTML = `<div class="mc-feeds-empty"><strong>${RSS_I18N.tf('noSummariesMatch', esc(_searchQuery))}</strong></div>`;
         return;
       }
-      body.innerHTML = `<div class="mc-feeds-empty"><strong>No summaries yet.</strong><br>` +
-        `Open the ⋯ menu on any article (or the header Summarize) and pick ✦ — ` +
-        `the digest runs on the local model and lands here.</div>`;
+      body.innerHTML = `<div class="mc-feeds-empty"><strong>${RSS_I18N.t('noSummariesYet')}</strong><br>` +
+        `${RSS_I18N.t('noSummariesHint')}</div>`;
       return;
     }
     // keep polling alive if anything is still running
@@ -2349,10 +2899,10 @@
     const pages = Math.max(1, Math.ceil(list.length / _pageSizes.summaries));
     if (_sumPage > pages) _sumPage = pages;
     const scEl2 = document.getElementById('mcFeedSideCounts');
-    if (scEl2) scEl2.textContent = `${list.length} summar${list.length === 1 ? 'y' : 'ies'}`;
+    if (scEl2) scEl2.textContent = RSS_I18N.tf(list.length === 1 ? 'summaryCountOne' : 'summaryCountMany', list.length);
     body.innerHTML =
-      `<div class="mc-feed-view-sticky"><div class="mc-feed-meta-row"><span class="mc-feed-group-count">${list.length} summar${list.length === 1 ? 'y' : 'ies'}` +
-        `${_summaryRunning > 0 ? ' · ' + _summaryRunning + ' running' : ''}</span>${_selectBtnHtml()}${_pageSizeSelect('summaries')}</div>${_selBarHtml()}</div>` +
+      `<div class="mc-feed-view-sticky"><div class="mc-feed-meta-row"><span class="mc-feed-group-count">${RSS_I18N.tf(list.length === 1 ? 'summaryCountOne' : 'summaryCountMany', list.length)}` +
+        `${_summaryRunning > 0 ? RSS_I18N.tf('runningSuffix', _summaryRunning) : ''}</span>${_selectBtnHtml()}${_pageSizeSelect('summaries')}</div>${_selBarHtml()}</div>` +
       `<div class="mc-summary-list">` + _pageSlice(list, _sumPage, 'summaries').map(_renderSummaryRow).join('') + `</div>` +
       _pagerHtml(list.length, _sumPage, 'mcSumGoPage', 'summaries');
     // Swipe a summary left to delete it.
@@ -2365,8 +2915,8 @@
     // Only show the item count for real digests (>1). A single-article summary
     // is obviously 1 item, so drop it — keep just "Xago". The model moved out
     // of the row to the expanded action bar (next to Rerun/Copy).
-    const countPart = s.entry_count > 1 ? `${s.entry_count} items · ` : '';
-    const meta = `${countPart}${esc(when)} ago`;
+    const countPart = s.entry_count > 1 ? RSS_I18N.tf('itemsCount', s.entry_count) : '';
+    const meta = `${countPart}${RSS_I18N.tf('agoSuffix', esc(when))}`;
     const running = s.status === 'running';
     return `
       <div class="mc-summary-item ${running ? 'is-running' : ''}${_selIds.has(s.id) ? ' is-selected' : ''}" data-summary-id="${s.id}" data-swipe-id="${s.id}">
@@ -2386,7 +2936,7 @@
     const open = item.classList.toggle('is-open');
     body.hidden = !open;
     if (open && !body.dataset.loaded) {
-      body.innerHTML = '<div class="mc-summary-loading">Loading…</div>';
+      body.innerHTML = `<div class="mc-summary-loading">${RSS_I18N.t('loadingEllipsis')}</div>`;
       try {
         const r = await fetch('/api/extensions/rss-feeds/sidecar/api/feeds/summaries?id=' + id, { credentials: 'same-origin' });
         const d = await r.json();
@@ -2397,7 +2947,7 @@
         const rerunScope = s.scope || (s.entry_id ? 'entry' : 'all');
         const rerunTarget = s.entry_id || rt;
         body.innerHTML = s.status === 'error'
-          ? `<div class="mc-feeds-error">Summary failed: ${esc(s.error || 'unknown')}</div>` + _summaryActionsBar(rerunScope, rerunTarget, s.model, id)
+          ? `<div class="mc-feeds-error">${RSS_I18N.tf('summaryFailed', esc(s.error || RSS_I18N.t('unknownWord')))}</div>` + _summaryActionsBar(rerunScope, rerunTarget, s.model, id)
           : (_miniMarkdown(s.content || '') + _renderSources(s.sources) + _summaryActionsBar(rerunScope, rerunTarget, s.model, id));
         body.dataset.loaded = '1';
       } catch (e) {
@@ -2481,19 +3031,19 @@
   async function _loadEntrySummary(id) {
     const body = $(`mcEntrySum-${id}`);
     if (!body) return;
-    body.innerHTML = '<div class="mc-summary-loading">Loading…</div>';
+    body.innerHTML = `<div class="mc-summary-loading">${RSS_I18N.t('loadingEllipsis')}</div>`;
     try {
       const r = await fetch('/api/extensions/rss-feeds/sidecar/api/feeds/summaries?entry_id=' + id, { credentials: 'same-origin' });
       const d = await r.json();
       const s = d.summary;
       if (s && s.status === 'running') {
-        body.innerHTML = '<div class="mc-summary-loading">Summarizing…</div>';
+        body.innerHTML = `<div class="mc-summary-loading">${RSS_I18N.t('summarizingEllipsis')}</div>`;
         body.dataset.loaded = '';   // let the poll reload it when done
         return;
       }
       body.dataset.raw = (s && s.content) || '';
       const main = (s && s.content) ? (_miniMarkdown(s.content) + _renderSources(s.sources))
-        : (s && s.error ? `<div class="mc-feeds-error">${esc(s.error)}</div>` : '<em>No summary.</em>');
+        : (s && s.error ? `<div class="mc-feeds-error">${esc(s.error)}</div>` : `<em>${RSS_I18N.t('noSummary')}</em>`);
       body.innerHTML = main + _summaryActionsBar('entry', id, s && s.model);
       body.dataset.loaded = '1';
     } catch (e) {
@@ -2508,13 +3058,13 @@
     const modelBadge = model ? `<span class="mc-summary-model">${esc(model)}</span>` : '';
     // Delete is pushed to the far right of the action bar (margin-left:auto).
     const delBtn = (delId != null)
-      ? `<button type="button" class="mc-summary-actbtn mc-summary-actbtn-del" title="Delete summary" onclick="event.stopPropagation(); mcDeleteSummary(${delId})">🗑 Delete</button>`
+      ? `<button type="button" class="mc-summary-actbtn mc-summary-actbtn-del" title="${RSS_I18N.t('deleteSummary')}" onclick="event.stopPropagation(); mcDeleteSummary(${delId})">${RSS_I18N.t('deleteBtn')}</button>`
       : '';
     return `<div class="mc-summary-actbar">` +
-      `<button type="button" class="mc-summary-actbtn" title="Re-run this summary (replaces it)" ` +
-        `onclick="event.stopPropagation(); mcRerunSummary('${esc(rerunScope)}', ${targetAttr}, this)">↻ Rerun</button>` +
-      `<button type="button" class="mc-summary-actbtn" title="Copy summary text" ` +
-        `onclick="event.stopPropagation(); mcCopySummaryFrom(this)">⧉ Copy</button>` +
+      `<button type="button" class="mc-summary-actbtn" title="${RSS_I18N.t('rerunTitle')}" ` +
+        `onclick="event.stopPropagation(); mcRerunSummary('${esc(rerunScope)}', ${targetAttr}, this)">${RSS_I18N.t('rerun')}</button>` +
+      `<button type="button" class="mc-summary-actbtn" title="${RSS_I18N.t('copyTitle')}" ` +
+        `onclick="event.stopPropagation(); mcCopySummaryFrom(this)">${RSS_I18N.t('copy')}</button>` +
       modelBadge + delBtn +
     `</div>`;
   }
@@ -2523,29 +3073,29 @@
     const raw = body ? (body.dataset.raw || body.innerText || '') : '';
     const ok = await _copyToClipboard(raw);
     const orig = btn.innerHTML;
-    btn.innerHTML = ok ? '✓ Copied' : '✗ Failed';
+    btn.innerHTML = ok ? RSS_I18N.t('copied') : RSS_I18N.t('copyFailedShort');
     setTimeout(() => { btn.innerHTML = orig; }, 1500);
   };
   window.mcRerunSummary = async (scope, target, btn) => {
-    if (btn) { btn.disabled = true; btn.innerHTML = '↻ Rerunning…'; }
+    if (btn) { btn.disabled = true; btn.innerHTML = RSS_I18N.t('rerunning'); }
     try {
       const r = await fetch('/api/extensions/rss-feeds/sidecar/api/feeds/summarize', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ scope, target }), credentials: 'same-origin',
       });
       if (!r.ok) throw new Error(((await r.json()).error) || ('HTTP ' + r.status));
-      _summaryToast('Re-running summary…');
+      _summaryToast(RSS_I18N.t('rerunningToast'));
       // Show the in-flight state on any open expander for this entry now.
       if (scope === 'entry') {
         const body = $(`mcEntrySum-${target}`);
-        if (body) { body.dataset.loaded = ''; body.innerHTML = '<div class="mc-summary-loading">Summarizing…</div>'; }
+        if (body) { body.dataset.loaded = ''; body.innerHTML = `<div class="mc-summary-loading">${RSS_I18N.t('summarizingEllipsis')}</div>`; }
       }
       await refreshSidebar();
       _startSummaryPoll();
       if (_summaryView) renderSummariesView();
     } catch (e) {
-      _summaryToast('Rerun failed: ' + e.message, true);
-      if (btn) { btn.disabled = false; btn.innerHTML = '↻ Rerun'; }
+      _summaryToast(RSS_I18N.tf('rerunFailed', e.message), true);
+      if (btn) { btn.disabled = false; btn.innerHTML = RSS_I18N.t('rerun'); }
     }
   };
   window.mcSummarizeEntry = (id) => _summarize('entry', id);
@@ -2597,7 +3147,7 @@
     window.mcCloseEntryActions();
     if (navigator.share) {
       try {
-        await navigator.share({ title: data.title || 'Article', url: data.url });
+        await navigator.share({ title: data.title || RSS_I18N.t('articleFallbackCap'), url: data.url });
         return;
       } catch (err) {
         // User dismissed the sheet — done, no fallback.
@@ -2628,7 +3178,7 @@
     const url = btn && btn.getAttribute('data-url');
     if (!url) return;
     const ok = await _copyToClipboard(url);
-    btn.textContent = ok ? '✓ Link copied' : 'Copy failed — select & ⌘C';
+    btn.textContent = ok ? RSS_I18N.t('linkCopied') : RSS_I18N.t('copyFailedSelect');
     if (!ok) { btn.title = url; }
   };
   function _openShareFallback(url, title) {
@@ -2642,7 +3192,7 @@
       ['Telegram',  `https://t.me/share/url?url=${U}&text=${T}`,        '✈️'],
       ['X / Twitter', `https://twitter.com/intent/tweet?url=${U}&text=${T}`, '𝕏'],
       ['Facebook',  `https://www.facebook.com/sharer/sharer.php?u=${U}`, '🔵'],
-      ['Email',     `mailto:?subject=${T}&body=${TU}`,                  '✉️'],
+      [RSS_I18N.t('email'), `mailto:?subject=${T}&body=${TU}`,           '✉️'],
     ];
     const links = targets.map(([name, href, ico]) =>
       `<a class="mc-share-target" href="${_attr(_safeUrl(href))}" target="_blank" rel="noopener noreferrer" onclick="mcFeedsCloseModal()">` +
@@ -2652,9 +3202,9 @@
       `<div class="mc-share-grid">${links}</div>` +
       `<div class="mc-share-copy-row">` +
         `<input type="text" class="mc-share-url" readonly value="${esc(url)}" onclick="this.select()">` +
-        `<button type="button" class="mc-btn-sm mc-btn-sm-primary mc-share-copy-btn" data-url="${esc(url)}" onclick="mcCopyShareLink(this)">Copy link</button>` +
+        `<button type="button" class="mc-btn-sm mc-btn-sm-primary mc-share-copy-btn" data-url="${esc(url)}" onclick="mcCopyShareLink(this)">${RSS_I18N.t('copyLink')}</button>` +
       `</div>`;
-    _openModal('Share article', body);
+    _openModal(RSS_I18N.t('shareArticleTitle'), body);
   }
   window.mcSummarizeCurrent = () => {
     if (_activeFeedId !== null) return _summarize('feed', _activeFeedId);
@@ -2678,7 +3228,7 @@
     const ids = Array.from(document.querySelectorAll('#mcSummarizePopup .mc-sum-feed:checked'))
       .map(c => parseInt(c.value, 10)).filter(Number.isFinite);
     mcCloseSummarizePopup();
-    if (!ids.length) { alert('Select at least one feed to summarize.'); return; }
+    if (!ids.length) { alert(RSS_I18N.t('selectAtLeastOne')); return; }
     _summarize('feeds', ids);
   };
   window.mcOpenSummarizePopup = (e) => {
@@ -2686,21 +3236,21 @@
     if (typeof mcCloseFeedSettings === 'function') mcCloseFeedSettings();   // never both open
     if (document.getElementById('mcSummarizePopup')) return mcCloseSummarizePopup();  // toggle
     const feeds = (_feeds || []).slice().sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-    if (!feeds.length) { alert('No feeds to summarize.'); return; }
+    if (!feeds.length) { alert(RSS_I18N.t('noFeedsToSummarize')); return; }
     const filterOn = !!_settings.filter_enabled;
     const pop = document.createElement('div');
     pop.id = 'mcSummarizePopup';
     pop.className = 'mc-summarize-popup';
     pop.innerHTML =
-      `<div class="mc-summarize-popup-head"><span>Summarize feeds</span>` +
-        `<label class="mc-summarize-all"><input type="checkbox" id="mcSumSelectAll" checked> All</label></div>` +
-      (filterOn ? `<div class="mc-summarize-note">Filter ON — only entries matching your keywords will be summarized.</div>` : '') +
+      `<div class="mc-summarize-popup-head"><span>${RSS_I18N.t('summarizeFeeds')}</span>` +
+        `<label class="mc-summarize-all"><input type="checkbox" id="mcSumSelectAll" checked> ${RSS_I18N.t('all')}</label></div>` +
+      (filterOn ? `<div class="mc-summarize-note">${RSS_I18N.t('filterOnNote')}</div>` : '') +
       `<div class="mc-summarize-list">` +
         _renderCatGroupedList(feeds, 'mc-sum-feed', () => true) +
       `</div>` +
       `<div class="mc-summarize-actions">` +
-        `<button type="button" class="mc-btn-sm" onclick="mcCloseSummarizePopup()">Cancel</button>` +
-        `<button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcRunSummarizeSelected()">Summarize selected</button></div>`;
+        `<button type="button" class="mc-btn-sm" onclick="mcCloseSummarizePopup()">${RSS_I18N.t('cancel')}</button>` +
+        `<button type="button" class="mc-btn-sm mc-btn-sm-primary" onclick="mcRunSummarizeSelected()">${RSS_I18N.t('summarizeSelected')}</button></div>`;
     document.body.appendChild(pop);
     _placeFeedsPopup(pop, (e && e.target && e.target.closest('button')) || $('feedsSummarizeBtn'));
     const all = document.getElementById('mcSumSelectAll');

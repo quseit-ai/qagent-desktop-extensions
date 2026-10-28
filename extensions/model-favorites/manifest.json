@@ -3,7 +3,7 @@
     {
       "id": "model-favorites",
       "name": "Model Favorites",
-      "description": "Star your most-used models; favorites are promoted to the top of the composer model picker.",
+      "description": "Star your most-used models in the composer model picker. Favorited models are promoted to a ★ Favorites group at the top of the dropdown for one-click switching. Provider-aware and persisted locally. 在输入框的模型选择器中收藏常用模型，收藏项会提升到下拉列表顶部的「★ 收藏」分组，按提供商区分并保存在本地。",
       "scripts": [
         "assets/model-favorites.js"
       ],

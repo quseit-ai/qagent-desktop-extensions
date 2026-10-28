@@ -8,6 +8,84 @@
   const CFG_KEY = 'hwx-avatar-config';
   const PRESET_KEY = 'hwx-avatar-preset';
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload. Character and preset names are proper
+  // nouns and stay untranslated.
+  const STR = {
+    en: {
+      character: 'Character',
+      colors: 'Colors',
+      resetColors: 'Reset Colors',
+      trackOn: '👀 Track ✓',
+      trackOff: '👀 Static',
+      avatarSettings: 'Avatar settings',
+      colorSkin: 'Skin',
+      colorHair: 'Hair',
+      colorIris: 'Iris',
+      colorMouth: 'Mouth',
+      colorFur: 'Fur',
+      colorEars: 'Ears',
+      colorNose: 'Nose',
+      colorBody: 'Body',
+      colorAccent: 'Accent',
+      colorFace: 'Face',
+      colorEyes: 'Eyes',
+      colorHorns: 'Horns',
+    },
+    zh: {
+      character: '角色',
+      colors: '颜色',
+      resetColors: '恢复默认颜色',
+      trackOn: '👀 跟随 ✓',
+      trackOff: '👀 静止',
+      avatarSettings: '形象设置',
+      colorSkin: '皮肤',
+      colorHair: '头发',
+      colorIris: '虹膜',
+      colorMouth: '嘴巴',
+      colorFur: '毛发',
+      colorEars: '耳朵',
+      colorNose: '鼻子',
+      colorBody: '身体',
+      colorAccent: '点缀色',
+      colorFace: '脸部',
+      colorEyes: '眼睛',
+      colorHorns: '犄角',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
+  // Color swatch labels live in PRESETS as display data ('Skin', 'Eyes', …);
+  // map them to a STR key and translate at render time only.
+  function colorLabel(en) {
+    const key = 'color' + en;
+    return STR.en[key] ? t(key) : en;
+  }
+
   /* ── Character Presets (SVG path data for layered rendering) ──────────── *
    * Each character has independent layers: head → eyeWhites → iris →        *
    * pupils → highlights → mouth. Pupils are centered and get offset by      *
@@ -604,7 +682,7 @@
     var preset = PRESETS[currentPreset];
     var label = el.appendChild(document.createElement('div'));
     label.style.cssText = S_label;
-    label.textContent = 'Character';
+    label.textContent = t('character');
 
     var sel = el.appendChild(document.createElement('select'));
     sel.style.cssText = 'width:100%;padding:4px;margin-bottom:8px;background:var(--code-bg,#333);color:var(--text,#ddd);border:1px solid var(--border2,#555);border-radius:4px;font-size:12px';
@@ -618,13 +696,13 @@
 
     var title = el.appendChild(document.createElement('div'));
     title.style.cssText = S_label + ';margin-top:4px';
-    title.textContent = 'Colors';
+    title.textContent = t('colors');
 
     var cl = preset.colorLabels || {};
     Object.keys(cl).forEach(function(key) {
       var wrap = el.appendChild(document.createElement('label'));
       wrap.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:6px';
-      wrap.textContent = cl[key] + ' ';
+      wrap.textContent = colorLabel(cl[key]) + ' ';
       var inp = wrap.appendChild(document.createElement('input'));
       inp.type = 'color';
       inp.dataset.key = key;
@@ -640,7 +718,7 @@
     btnRow.style.cssText = 'margin-top:8px;display:flex;gap:6px';
 
     var resetBtn = btnRow.appendChild(document.createElement('button'));
-    resetBtn.textContent = 'Reset Colors';
+    resetBtn.textContent = t('resetColors');
     resetBtn.style.cssText = S_btn + 'padding:4px 10px;flex:1';
     resetBtn.addEventListener('click', function() { resetColors(); });
 
@@ -649,11 +727,11 @@
     trackRow.style.cssText = 'display:flex;gap:4px;margin-top:6px';
 
     var eyeBtn = trackRow.appendChild(document.createElement('button'));
-    eyeBtn.textContent = mouseTrackingEnabled ? '👀 Track ✓' : '👀 Static';
+    eyeBtn.textContent = t(mouseTrackingEnabled ? 'trackOn' : 'trackOff');
     eyeBtn.style.cssText = S_btn + 'padding:4px 8px;flex:1';
     eyeBtn.addEventListener('click', function() {
       mouseTrackingEnabled = !mouseTrackingEnabled;
-      eyeBtn.textContent = mouseTrackingEnabled ? '👀 Track ✓' : '👀 Static';
+      eyeBtn.textContent = t(mouseTrackingEnabled ? 'trackOn' : 'trackOff');
     });
   }
 
@@ -689,7 +767,7 @@
     var btn = document.createElement('button');
     btn.id = 'hwx-avatar-titlebar-btn';
     btn.type = 'button';
-    btn.setAttribute('aria-label', 'Avatar settings');
+    btn.setAttribute('aria-label', t('avatarSettings'));
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -697,7 +775,7 @@
     });
     var titlebar = document.querySelector('.app-titlebar');
     if (titlebar && titlebarUsable()) {
-      btn.title = 'Avatar settings';
+      btn.title = t('avatarSettings');
       btn.textContent = '⚙';
       var reload = document.getElementById('btnReload');
       if (reload && reload.parentNode) {
@@ -711,7 +789,7 @@
       // Banner-less layout: mount into the left rail; host replaced native
       // tooltips (#1775), so use its has-tooltip + data-tooltip convention.
       btn.className = 'rail-btn nav-tab has-tooltip';
-      btn.setAttribute('data-tooltip', 'Avatar settings');
+      btn.setAttribute('data-tooltip', t('avatarSettings'));
       btn.innerHTML = SMILE_SVG;
       // Sit with the content tabs, just above the rail spacer / settings.
       var spacer = rail.querySelector('.rail-spacer');

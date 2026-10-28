@@ -40,6 +40,64 @@
       .replace(/'/g, '&#39;');
   }
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      pinMessage: 'Pin message',
+      unpinMessage: 'Unpin message',
+      msgPinned: 'Message pinned',
+      msgUnpinned: 'Message unpinned',
+      pinCap: 'You can pin up to {0} messages. Unpin one first.',
+      pinOutsideWindow: 'That message is outside the loaded part of the transcript. Scroll up to load it, then try again.',
+      pinnedMessages: 'Pinned messages',
+      pinnedMessagesCount: 'Pinned messages ({0})',
+      noPinnedYet: 'No pinned messages yet. Hover a message and click the pin icon.',
+      messageHash: 'Message #',
+      unpin: 'Unpin',
+      unpinThisMessage: 'Unpin this message',
+    },
+    zh: {
+      pinMessage: '固定消息',
+      unpinMessage: '取消固定消息',
+      msgPinned: '消息已固定',
+      msgUnpinned: '已取消固定消息',
+      pinCap: '最多只能固定 {0} 条消息，请先取消固定一条。',
+      pinOutsideWindow: '该消息不在已加载的对话范围内。请向上滚动加载后再试。',
+      pinnedMessages: '已固定的消息',
+      pinnedMessagesCount: '已固定的消息（{0}）',
+      noPinnedYet: '还没有固定任何消息。将鼠标悬停在消息上，点击固定图标。',
+      messageHash: '消息 #',
+      unpin: '取消固定',
+      unpinThisMessage: '取消固定此消息',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
   // Resolve the active session id without relying on the page's module-scoped
   // `S` global (not exposed to extensions). Rendered message turns carry a
   // `data-session-id`; the route is also `/session/<id>`. Prefer the DOM
@@ -116,7 +174,7 @@
       text = body ? body.textContent : '';
     }
     text = (text || '').replace(/\s+/g, ' ').trim();
-    if (!text) text = 'Message #' + (rowIdx(row) != null ? rowIdx(row) : '?');
+    if (!text) text = t('messageHash') + (rowIdx(row) != null ? rowIdx(row) : '?');
     return text.length > PREVIEW_LEN ? text.slice(0, PREVIEW_LEN - 1) + '\u2026' : text;
   }
 
@@ -138,16 +196,16 @@
     if (isPinned(idx, pins)) {
       pins = pins.filter((p) => p.idx !== idx);
       savePins(pins);
-      toast('Message unpinned');
+      toast(t('msgUnpinned'));
     } else {
       if (pins.length >= MAX_PINS) {
-        toast('You can pin up to ' + MAX_PINS + ' messages. Unpin one first.');
+        toast(tf('pinCap', MAX_PINS));
         return;
       }
       pins.push({ idx: idx, preview: rowPreview(row) });
       pins.sort((a, b) => a.idx - b.idx);
       savePins(pins);
-      toast('Message pinned');
+      toast(t('msgPinned'));
     }
     redecorate(row ? [row] : null);
     refreshHeader();
@@ -169,7 +227,7 @@
     // Long transcripts virtualize rows out of the DOM; an off-window pin can't
     // be scrolled to without core's virtual-scroll internals. Tell the user
     // plainly rather than silently no-op.
-    toast('That message is outside the loaded part of the transcript. Scroll up to load it, then try again.');
+    toast(t('pinOutsideWindow'));
   }
 
   // ── per-row decoration ───────────────────────────────────────────────────
@@ -205,8 +263,8 @@
     btn.dataset.hwxPinState = state;
     btn.classList.toggle('hwx-pin-btn--active', pinned);
     btn.setAttribute('aria-pressed', pinned ? 'true' : 'false');
-    btn.title = pinned ? 'Unpin message' : 'Pin message';
-    btn.setAttribute('aria-label', pinned ? 'Unpin message' : 'Pin message');
+    btn.title = t(pinned ? 'unpinMessage' : 'pinMessage');
+    btn.setAttribute('aria-label', t(pinned ? 'unpinMessage' : 'pinMessage'));
     btn.innerHTML = pinButtonSvg(pinned);
   }
 
@@ -288,8 +346,8 @@
     btn.className = 'hwx-pin-header-btn';
     btn.setAttribute('aria-haspopup', 'true');
     btn.setAttribute('aria-expanded', 'false');
-    btn.title = 'Pinned messages';
-    btn.setAttribute('aria-label', 'Pinned messages');
+    btn.title = t('pinnedMessages');
+    btn.setAttribute('aria-label', t('pinnedMessages'));
     btn.innerHTML = pinButtonSvg(true) + '<span class="hwx-pin-badge" hidden>0</span>';
     btn.addEventListener('click', (ev) => {
       ev.preventDefault();
@@ -349,7 +407,7 @@
     popover = document.createElement('div');
     popover.className = 'hwx-pin-popover';
     popover.setAttribute('role', 'menu');
-    popover.setAttribute('aria-label', 'Pinned messages');
+    popover.setAttribute('aria-label', t('pinnedMessages'));
     document.body.appendChild(popover);
     renderPopover();
     positionPopover(btn);
@@ -367,13 +425,13 @@
 
     const head = document.createElement('div');
     head.className = 'hwx-pin-popover-head';
-    head.textContent = pins.length ? 'Pinned messages (' + pins.length + ')' : 'Pinned messages';
+    head.textContent = pins.length ? tf('pinnedMessagesCount', pins.length) : t('pinnedMessages');
     popover.appendChild(head);
 
     if (!pins.length) {
       const empty = document.createElement('div');
       empty.className = 'hwx-pin-popover-empty';
-      empty.textContent = 'No pinned messages yet. Hover a message and click the pin icon.';
+      empty.textContent = t('noPinnedYet');
       popover.appendChild(empty);
       return;
     }
@@ -386,13 +444,13 @@
 
       const text = document.createElement('span');
       text.className = 'hwx-pin-item-text';
-      text.textContent = p.preview || ('Message #' + p.idx);
+      text.textContent = p.preview || (t('messageHash') + p.idx);
       item.appendChild(text);
 
       const remove = document.createElement('span');
       remove.className = 'hwx-pin-item-remove';
-      remove.title = 'Unpin';
-      remove.setAttribute('aria-label', 'Unpin this message');
+      remove.title = t('unpin');
+      remove.setAttribute('aria-label', t('unpinThisMessage'));
       remove.innerHTML = '\u00d7';
       item.appendChild(remove);
 

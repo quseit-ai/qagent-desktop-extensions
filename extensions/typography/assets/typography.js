@@ -8,7 +8,6 @@
   const RAIL_BUTTON_ID = 'hwx-type-rail-button';
   const PANEL_ID = 'hwx-type-panel';
   const GOOGLE_STYLE_ID = 'hwx-type-google-fonts';
-  const DISCLOSURE = 'Google-hosted choices load selected families from Google and expose your browser IP to Google. WebUI default choices use core-provided system font stacks; this extension makes no external font request for them. Local fonts stay in this browser and are never sent to a server.';
   const STORAGE_KEY = 'selection';
   const FALLBACK_STORAGE_KEY = 'hermes-ext-typography-selection';
   const FONT_DB_NAME = 'hermes-ext-typography-fonts';
@@ -19,10 +18,211 @@
   const MAX_LOCAL_FONT_TOTAL_BYTES = 40 * 1024 * 1024;
   const FONT_ACCEPT = '.woff2,.woff,.ttf,.otf';
   const ROLES = ['interface', 'conversation', 'code'];
-  const ROLE_LABELS = Object.freeze({ interface: 'Interface', conversation: 'Conversations', code: 'Code' });
+  const ROLE_LABEL_KEYS = Object.freeze({ interface: 'roleInterface', conversation: 'roleConversation', code: 'roleCode' });
   const DEFAULTS = Object.freeze({ interface: 'default', conversation: 'same-ui', code: 'default' });
   const LOCAL_ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
-  const LOCAL_FONT_OVERFLOW_MESSAGE = 'Some stored local fonts were not loaded because the browser-local limits were exceeded. Extra stored fonts were not loaded; use browser site-data controls to clear them. New imports and replacements are unavailable until then.';
+
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      typography: 'Typography',
+      panelTitle: 'Typography',
+      subtitle: 'Choose a font for each part of Hermes.',
+      disclosure: 'Google-hosted choices load selected families from Google and expose your browser IP to Google. WebUI default choices use core-provided system font stacks; this extension makes no external font request for them. Local fonts stay in this browser and are never sent to a server.',
+      disclosureAria: 'Privacy and network information: {0}',
+      close: 'Close',
+      closeAria: 'Close typography',
+      preset: 'Preset',
+      presetAria: 'Typography preset',
+      presetCustom: 'Custom',
+      presetWebuiDefault: 'WebUI Default',
+      presetModern: 'Modern',
+      presetAccessible: 'Accessible',
+      presetComfortableReading: 'Comfortable Reading',
+      presetDeveloper: 'Developer',
+      presetDense: 'Dense',
+      presetWarm: 'Warm',
+      presetCyberdeck: 'Cyberdeck',
+      roleInterface: 'Interface',
+      roleConversation: 'Conversations',
+      roleCode: 'Code',
+      previewsAria: 'Font previews',
+      previewInterfaceSample: 'Ag Il1 O0 0123456789 · Clear controls and compact labels',
+      previewConversationSample: 'Ag Il1 O0 0123456789 · Readable paragraphs <em>feel at home</em> with <strong>clear emphasis</strong>.',
+      localFonts: 'Local fonts',
+      localDisclosure: 'Import up to 8 .woff2, .woff, .ttf, or .otf files, 10 MiB each and 40 MiB total.',
+      importFont: 'Import font',
+      localHelp: 'Choose local fonts in any role selector.',
+      fontWebuiDefault: 'WebUI default',
+      fontSameAsInterface: 'Same as interface',
+      noLocalFonts: 'No local fonts imported yet.',
+      storedUnavailable: 'Stored but unavailable; replace or delete it.',
+      rename: 'Rename',
+      replace: 'Replace',
+      delete: 'Delete',
+      localImportsLoading: 'Local font imports are loading.',
+      localImportsUnavailable: 'Local font imports are unavailable here because IndexedDB and FontFace support are required. Curated fonts and presets remain available.',
+      localFontsLoadingStored: 'Loading stored local fonts.',
+      localOverflow: 'Some stored local fonts were not loaded because the browser-local limits were exceeded. Extra stored fonts were not loaded; use browser site-data controls to clear them. New imports and replacements are unavailable until then.',
+      statusActivationFailed: 'Some stored local fonts could not be activated; their records were kept. Replace or delete them if needed.',
+      statusOverflowAndActivation: 'Some stored local fonts were not loaded because the browser-local limits were exceeded. Extra stored fonts were not loaded; use browser site-data controls to clear them. New imports and replacements are unavailable until then. Some stored local fonts could not be activated; their records were kept. Replace or delete them if needed.',
+      localImportsOpenFailed: 'Local font imports are unavailable because this browser could not open IndexedDB. Curated fonts and presets remain available.',
+      statusRaw: '{0}',
+      errMaxCount: 'You can store up to 8 local fonts.',
+      errTotalBytes: 'Local fonts can use up to 40 MiB in total.',
+      errUseFontFile: 'Use a .woff2, .woff, .ttf, or .otf font file.',
+      errEmptyFile: 'The font file is empty.',
+      errTooLargeFile: 'Font files must be 10 MiB or smaller.',
+      errMimeMismatch: 'The file MIME type does not match its extension.',
+      errSignatureMismatch: 'The file signature does not match a supported font format.',
+      errCannotReadBrowser: 'This browser cannot read local font files.',
+      errFileUnreadable: 'The selected file could not be read.',
+      errImportFailed: 'The font could not be imported.',
+      errReplaceFailed: 'The font could not be replaced; the previous font is unchanged.',
+      errPickerOpenFailed: 'The replacement picker could not open.',
+      errRenameUnavailable: 'Renaming is unavailable in this browser.',
+      promptFontName: 'Font name (80 characters maximum)',
+      errEmptyName: 'Font names cannot be empty.',
+      statusRenamed: 'Font renamed.',
+      errRenameFailed: 'The font could not be renamed.',
+      errDeleteUnavailable: 'Deleting is unavailable in this browser.',
+      confirmDelete: 'Delete this imported font?',
+      statusDeleted: 'Font deleted.',
+      errDeleteFailed: 'The font could not be deleted.',
+      statusReplaced: 'Font replaced. Its name and selections were preserved.',
+      errIdbOpen: 'Could not open local font storage.',
+      errIdbRequest: 'IndexedDB request failed.',
+      errIdbTransaction: 'IndexedDB transaction failed.',
+      errIdbAbort: 'IndexedDB transaction aborted.',
+      errIdbCursor: 'IndexedDB cursor failed.',
+    },
+    zh: {
+      typography: '字体',
+      panelTitle: '字体',
+      subtitle: '为 Hermes 的各个部分选择字体。',
+      disclosure: 'Google 托管的字体选项会从 Google 加载所选字体族，并向 Google 暴露你的浏览器 IP 地址。WebUI 默认选项使用核心内置的系统字体栈；本扩展不会为这些选项发起外部字体请求。本地字体仅保存在此浏览器中，绝不会发送到服务器。',
+      disclosureAria: '隐私与网络信息：{0}',
+      close: '关闭',
+      closeAria: '关闭字体设置',
+      preset: '预设',
+      presetAria: '字体预设',
+      presetCustom: '自定义',
+      presetWebuiDefault: 'WebUI 默认',
+      presetModern: '现代',
+      presetAccessible: '无障碍',
+      presetComfortableReading: '舒适阅读',
+      presetDeveloper: '开发者',
+      presetDense: '紧凑',
+      presetWarm: '温暖',
+      presetCyberdeck: '赛博终端',
+      roleInterface: '界面',
+      roleConversation: '对话',
+      roleCode: '代码',
+      previewsAria: '字体预览',
+      previewInterfaceSample: 'Ag Il1 O0 0123456789 · 清晰的控件与紧凑的标签',
+      previewConversationSample: 'Ag Il1 O0 0123456789 · 可读性佳的段落<em>自然舒适</em>，<strong>重点清晰</strong>。',
+      localFonts: '本地字体',
+      localDisclosure: '最多可导入 8 个 .woff2、.woff、.ttf 或 .otf 文件，每个不超过 10 MiB，总计不超过 40 MiB。',
+      importFont: '导入字体',
+      localHelp: '可在任意角色选择器中选择本地字体。',
+      fontWebuiDefault: 'WebUI 默认',
+      fontSameAsInterface: '与界面相同',
+      noLocalFonts: '尚未导入本地字体。',
+      storedUnavailable: '已保存但不可用；请替换或删除。',
+      rename: '重命名',
+      replace: '替换',
+      delete: '删除',
+      localImportsLoading: '正在加载本地字体导入功能。',
+      localImportsUnavailable: '此环境不支持本地字体导入，因为需要 IndexedDB 和 FontFace 支持。精选字体和预设仍可使用。',
+      localFontsLoadingStored: '正在加载已保存的本地字体。',
+      localOverflow: '部分已保存的本地字体因超出浏览器本地限制而未加载。多余的已保存字体未被载入；请使用浏览器的站点数据控制功能清除它们。在此之前无法导入或替换字体。',
+      statusActivationFailed: '部分已保存的本地字体无法启用；其记录仍被保留。如有需要，请替换或删除它们。',
+      statusOverflowAndActivation: '部分已保存的本地字体因超出浏览器本地限制而未加载。多余的已保存字体未被载入；请使用浏览器的站点数据控制功能清除它们。在此之前无法导入或替换字体。部分已保存的本地字体无法启用；其记录仍被保留。如有需要，请替换或删除它们。',
+      localImportsOpenFailed: '此浏览器无法打开 IndexedDB，因此本地字体导入不可用。精选字体和预设仍可使用。',
+      statusRaw: '{0}',
+      errMaxCount: '最多只能保存 8 个本地字体。',
+      errTotalBytes: '本地字体总共最多可使用 40 MiB。',
+      errUseFontFile: '请使用 .woff2、.woff、.ttf 或 .otf 字体文件。',
+      errEmptyFile: '字体文件为空。',
+      errTooLargeFile: '字体文件不得超过 10 MiB。',
+      errMimeMismatch: '文件的 MIME 类型与扩展名不匹配。',
+      errSignatureMismatch: '文件签名与受支持的字体格式不符。',
+      errCannotReadBrowser: '此浏览器无法读取本地字体文件。',
+      errFileUnreadable: '无法读取所选文件。',
+      errImportFailed: '无法导入该字体。',
+      errReplaceFailed: '无法替换该字体；原字体保持不变。',
+      errPickerOpenFailed: '无法打开替换文件选择器。',
+      errRenameUnavailable: '此浏览器不支持重命名。',
+      promptFontName: '字体名称（最多 80 个字符）',
+      errEmptyName: '字体名称不能为空。',
+      statusRenamed: '字体已重命名。',
+      errRenameFailed: '无法重命名字体。',
+      errDeleteUnavailable: '此浏览器不支持删除。',
+      confirmDelete: '要删除这个导入的字体吗？',
+      statusDeleted: '字体已删除。',
+      errDeleteFailed: '无法删除该字体。',
+      statusReplaced: '字体已替换。其名称和选择均已保留。',
+      errIdbOpen: '无法打开本地字体存储。',
+      errIdbRequest: 'IndexedDB 请求失败。',
+      errIdbTransaction: 'IndexedDB 事务失败。',
+      errIdbAbort: 'IndexedDB 事务已中止。',
+      errIdbCursor: 'IndexedDB 游标读取失败。',
+    },
+  };
+
+  const PRESET_LABEL_KEYS = Object.freeze({
+    'webui-default': 'presetWebuiDefault',
+    modern: 'presetModern',
+    accessible: 'presetAccessible',
+    'comfortable-reading': 'presetComfortableReading',
+    developer: 'presetDeveloper',
+    dense: 'presetDense',
+    warm: 'presetWarm',
+    cyberdeck: 'presetCyberdeck',
+  });
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
+  function roleLabel(role) {
+    return t(ROLE_LABEL_KEYS[role] || 'roleInterface');
+  }
+
+  function presetLabel(preset) {
+    const key = PRESET_LABEL_KEYS[preset.id];
+    return key ? t(key) : preset.label;
+  }
+
+  // Translate descriptive catalog labels at render time; font family names
+  // (Inter, Noto Sans, …) stay as-is and option values remain data keys.
+  function catalogOption(option) {
+    if (option && option.value === 'default') return { ...option, label: t('fontWebuiDefault') };
+    if (option && option.value === 'same-ui') return { ...option, label: t('fontSameAsInterface') };
+    return option;
+  }
 
   const PRESETS = Object.freeze([
     Object.freeze({ id: 'webui-default', label: 'WebUI Default', interface: 'default', conversation: 'same-ui', code: 'default' }),
@@ -122,7 +322,7 @@
     available: false,
     ready: false,
     overflow: false,
-    message: 'Local font imports are loading.',
+    message: 'localImportsLoading',
     error: false,
   };
   let localFontBusy = false;
@@ -369,11 +569,11 @@
   function populateSelect(select, role) {
     if (!select) return;
     while (select.firstChild) select.removeChild(select.firstChild);
-    CATALOG[role].forEach((option) => appendSelectOption(select, option));
+    CATALOG[role].forEach((option) => appendSelectOption(select, catalogOption(option)));
     const locals = [...localFonts.values()].filter((record) => record.active);
     if (locals.length) {
       const group = document.createElement('optgroup');
-      group.label = 'Local fonts';
+      group.label = t('localFonts');
       locals.forEach((record) => appendSelectOption(group, localOptionFor(record, role)));
       select.appendChild(group);
     }
@@ -385,13 +585,13 @@
     field.className = 'hwx-type-preset-field';
     const label = document.createElement('span');
     label.className = 'hwx-type-field-label';
-    label.textContent = 'Preset';
+    label.textContent = t('preset');
     const select = document.createElement('select');
     select.id = 'hwx-type-preset';
     select.className = 'hwx-type-select';
-    select.setAttribute('aria-label', 'Typography preset');
-    appendSelectOption(select, { value: 'custom', label: 'Custom' });
-    PRESETS.forEach((preset) => appendSelectOption(select, { value: preset.id, label: preset.label }));
+    select.setAttribute('aria-label', t('presetAria'));
+    appendSelectOption(select, { value: 'custom', label: t('presetCustom') });
+    PRESETS.forEach((preset) => appendSelectOption(select, { value: preset.id, label: presetLabel(preset) }));
     select.addEventListener('change', () => setPreset(select.value));
     field.append(label, select);
     host.appendChild(field);
@@ -402,25 +602,49 @@
     field.className = 'hwx-type-field';
     const label = document.createElement('span');
     label.className = 'hwx-type-field-label';
-    label.textContent = ROLE_LABELS[role];
+    label.textContent = roleLabel(role);
     const select = document.createElement('select');
     select.id = 'hwx-type-' + role;
     select.className = 'hwx-type-select';
-    select.setAttribute('aria-label', ROLE_LABELS[role]);
+    select.setAttribute('aria-label', roleLabel(role));
     populateSelect(select, role);
     select.addEventListener('change', () => setRole(role, select.value));
     field.append(label, select);
     host.appendChild(field);
   }
 
-  function setLocalStatus(message, error = false) {
-    localFontState.message = message;
-    localFontState.error = error;
+  // Errors created here carry an i18n key so the status line can be rendered
+  // in the current locale on every render (the message text stays English for
+  // callers that inspect the Error itself).
+  function localizedError(key, message) {
+    const error = new Error(message || key);
+    error.i18nKey = key;
+    return error;
+  }
+
+  function statusForError(error, fallbackKey) {
+    if (error && typeof error.i18nKey === 'string') return { key: error.i18nKey, args: [] };
+    const message = error && typeof error.message === 'string' ? error.message : '';
+    return message ? { key: 'statusRaw', args: [message] } : { key: fallbackKey, args: [] };
+  }
+
+  function localFontMessage() {
+    return localFontState.message ? tf(localFontState.message, ...(localFontState.messageArgs || [])) : '';
+  }
+
+  function renderLocalStatus() {
     const status = document.getElementById('hwx-type-local-status');
-    if (status) {
-      status.textContent = message;
-      status.classList.toggle('hwx-type-status-error', error);
-    }
+    if (!status) return;
+    status.textContent = localFontMessage();
+    status.classList.toggle('hwx-type-status-error', localFontState.error);
+  }
+
+  function setLocalStatus(spec, error = false) {
+    const normalized = spec && typeof spec === 'object' ? spec : { key: spec || '' };
+    localFontState.message = normalized.key || '';
+    localFontState.messageArgs = normalized.args || [];
+    localFontState.error = error;
+    renderLocalStatus();
   }
 
   function setLocalControlsDisabled(disabled) {
@@ -441,7 +665,7 @@
     if (!localFonts.size) {
       const empty = document.createElement('li');
       empty.className = 'hwx-type-local-empty';
-      empty.textContent = 'No local fonts imported yet.';
+      empty.textContent = t('noLocalFonts');
       list.appendChild(empty);
       return;
     }
@@ -468,7 +692,7 @@
       if (!record.active) {
         const meta = document.createElement('span');
         meta.className = 'hwx-type-local-meta';
-        meta.textContent = 'Stored but unavailable; replace or delete it.';
+        meta.textContent = t('storedUnavailable');
         details.appendChild(meta);
       }
 
@@ -477,19 +701,19 @@
       const rename = document.createElement('button');
       rename.type = 'button';
       rename.className = 'hwx-type-local-action';
-      rename.textContent = 'Rename';
+      rename.textContent = t('rename');
       rename.disabled = localFontBusy;
       rename.addEventListener('click', () => renameLocalFont(record.id));
       const replace = document.createElement('button');
       replace.type = 'button';
       replace.className = 'hwx-type-local-action';
-      replace.textContent = 'Replace';
+      replace.textContent = t('replace');
       replace.disabled = localFontBusy || localFontState.overflow;
       replace.addEventListener('click', () => chooseReplacement(record.id));
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.className = 'hwx-type-local-action hwx-type-local-delete';
-      remove.textContent = 'Delete';
+      remove.textContent = t('delete');
       remove.disabled = localFontBusy;
       remove.addEventListener('click', () => deleteLocalFont(record.id));
       actions.append(rename, replace, remove);
@@ -512,11 +736,7 @@
       }
     }
     setLocalControlsDisabled(!localFontState.available || !localFontState.ready || localFontBusy || localFontState.overflow);
-    const status = document.getElementById('hwx-type-local-status');
-    if (status) {
-      status.textContent = localFontState.message;
-      status.classList.toggle('hwx-type-status-error', localFontState.error);
-    }
+    renderLocalStatus();
     renderLocalFonts();
     updatePreviews();
     if (restoreFocus && !panel.contains(document.activeElement)) {
@@ -535,33 +755,33 @@
         <div class="hwx-type-header">
           <div>
             <div class="hwx-type-title-row">
-              <h2 id="hwx-type-title">Typography</h2>
-              <button type="button" class="hwx-type-info has-tooltip has-tooltip--bottom" data-tooltip="${DISCLOSURE}" aria-label="Privacy and network information: ${DISCLOSURE}">i</button>
+              <h2 id="hwx-type-title">${t('panelTitle')}</h2>
+              <button type="button" class="hwx-type-info has-tooltip has-tooltip--bottom" data-tooltip="${t('disclosure')}" aria-label="${tf('disclosureAria', t('disclosure'))}">i</button>
             </div>
-            <p class="hwx-type-subtitle">Choose a font for each part of Hermes.</p>
+            <p class="hwx-type-subtitle">${t('subtitle')}</p>
           </div>
-          <button type="button" class="hwx-type-close" aria-label="Close typography">&times;</button>
+          <button type="button" class="hwx-type-close" aria-label="${t('closeAria')}">&times;</button>
         </div>
         <div class="hwx-type-body">
           <div class="hwx-type-preset"></div>
           <div class="hwx-type-controls"></div>
-          <div class="hwx-type-previews" aria-label="Font previews">
-            <div class="hwx-type-preview" data-hwx-type-preview="interface"><span class="hwx-type-preview-label">Interface</span><span>Ag Il1 O0 0123456789 · Clear controls and compact labels</span></div>
-            <div class="hwx-type-preview" data-hwx-type-preview="conversation"><span class="hwx-type-preview-label">Conversations</span><span>Ag Il1 O0 0123456789 · Readable paragraphs <em>feel at home</em> with <strong>clear emphasis</strong>.</span></div>
-            <div class="hwx-type-preview hwx-type-preview-code" data-hwx-type-preview="code"><span class="hwx-type-preview-label">Code</span><code>Il1 O0 {} [] != =&gt; ,.;:</code></div>
+          <div class="hwx-type-previews" aria-label="${t('previewsAria')}">
+            <div class="hwx-type-preview" data-hwx-type-preview="interface"><span class="hwx-type-preview-label">${t('roleInterface')}</span><span>${t('previewInterfaceSample')}</span></div>
+            <div class="hwx-type-preview" data-hwx-type-preview="conversation"><span class="hwx-type-preview-label">${t('roleConversation')}</span><span>${t('previewConversationSample')}</span></div>
+            <div class="hwx-type-preview hwx-type-preview-code" data-hwx-type-preview="code"><span class="hwx-type-preview-label">${t('roleCode')}</span><code>Il1 O0 {} [] != =&gt; ,.;:</code></div>
           </div>
           <section class="hwx-type-local" aria-labelledby="hwx-type-local-title">
-            <h3 id="hwx-type-local-title">Local fonts</h3>
-            <p class="hwx-type-local-disclosure">Import up to 8 .woff2, .woff, .ttf, or .otf files, 10 MiB each and 40 MiB total.</p>
+            <h3 id="hwx-type-local-title">${t('localFonts')}</h3>
+            <p class="hwx-type-local-disclosure">${t('localDisclosure')}</p>
             <input id="hwx-type-local-file" type="file" accept=".woff2,.woff,.ttf,.otf" hidden>
-            <button type="button" id="hwx-type-import">Import font</button>
-            <p class="hwx-type-local-help">Choose local fonts in any role selector.</p>
+            <button type="button" id="hwx-type-import">${t('importFont')}</button>
+            <p class="hwx-type-local-help">${t('localHelp')}</p>
             <p id="hwx-type-local-status" class="hwx-type-local-status" role="status" aria-live="polite" aria-atomic="true"></p>
             <ul id="hwx-type-local-list" class="hwx-type-local-list"></ul>
           </section>
         </div>
         <div class="hwx-type-actions">
-          <button type="button" class="hwx-type-close-action">Close</button>
+          <button type="button" class="hwx-type-close-action">${t('close')}</button>
         </div>
       </div>`;
     const preset = panel.querySelector('.hwx-type-preset');
@@ -665,8 +885,8 @@
     button.id = RAIL_BUTTON_ID;
     button.type = 'button';
     button.className = 'rail-btn nav-tab has-tooltip hwx-type-rail-button';
-    button.dataset.tooltip = 'Typography';
-    button.setAttribute('aria-label', 'Typography');
+    button.dataset.tooltip = t('typography');
+    button.setAttribute('aria-label', t('typography'));
     button.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></svg>';
     button.addEventListener('click', (event) => { event.preventDefault(); open(button); });
     const spacer = rail.querySelector('.rail-spacer');
@@ -717,10 +937,10 @@
     const count = currentCount + (replacing ? 0 : 1);
     const totalBytes = currentTotalBytes - (replacing ? oldBytes : 0) + newBytes;
     if (count > MAX_LOCAL_FONT_COUNT) {
-      return { ok: false, count, totalBytes, error: 'You can store up to 8 local fonts.' };
+      return { ok: false, count, totalBytes, error: 'You can store up to 8 local fonts.', errorKey: 'errMaxCount' };
     }
     if (totalBytes > MAX_LOCAL_FONT_TOTAL_BYTES) {
-      return { ok: false, count, totalBytes, error: 'Local fonts can use up to 40 MiB in total.' };
+      return { ok: false, count, totalBytes, error: 'Local fonts can use up to 40 MiB in total.', errorKey: 'errTotalBytes' };
     }
     return { ok: true, count, totalBytes };
   }
@@ -749,12 +969,12 @@
 
   function validateLocalFontMetadata({ name, type, size, signature } = {}) {
     const format = extensionForFilename(name);
-    if (!Object.prototype.hasOwnProperty.call(SIGNATURES, format)) return { ok: false, error: 'Use a .woff2, .woff, .ttf, or .otf font file.' };
-    if (!Number.isInteger(size) || size <= 0) return { ok: false, error: 'The font file is empty.' };
-    if (size > MAX_FONT_BYTES) return { ok: false, error: 'Font files must be 10 MiB or smaller.' };
+    if (!Object.prototype.hasOwnProperty.call(SIGNATURES, format)) return { ok: false, error: 'Use a .woff2, .woff, .ttf, or .otf font file.', errorKey: 'errUseFontFile' };
+    if (!Number.isInteger(size) || size <= 0) return { ok: false, error: 'The font file is empty.', errorKey: 'errEmptyFile' };
+    if (size > MAX_FONT_BYTES) return { ok: false, error: 'Font files must be 10 MiB or smaller.', errorKey: 'errTooLargeFile' };
     const mime = typeof type === 'string' ? type.trim().toLowerCase() : '';
-    if (mime && mime !== 'application/octet-stream' && !MIME_TYPES[format].has(mime)) return { ok: false, error: 'The file MIME type does not match its extension.' };
-    if (!SIGNATURES[format].includes(signature)) return { ok: false, error: 'The file signature does not match a supported font format.' };
+    if (mime && mime !== 'application/octet-stream' && !MIME_TYPES[format].has(mime)) return { ok: false, error: 'The file MIME type does not match its extension.', errorKey: 'errMimeMismatch' };
+    if (!SIGNATURES[format].includes(signature)) return { ok: false, error: 'The file signature does not match a supported font format.', errorKey: 'errSignatureMismatch' };
     return { ok: true, format };
   }
 
@@ -799,7 +1019,7 @@
   function idbRequest(request) {
     return new Promise((resolve, reject) => {
       request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error || new Error('IndexedDB request failed.'));
+      request.onerror = () => reject(request.error || localizedError('errIdbRequest', 'IndexedDB request failed.'));
     });
   }
 
@@ -815,8 +1035,8 @@
         callback(value);
       };
       transaction.oncomplete = () => finish(resolve);
-      transaction.onerror = () => finish(reject, transaction.error || new Error('IndexedDB transaction failed.'));
-      transaction.onabort = () => finish(reject, transaction.error || new Error('IndexedDB transaction aborted.'));
+      transaction.onerror = () => finish(reject, transaction.error || localizedError('errIdbTransaction', 'IndexedDB transaction failed.'));
+      transaction.onabort = () => finish(reject, transaction.error || localizedError('errIdbAbort', 'IndexedDB transaction aborted.'));
     });
   }
 
@@ -841,7 +1061,7 @@
         if (!database.objectStoreNames.contains(FONT_STORE_NAME)) database.createObjectStore(FONT_STORE_NAME, { keyPath: 'id' });
       };
       request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error || new Error('Could not open local font storage.'));
+      request.onerror = () => reject(request.error || localizedError('errIdbOpen', 'Could not open local font storage.'));
     });
   }
 
@@ -864,11 +1084,11 @@
           callback(value);
         };
         transaction.oncomplete = () => finish(resolve, { records, count, totalBytes, overflow });
-        transaction.onerror = () => finish(reject, transaction.error || new Error('IndexedDB transaction failed.'));
-        transaction.onabort = () => finish(reject, transaction.error || new Error('IndexedDB transaction aborted.'));
+        transaction.onerror = () => finish(reject, transaction.error || localizedError('errIdbTransaction', 'IndexedDB transaction failed.'));
+        transaction.onabort = () => finish(reject, transaction.error || localizedError('errIdbAbort', 'IndexedDB transaction aborted.'));
         try {
           const request = transaction.objectStore(FONT_STORE_NAME).openCursor();
-          request.onerror = () => finish(reject, request.error || new Error('IndexedDB cursor failed.'));
+          request.onerror = () => finish(reject, request.error || localizedError('errIdbCursor', 'IndexedDB cursor failed.'));
           request.onsuccess = () => {
             const cursor = request.result;
             if (!cursor) return;
@@ -935,22 +1155,18 @@
     if (face && document.fonts && typeof document.fonts.delete === 'function') document.fonts.delete(face);
   }
 
-  function localErrorMessage(error, fallback) {
-    return error && typeof error.message === 'string' && error.message ? error.message : fallback;
-  }
-
   async function readValidatedFile(file, nameOverride) {
-    if (!file || typeof file.arrayBuffer !== 'function') throw new Error('This browser cannot read local font files.');
-    if (Number.isFinite(file.size) && file.size > MAX_FONT_BYTES) throw new Error('Font files must be 10 MiB or smaller.');
+    if (!file || typeof file.arrayBuffer !== 'function') throw localizedError('errCannotReadBrowser', 'This browser cannot read local font files.');
+    if (Number.isFinite(file.size) && file.size > MAX_FONT_BYTES) throw localizedError('errTooLargeFile', 'Font files must be 10 MiB or smaller.');
     const bytes = toArrayBuffer(await file.arrayBuffer());
-    if (!bytes) throw new Error('The selected file could not be read.');
+    if (!bytes) throw localizedError('errFileUnreadable', 'The selected file could not be read.');
     const metadata = validateLocalFontMetadata({
       name: file.name,
       type: file.type,
       size: bytes.byteLength,
       signature: signatureForBytes(bytes),
     });
-    if (!metadata.ok) throw new Error(metadata.error);
+    if (!metadata.ok) throw localizedError(metadata.errorKey, metadata.error);
     const name = nameOverride === undefined ? displayNameForFilename(file.name) : String(nameOverride).trim().slice(0, 80);
     return { bytes, format: metadata.format, name: name || 'Imported font' };
   }
@@ -970,14 +1186,14 @@
   function importLocalFont(file) {
     runLocalOperation(async () => {
       try {
-        if (localFontState.overflow) throw new Error(LOCAL_FONT_OVERFLOW_MESSAGE);
+        if (localFontState.overflow) throw localizedError('localOverflow');
         const imported = await readValidatedFile(file);
         const capacity = localFontCapacity({
           currentCount: localFontStoredCount,
           currentTotalBytes: localFontStoredBytes,
           newBytes: imported.bytes.byteLength,
         });
-        if (!capacity.ok) throw new Error(capacity.error);
+        if (!capacity.ok) throw localizedError(capacity.errorKey, capacity.error);
         let id = makeOpaqueId();
         while (localFonts.has(id)) id = makeOpaqueId();
         const face = await loadFace(id, imported.bytes);
@@ -1006,7 +1222,7 @@
         setLocalStatus('');
         syncControls();
       } catch (error) {
-        setLocalStatus(localErrorMessage(error, 'The font could not be imported.'), true);
+        setLocalStatus(statusForError(error, 'errImportFailed'), true);
       }
     });
   }
@@ -1037,7 +1253,7 @@
       input.click();
     } catch (error) {
       cleanup();
-      setLocalStatus(localErrorMessage(error, 'The replacement picker could not open.'), true);
+      setLocalStatus(statusForError(error, 'errPickerOpenFailed'), true);
     }
   }
 
@@ -1046,7 +1262,7 @@
       const previous = localFonts.get(id);
       if (!previous) return;
       try {
-        if (localFontState.overflow) throw new Error(LOCAL_FONT_OVERFLOW_MESSAGE);
+        if (localFontState.overflow) throw localizedError('localOverflow');
         const replacement = await readValidatedFile(file, previous.name);
         const capacity = localFontCapacity({
           currentCount: localFontStoredCount,
@@ -1055,7 +1271,7 @@
           replacing: true,
           oldBytes: previous.bytes.byteLength,
         });
-        if (!capacity.ok) throw new Error(capacity.error);
+        if (!capacity.ok) throw localizedError(capacity.errorKey, capacity.error);
         const face = await loadFace(id, replacement.bytes);
         document.fonts.add(face);
         const next = {
@@ -1081,10 +1297,10 @@
           selection = normalizeSelection(persisted);
           apply();
         }
-        setLocalStatus('Font replaced. Its name and selections were preserved.');
+        setLocalStatus('statusReplaced');
         syncControls();
       } catch (error) {
-        setLocalStatus(localErrorMessage(error, 'The font could not be replaced; the previous font is unchanged.'), true);
+        setLocalStatus(statusForError(error, 'errReplaceFailed'), true);
       }
     });
   }
@@ -1093,14 +1309,14 @@
     const record = localFonts.get(id);
     if (!record || localFontBusy) return;
     if (typeof window.prompt !== 'function') {
-      setLocalStatus('Renaming is unavailable in this browser.', true);
+      setLocalStatus('errRenameUnavailable', true);
       return;
     }
-    const entered = window.prompt('Font name (80 characters maximum)', record.name);
+    const entered = window.prompt(t('promptFontName'), record.name);
     if (entered === null) return;
     const name = String(entered).trim().slice(0, 80);
     if (!name) {
-      setLocalStatus('Font names cannot be empty.', true);
+      setLocalStatus('errEmptyName', true);
       return;
     }
     runLocalOperation(async () => {
@@ -1108,10 +1324,10 @@
       try {
         await putFontRecord(next);
         localFonts.set(id, next);
-        setLocalStatus('Font renamed.');
+        setLocalStatus('statusRenamed');
         syncControls();
       } catch (error) {
-        setLocalStatus(localErrorMessage(error, 'The font could not be renamed.'), true);
+        setLocalStatus(statusForError(error, 'errRenameFailed'), true);
       }
     });
   }
@@ -1120,12 +1336,12 @@
     const record = localFonts.get(id);
     if (!record || localFontBusy) return;
     if (typeof window.confirm !== 'function') {
-      setLocalStatus('Deleting is unavailable in this browser.', true);
+      setLocalStatus('errDeleteUnavailable', true);
       return;
     }
     let confirmed;
-    try { confirmed = window.confirm('Delete this imported font?'); } catch (_) {
-      setLocalStatus('Deleting is unavailable in this browser.', true);
+    try { confirmed = window.confirm(t('confirmDelete')); } catch (_) {
+      setLocalStatus('errDeleteUnavailable', true);
       return;
     }
     if (!confirmed) return;
@@ -1146,10 +1362,10 @@
           saveSelection();
           apply();
         }
-        setLocalStatus('Font deleted.');
+        setLocalStatus('statusDeleted');
         syncControls();
       } catch (error) {
-        setLocalStatus(localErrorMessage(error, 'The font could not be deleted.'), true);
+        setLocalStatus(statusForError(error, 'errDeleteFailed'), true);
       }
     });
   }
@@ -1160,7 +1376,7 @@
         available: false,
         ready: false,
         overflow: false,
-        message: 'Local font imports are unavailable here because IndexedDB and FontFace support are required. Curated fonts and presets remain available.',
+        message: 'localImportsUnavailable',
         error: true,
       };
       selection = normalizeSelection(selection);
@@ -1168,7 +1384,7 @@
       syncControls();
       return;
     }
-    localFontState = { available: true, ready: false, overflow: false, message: 'Loading stored local fonts.', error: false };
+    localFontState = { available: true, ready: false, overflow: false, message: 'localFontsLoadingStored', error: false };
     syncControls();
     try {
       const stored = await readFontRecords();
@@ -1192,15 +1408,16 @@
           activationFailures += 1;
         }
       }
-      const messages = [];
-      if (stored.overflow) messages.push(LOCAL_FONT_OVERFLOW_MESSAGE);
-      if (activationFailures) messages.push('Some stored local fonts could not be activated; their records were kept. Replace or delete them if needed.');
+      let message = '';
+      if (stored.overflow && activationFailures) message = 'statusOverflowAndActivation';
+      else if (stored.overflow) message = 'localOverflow';
+      else if (activationFailures) message = 'statusActivationFailed';
       localFontState = {
         available: true,
         ready: true,
         overflow: stored.overflow,
-        message: messages.join(' '),
-        error: Boolean(messages.length),
+        message,
+        error: Boolean(message),
       };
     } catch (_) {
       localFonts = new Map();
@@ -1210,7 +1427,7 @@
         available: false,
         ready: false,
         overflow: false,
-        message: 'Local font imports are unavailable because this browser could not open IndexedDB. Curated fonts and presets remain available.',
+        message: 'localImportsOpenFailed',
         error: true,
       };
       selection = normalizeSelection(selection);

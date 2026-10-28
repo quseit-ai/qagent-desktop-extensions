@@ -3,7 +3,7 @@
     {
       "id": "theme-creator",
       "name": "Theme Creator",
-      "description": "Build your own theme with a live color editor; saves into the native Appearance picker.",
+      "description": "Build your own theme with a live color editor; saves into the native Appearance picker. 自定义主题可实时预览并保存到系统外观选择器，所有数据都保存在本地。",
       "scripts": [
         "assets/theme-creator.js"
       ],

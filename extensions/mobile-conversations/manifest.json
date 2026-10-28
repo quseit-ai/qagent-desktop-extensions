@@ -3,7 +3,7 @@
     {
       "id": "mobile-conversations",
       "name": "Mobile Conversations Button",
-      "description": "Phone-only floating Conversations button with same-location drawer close X and shortcut menu for Hermes WebUI.",
+      "description": "Phone-only floating Conversations button for Hermes WebUI that opens the existing mobile conversations drawer, becomes a same-location close X while the drawer is open, and exposes long-press shortcuts. 仅在手机上显示的浮动对话按钮：打开移动端对话侧边栏，侧边栏打开后就地变为关闭图标，并支持长按快捷菜单。",
       "scripts": [
         "assets/mobile-conversations.js"
       ],

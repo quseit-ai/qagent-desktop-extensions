@@ -3,7 +3,7 @@
     {
       "id": "custom-avatar",
       "name": "Custom Assistant Avatar",
-      "description": "Give the assistant a custom avatar image in the chat transcript.",
+      "description": "Give the assistant a custom avatar image in the chat transcript. 在聊天记录中为助手设置自定义头像图片。",
       "scripts": [
         "assets/custom-avatar.js"
       ],

@@ -3,7 +3,7 @@
     {
       "id": "mcp-tool-shortcuts",
       "name": "MCP Tool Shortcuts",
-      "description": "Pin MCP tools and draft a ready-to-send request into the composer (never auto-executes).",
+      "description": "Pin frequently-used MCP tools and get a one-click strip that DRAFTS a ready-to-send natural-language tool request into the composer. Never auto-executes a tool — it only inserts a prompt you review and send. Lives in Settings → MCP Tools. 固定常用的 MCP 工具，并可一键把待发送的自然语言工具请求起草到输入框；绝不自动执行工具，仅插入由你检查后发送的提示词。",
       "scripts": [
         "assets/mcp-tool-shortcuts.js"
       ],

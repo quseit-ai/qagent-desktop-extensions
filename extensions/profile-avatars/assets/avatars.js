@@ -16,6 +16,78 @@
   var EXT = 'profile-avatars';
   var BASE = '/api/extensions/' + EXT + '/sidecar';
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang'. Core's own i18n already defines a global `t`, so this
+  // extension keeps its table in a uniquely named namespace. Read live (no
+  // cache) so a locale switch is picked up on the next render.
+  var PROFILE_AVATARS_I18N = (() => {
+    const STR = {
+      en: {
+        managerTitle: 'Profile avatars',
+        manageAria: 'Manage profile avatars',
+        launcherSub: 'Upload or remove a photo for each profile',
+        close: 'Close',
+        hint: 'PNG / JPEG / WebP, ≤ 512 KiB. 256–512px square looks best.',
+        customImage: 'custom image',
+        initialOnly: 'initial only',
+        upload: 'Upload',
+        replace: 'Replace',
+        remove: 'Remove',
+        removeTitle: 'Remove profile avatar?',
+        removeMessage: 'Remove the stored avatar for {0}?',
+        notDecodable: 'The selected file is not a decodable image.',
+        invalidDimensions: 'The selected image has invalid dimensions.',
+        dimensionsTooLarge: 'Image dimensions are too large (max 4096px / 16 megapixels).',
+        tooLarge: 'Image too large (max 512 KiB). Resize to 256–512px first.',
+        enableSidecar: 'Enable WebUI authentication and approve this sidecar in Settings → Extensions.',
+        deleteFailed: 'Delete failed (HTTP {0})',
+        uploadFailed: 'Upload failed (HTTP {0})',
+        unknownProfile: 'Unknown profile',
+      },
+      zh: {
+        managerTitle: '资料头像',
+        manageAria: '管理资料头像',
+        launcherSub: '为每个资料上传或移除照片',
+        close: '关闭',
+        hint: '支持 PNG / JPEG / WebP，≤ 512 KiB。256–512px 的正方形效果最佳。',
+        customImage: '自定义图片',
+        initialOnly: '仅首字母',
+        upload: '上传',
+        replace: '替换',
+        remove: '移除',
+        removeTitle: '移除资料头像？',
+        removeMessage: '确定移除 {0} 已保存的头像吗？',
+        notDecodable: '所选文件不是可解码的图片。',
+        invalidDimensions: '所选图片的尺寸无效。',
+        dimensionsTooLarge: '图片尺寸过大（上限 4096px / 1600 万像素）。',
+        tooLarge: '图片过大（上限 512 KiB）。请先缩小到 256–512px。',
+        enableSidecar: '请在“设置 → 扩展”中启用 WebUI 身份验证并批准此 sidecar。',
+        deleteFailed: '删除失败（HTTP {0}）',
+        uploadFailed: '上传失败（HTTP {0}）',
+        unknownProfile: '未知资料',
+      },
+    };
+    function isZh() {
+      let v = '';
+      try { v = String(document.documentElement.lang || ''); } catch (_) {}
+      if (!/^zh/i.test(v)) {
+        try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+      }
+      return /^zh/i.test(v);
+    }
+    function t(key) {
+      const table = isZh() ? STR.zh : STR.en;
+      return (table && table[key]) || STR.en[key] || key;
+    }
+    function tf(key, ...args) {
+      let out = t(key);
+      args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+      return out;
+    }
+    return { t: t, tf: tf };
+  })();
+
   var _byProfile = Object.create(null);
   var _activeName = null;
   var _loaded = false;
@@ -355,7 +427,7 @@
       method: 'DELETE', credentials: 'same-origin',
     }).then(function (r) {
       if (!r.ok) return r.json().catch(function () { return {}; }).then(function (jj) {
-        throw new Error(jj.error || ('Delete failed (HTTP ' + r.status + ')'));
+        throw new Error(jj.error || PROFILE_AVATARS_I18N.tf('deleteFailed', r.status));
       });
       return r.json().catch(function () { return {}; });
     });
@@ -363,7 +435,7 @@
 
   function upload(name, blob) {
     var current = _entryForName(name);
-    if (!current) return Promise.reject(new Error('Unknown profile'));
+    if (!current) return Promise.reject(new Error(PROFILE_AVATARS_I18N.t('unknownProfile')));
     var displayName = _canonicalLookupName(name);
     var storageName = current.storageName || displayName;
     var fd = new FormData();
@@ -372,7 +444,7 @@
       method: 'POST', body: fd, credentials: 'same-origin',
     }).then(function (r) {
       if (!r.ok) return r.json().catch(function () { return {}; }).then(function (jj) {
-        throw new Error(jj.error || ('Upload failed (HTTP ' + r.status + ')'));
+        throw new Error(jj.error || PROFILE_AVATARS_I18N.tf('uploadFailed', r.status));
       });
       return r.json();
     }).then(function (jj) {
@@ -391,7 +463,7 @@
   }
   function remove(name) {
     var current = _entryForName(name);
-    if (!current) return Promise.reject(new Error('Unknown profile'));
+    if (!current) return Promise.reject(new Error(PROFILE_AVATARS_I18N.t('unknownProfile')));
     var displayName = _canonicalLookupName(name);
     var targets = [current.storageName || displayName];
     if (displayName !== targets[0]) targets.push(displayName);
@@ -516,11 +588,11 @@
     else window.alert(message);
   }
   function _confirmAvatarRemoval(name) {
-    var message = 'Remove the stored avatar for ' + name + '?';
+    var message = PROFILE_AVATARS_I18N.tf('removeMessage', name);
     if (typeof window.showConfirmDialog === 'function') {
       return window.showConfirmDialog({
-        title: 'Remove profile avatar?', message: message,
-        confirmLabel: 'Remove', danger: true, focusCancel: true,
+        title: PROFILE_AVATARS_I18N.t('removeTitle'), message: message,
+        confirmLabel: PROFILE_AVATARS_I18N.t('remove'), danger: true, focusCancel: true,
       });
     }
     return Promise.resolve(window.confirm(message));
@@ -545,17 +617,17 @@
       nm.textContent = p.label || p.name;
       var sub = document.createElement('div');
       sub.className = 'pa-m-sub';
-      sub.textContent = p.url ? 'custom image' : 'initial only';
+      sub.textContent = p.url ? PROFILE_AVATARS_I18N.t('customImage') : PROFILE_AVATARS_I18N.t('initialOnly');
       meta.appendChild(nm); meta.appendChild(sub);
       var actions = document.createElement('div');
       actions.className = 'pa-m-actions';
       var up = document.createElement('button');
-      up.type = 'button'; up.className = 'pa-m-btn'; up.textContent = p.url ? 'Replace' : 'Upload';
+      up.type = 'button'; up.className = 'pa-m-btn'; up.textContent = p.url ? PROFILE_AVATARS_I18N.t('replace') : PROFILE_AVATARS_I18N.t('upload');
       up.onclick = function () { _pickAndUpload(p.name); };
       actions.appendChild(up);
       if (p.url) {
         var rm = document.createElement('button');
-        rm.type = 'button'; rm.className = 'pa-m-btn pa-m-btn--danger'; rm.textContent = 'Remove';
+        rm.type = 'button'; rm.className = 'pa-m-btn pa-m-btn--danger'; rm.textContent = PROFILE_AVATARS_I18N.t('remove');
         rm.onclick = function () {
           _clearAvatarStatus();
           _confirmAvatarRemoval(p.label || p.name).then(function (approved) {
@@ -579,7 +651,7 @@
         if (typeof bitmap.close === 'function') bitmap.close();
         return dimensions;
       }).catch(function () {
-        throw new Error('The selected file is not a decodable image.');
+        throw new Error(PROFILE_AVATARS_I18N.t('notDecodable'));
       });
     }
     return new Promise(function (resolve, reject) {
@@ -592,7 +664,7 @@
       };
       image.onerror = function () {
         URL.revokeObjectURL(objectUrl);
-        reject(new Error('The selected file is not a decodable image.'));
+        reject(new Error(PROFILE_AVATARS_I18N.t('notDecodable')));
       };
       image.src = objectUrl;
     });
@@ -601,9 +673,9 @@
     return _decodeAvatarDimensions(file).then(function (dimensions) {
       var width = Number(dimensions.width) || 0;
       var height = Number(dimensions.height) || 0;
-      if (!width || !height) throw new Error('The selected image has invalid dimensions.');
+      if (!width || !height) throw new Error(PROFILE_AVATARS_I18N.t('invalidDimensions'));
       if (width > 4096 || height > 4096 || width * height > 16 * 1024 * 1024) {
-        throw new Error('Image dimensions are too large (max 4096px / 16 megapixels).');
+        throw new Error(PROFILE_AVATARS_I18N.t('dimensionsTooLarge'));
       }
       return dimensions;
     });
@@ -617,7 +689,7 @@
       _clearAvatarStatus();
       // 512 KiB matches the core sidecar-proxy's hard response cap — anything
       // larger uploads "ok" then 502s on read, so reject it up front.
-      if (f.size > 512 * 1024) { _showAvatarError('Image too large (max 512 KiB). Resize to 256–512px first.'); return; }
+      if (f.size > 512 * 1024) { _showAvatarError(PROFILE_AVATARS_I18N.t('tooLarge')); return; }
       _validateAvatarFile(f)
         .then(function () { return upload(name, f); })
         .catch(function (e) { _showAvatarError(e.message); });
@@ -631,10 +703,10 @@
     ov.className = 'pa-m-overlay';
     ov.style.display = 'none';
     ov.innerHTML =
-      '<div class="pa-m-card" role="dialog" aria-modal="true" aria-label="Profile avatars">' +
-        '<div class="pa-m-topbar"><span class="pa-m-brand">Profile avatars</span>' +
-          '<button type="button" class="pa-m-close" id="paAvatarClose" aria-label="Close">&times;</button></div>' +
-        '<div class="pa-m-hint">PNG / JPEG / WebP, ≤ 512 KiB. 256–512px square looks best.</div>' +
+      '<div class="pa-m-card" role="dialog" aria-modal="true" aria-label="' + PROFILE_AVATARS_I18N.t('managerTitle') + '">' +
+        '<div class="pa-m-topbar"><span class="pa-m-brand">' + PROFILE_AVATARS_I18N.t('managerTitle') + '</span>' +
+          '<button type="button" class="pa-m-close" id="paAvatarClose" aria-label="' + PROFILE_AVATARS_I18N.t('close') + '">&times;</button></div>' +
+        '<div class="pa-m-hint">' + PROFILE_AVATARS_I18N.t('hint') + '</div>' +
         '<div class="pa-m-status" id="paAvatarManagerStatus" role="status" aria-live="polite" hidden></div>' +
         '<div class="pa-m-list" id="paAvatarManagerList"></div>' +
       '</div>';
@@ -671,7 +743,7 @@
     sidecarConsented().then(function (ok) {
       if (!ok) {
         _renderManagerList();
-        _showAvatarError('Enable WebUI authentication and approve this sidecar in Settings → Extensions.');
+        _showAvatarError(PROFILE_AVATARS_I18N.t('enableSidecar'));
         return;
       }
       return refresh().then(_renderManagerList);
@@ -697,10 +769,10 @@
     if (!panel.querySelector('.profile-card, .profile-card-header')) return;
     var btn = document.createElement('button');
     btn.id = 'paAvatarLauncher'; btn.type = 'button'; btn.className = 'pa-profiles-launcher';
-    btn.setAttribute('aria-label', 'Manage profile avatars');
+    btn.setAttribute('aria-label', PROFILE_AVATARS_I18N.t('manageAria'));
     btn.innerHTML =
       '<span class="pa-pl-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span>' +
-      '<span class="pa-pl-text"><span class="pa-pl-title">Profile avatars</span><span class="pa-pl-sub">Upload or remove a photo for each profile</span></span>' +
+      '<span class="pa-pl-text"><span class="pa-pl-title">' + PROFILE_AVATARS_I18N.t('managerTitle') + '</span><span class="pa-pl-sub">' + PROFILE_AVATARS_I18N.t('launcherSub') + '</span></span>' +
       '<span class="pa-pl-chevron" aria-hidden="true">&rsaquo;</span>';
     btn.addEventListener('click', openManager);
     panel.insertBefore(btn, panel.firstChild);

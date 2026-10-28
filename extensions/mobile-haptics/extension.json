@@ -1,8 +1,8 @@
 {
   "id": "mobile-haptics",
   "name": "Mobile Haptics",
-  "description": "A short device vibration when an assistant turn finishes, so a phone user who set the device down gets a physical \"it's done\" cue. Opt-in; Android / Android-PWA only (no-ops on desktop and iOS Safari).",
-  "version": "0.1.0",
+  "description": "A short device vibration when an assistant turn finishes, so a phone user who set the device down gets a physical \"it's done\" cue. Opt-in; Android / Android-PWA only (no-ops on desktop and iOS Safari). 当助手回合结束时让设备短暂振动，为放下手机的用户提供物理提示。需手动开启，仅 Android / Android-PWA 生效（桌面与 iOS Safari 无操作）。",
+  "version": "0.2.0",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [
@@ -47,7 +47,7 @@
     {
       "key": "enabled",
       "type": "boolean",
-      "label": "Vibrate when a turn finishes",
+      "label": "Vibrate when a turn finishes / 回合结束后振动",
       "default": true
     }
   ]

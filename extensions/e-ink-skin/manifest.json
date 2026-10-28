@@ -3,7 +3,7 @@
     {
       "id": "e-ink-skin",
       "name": "E-Ink Skin",
-      "description": "Maximum-contrast near-monochrome light skin for e-ink displays; registers into the native Appearance picker.",
+      "description": "Maximum-contrast near-monochrome light skin for e-ink displays; registers into the native Appearance picker. 专为电子墨水屏优化的高对比度、近单色浅色皮肤，可在系统外观选择器中选择。",
       "scripts": [
         "assets/e-ink-skin.js"
       ],
