@@ -536,6 +536,9 @@
       row.dataset.rel = rel;
       row.dataset.depth = String(depth);
       row.setAttribute('role', 'treeitem');
+      // Full name on hover: the row truncates long names with an ellipsis, so
+      // the native title tooltip is the only place the whole name is visible.
+      row.title = en.name || rel;
       if (en.type === 'dir' || en.is_dir) row.setAttribute('aria-expanded', 'false');
       const chev = document.createElement('span');
       chev.className = 'hwx-extapp-tree-chev';
