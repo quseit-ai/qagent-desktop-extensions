@@ -3,7 +3,7 @@
     {
       "id": "assistant-avatar",
       "name": "Assistant Avatar",
-      "description": "Animated companion character that reacts to AI state and follows your mouse.",
+      "description": "Animated companion character that reacts to AI state and follows your mouse. 一个会响应 AI 状态并跟随鼠标光标的动画伙伴角色。",
       "scripts": ["assets/avatar.js"],
       "stylesheets": ["assets/avatar.css"]
     }

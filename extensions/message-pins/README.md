@@ -6,6 +6,14 @@ header popover that lists your pinned messages with click-to-jump, and a small
 badge showing the pin count. Pins are saved locally in your browser, per
 session.
 
+## 中文说明
+
+本扩展让你在对话中固定个别消息：每条消息的操作栏会多出一个固定按钮，
+右上角有带计数的入口，点开后可查看已固定消息列表并点击跳转。每个会话
+最多固定 3 条，超出时会提示先取消一条。固定记录按会话保存在浏览器的
+`localStorage` 中（键：`hermes-ext-message-pins`），不会跨设备同步。
+界面文案会跟随 WebUI 的语言设置，简体中文环境下自动显示中文。
+
 ## What It Does
 
 - Adds a pin button to each message (in the hover action bar, with a floating

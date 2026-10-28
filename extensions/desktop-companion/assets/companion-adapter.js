@@ -39,6 +39,49 @@
     return String(value || '').replace(/\s+/g, ' ').trim();
   }
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot register
+  // into core's dictionary, so keep a small local one and follow the page
+  // language. Read live (no cache) so a locale switch applies on the next render.
+  // Only bubble/status copy the desktop pet shows to the user lives here; ids,
+  // status keys, and protocol values stay untranslated.
+  const STR = {
+    en: {
+      session: 'Session',
+      working: 'Hermes is working',
+      readyToReview: 'Ready to review',
+      actionRequired: 'Action required',
+    },
+    zh: {
+      session: '会话',
+      working: 'Hermes 正在工作',
+      readyToReview: '可以查看了',
+      actionRequired: '需要处理',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
   function readJsonStorage(key) {
     try {
       const parsed = JSON.parse(localStorage.getItem(key) || '{}');
@@ -351,7 +394,7 @@
   }
 
   function sessionTitle(session) {
-    return cleanText(session.display_title || session.title || session.name || 'Session');
+    return cleanText(session.display_title || session.title || session.name || '') || t('session');
   }
 
   function messageContentText(message) {
@@ -502,11 +545,11 @@
         session.process_text ||
         session.status_text ||
         processTextFromRuntime(session, detail, runtime) ||
-        'Hermes is working'
+        t('working')
       );
     }
     if (status === 'ready') {
-      return compactBubbleText(attention.text || latestFinalText(detail) || session.summary || 'Ready to review');
+      return compactBubbleText(attention.text || latestFinalText(detail) || session.summary || t('readyToReview'));
     }
     return cleanText(attention.text || session.process_text || '');
   }
@@ -742,7 +785,7 @@
           : emptyActionRequiredMetadata();
         const baseText = sessionText(session, finalStatus, detail, runtime);
         const text = finalStatus === 'action_required'
-          ? compactBubbleText(action.action_required_description || action.action_required_command || baseText || 'Action required')
+          ? compactBubbleText(action.action_required_description || action.action_required_command || baseText || t('actionRequired'))
           : baseText;
         return {
           session_id: sessionId(session),

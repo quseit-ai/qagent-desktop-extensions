@@ -6,6 +6,13 @@ maximum-contrast, near-monochrome light skin tuned for **e-ink displays**
 **Settings → Appearance** skin picker, so you select it exactly like a built-in
 skin.
 
+## 中文说明
+
+- 提供一款专为电子墨水屏（Kindle、Boox、reMarkable 等）优化的高对比度、近单色浅色皮肤。
+- 纯白背景、近黑文字、硬边框，避免灰上加灰，并压平阴影。
+- 通过核心的主题注册能力注册，可直接在“设置 → 外观”的皮肤选择器中选择。
+- 需要较新版本的 WebUI；若内核不支持，扩展会静默停用，不会报错。
+
 ## What It Does
 
 - Registers an **E-Ink** skin via the core theme-registration capability

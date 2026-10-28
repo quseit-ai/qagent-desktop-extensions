@@ -4,6 +4,17 @@ Typography lets users choose curated fonts, role-based presets, and browser-loca
 font files for the Hermes WebUI interface, conversations, and code. It adds a
 **Typography** button to the WebUI rail.
 
+## 中文说明
+
+本扩展可为 Hermes WebUI 的界面、对话和代码分别选择字体，并在侧边栏添加
+「字体」按钮。面板提供精选 Google Fonts、按角色划分的预设，以及仅在浏览器
+本地保存的字体导入。
+
+- 预设：WebUI 默认、现代、无障碍、舒适阅读、Noto、IBM Plex、开发者、紧凑、温暖、赛博终端。
+- 字体选择按角色（`interface`、`conversation`、`code`）保存，可随时手动调整。
+- 本地字体仅保存在此浏览器中，不会发送到服务器；Google 字体选项会从 Google 加载。
+- 界面跟随 WebUI 的语言设置（`<html lang>` 或 `localStorage['hermes-lang']`），支持英文和简体中文。
+
 ## Install for local testing
 
 From a Hermes WebUI checkout, point the manifest-bundle loader at this entry:

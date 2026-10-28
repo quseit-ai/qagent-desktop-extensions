@@ -6,6 +6,14 @@ the existing mobile conversations drawer, then stays in the same floating
 position as an **X** above the open drawer so it can be closed again. It also
 provides a long-press shortcuts menu for common conversation navigation actions.
 
+## 中文说明
+
+本扩展在手机宽度下为聊天界面添加一个浮动的「对话」按钮：轻点打开现有的
+移动端对话侧边栏，侧边栏打开后按钮停留在原位并变成关闭（X）图标；长按
+可打开快捷菜单，包含新建对话、打开侧边栏、回到顶部、跳到最新消息。
+桌面宽度下界面保持不变。界面文案会跟随 WebUI 的语言设置，简体中文环境
+下自动显示中文。
+
 ## What It Does
 
 - Adds a phone-width-only floating Conversations button inside the chat messages

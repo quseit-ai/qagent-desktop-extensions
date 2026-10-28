@@ -6,6 +6,19 @@ list, an empty item exits it, and Tab indents by two spaces. Continuation binds 
 whichever Enter chord is **not** your configured send key, so sending is never
 hijacked (see "What It Does").
 
+## 中文说明
+
+本扩展让消息输入框中的列表编辑像现代编辑器一样：
+
+- 在有序（`1.`、`1)`）或无序（`-`、`*`、`+`）列表项中按续行键，会自动插入
+  下一个标记并保留缩进；在空列表项上按续行键则退出列表。
+- `Tab` 将当前列表项缩进两个空格，`Shift+Tab` 反缩进；不在列表中时 `Tab`
+  在光标处插入两个空格。
+- 续行键始终是 Core 不用于发送的那个 Enter 组合，因此不会劫持发送操作。
+
+本扩展不渲染任何界面文案，因此没有需要本地化的 UI 字符串；扩展名称与描述
+已提供中文版本。
+
 ## What It Does
 
 - **The continuation key is an Enter chord that Core does _not_ send** for your

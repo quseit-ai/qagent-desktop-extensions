@@ -149,7 +149,12 @@ class InstalledArtifactSettingsTest(unittest.TestCase):
         setting = runtime_entry["settings_schema"][0]
         self.assertEqual(setting["key"], "enabled")
         self.assertEqual(setting["type"], "boolean")
-        self.assertEqual(setting["label"], "Vibrate when a turn finishes")
+        # Labels are bilingual ("English / 中文") once an extension is
+        # localized; the English label must still lead the string.
+        self.assertTrue(
+            setting["label"].startswith("Vibrate when a turn finishes"),
+            setting["label"],
+        )
         self.assertIs(setting["default"], True)
 
     def test_production_artifact_install_exposes_external_app_tab_settings(self) -> None:
@@ -160,25 +165,29 @@ class InstalledArtifactSettingsTest(unittest.TestCase):
         installed, runtime_entry = self._install_artifact("external-app-tab")
         self.assertTrue(installed["installed"])
         self.assertIs(runtime_entry["storage_owned"], True)
+        schema = runtime_entry["settings_schema"]
         self.assertEqual(
-            runtime_entry["settings_schema"],
+            [(f["key"], f["type"], f["default"]) for f in schema],
             [
-                {
-                    "key": "url",
-                    "type": "string",
-                    "label": "App URL",
-                    "description": "",
-                    "default": "",
-                },
-                {
-                    "key": "label",
-                    "type": "string",
-                    "label": "Rail label",
-                    "description": "",
-                    "default": "App",
-                },
+                # workspace mode is the default; the external URL is opt-in
+                ("mode", "string", "workspace"),
+                ("url", "string", ""),
+                ("label", "string", "App"),
+                ("workspace", "string", ""),
+                ("lastFile", "string", ""),
             ],
         )
+        # Labels are bilingual ("English / 中文"); the English label must lead.
+        english_labels = [
+            "Mode",
+            "App URL",
+            "Rail label",
+            "Workspace path",
+            "Last previewed file",
+        ]
+        for field, english in zip(schema, english_labels):
+            self.assertTrue(field["label"].startswith(english), field["label"])
+            self.assertEqual(field["description"], "")
 
 
 if __name__ == "__main__":

@@ -32,6 +32,72 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot register
+  // into core's dictionary, so keep a small local one and follow the page
+  // language. Read live (no cache) so a locale switch applies on the next render.
+  const STR = {
+    en: {
+      conversation: 'Conversation',
+      noConversation: 'No conversation to export.',
+      messagesRendered: '{0} messages rendered',
+      windowedNoteHtml: 'Note: this conversation is long enough to be ' +
+        'windowed/virtualized, so this export covers the currently-loaded ' +
+        'transcript, which may not include the entire conversation. Scroll to ' +
+        'the top to load earlier messages before exporting for a complete copy.',
+      you: 'You',
+      assistant: 'Assistant',
+      exportingLoaded: 'Exporting the loaded transcript — scroll up to include earlier messages.',
+      windowedMarkdownNote: '> _Note: this export covers the currently-loaded transcript and may ' +
+        'not include the entire conversation (long transcripts are windowed). ' +
+        'Scroll to the top to load earlier messages before exporting._',
+      loadedCopied: 'Loaded transcript copied as Markdown (scroll up for earlier messages)',
+      copied: 'Conversation copied as Markdown',
+      exportToPdf: 'Export to PDF',
+      copyAsMarkdown: 'Copy as Markdown',
+      exportConversation: 'Export conversation',
+    },
+    zh: {
+      conversation: '对话',
+      noConversation: '没有可导出的对话。',
+      messagesRendered: '已渲染 {0} 条消息',
+      windowedNoteHtml: '注意：该对话较长，已启用窗口化/虚拟滚动，因此本次导出只包含当前已加载的对话内容，可能不完整。' +
+        '导出前请滚动到顶部加载更早的消息，以获得完整副本。',
+      you: '你',
+      assistant: '助手',
+      exportingLoaded: '正在导出已加载的对话——向上滚动可包含更早的消息。',
+      windowedMarkdownNote: '> _注意：本次导出只包含当前已加载的对话内容，可能不完整（长对话会启用窗口化）。' +
+        '导出前请滚动到顶部加载更早的消息。_',
+      loadedCopied: '已将已加载的对话复制为 Markdown（向上滚动可获取更早消息）',
+      copied: '已将对话复制为 Markdown',
+      exportToPdf: '导出为 PDF',
+      copyAsMarkdown: '复制为 Markdown',
+      exportConversation: '导出对话',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
+  }
+
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key);
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)); });
+    return out;
+  }
+
   // Produce a SANITIZED clone of a rendered .msg-body for the print document.
   // Although core already sanitizes rendered markdown, we never re-inject raw
   // innerHTML (gate rule: clone, don't reparse attacker-influenceable HTML).
@@ -77,8 +143,8 @@
 
   function currentTitle() {
     const el = $('appTitlebarTitle');
-    const t = el ? el.textContent.trim() : '';
-    return (t && t !== 'Hermes') ? t : 'Conversation';
+    const title = el ? el.textContent.trim() : '';
+    return (title && title !== 'Hermes') ? title : t('conversation');
   }
 
   function hasOpenConversation() {
@@ -144,7 +210,7 @@
 
   function exportPdf() {
     const rows = collectRows();
-    if (!rows.length) { toast('No conversation to export.'); return; }
+    if (!rows.length) { toast(t('noConversation')); return; }
     const title = currentTitle();
     const windowed = transcriptMaybeWindowed();
     // Build an off-screen print root that ONLY shows during print.
@@ -157,12 +223,9 @@
     // BODIES are appended as SANITIZED CLONES (never raw innerHTML reparse).
     const headHtml = '<div class="hwx-print-head"><h1>' + escapeHtml(title) + '</h1>' +
       '<div class="hwx-print-meta">' + escapeHtml(new Date().toLocaleString()) +
-      ' · ' + rows.length + ' messages rendered</div>' +
+      ' · ' + tf('messagesRendered', rows.length) + '</div>' +
       (windowed
-        ? '<div class="hwx-print-note">Note: this conversation is long enough to be ' +
-          'windowed/virtualized, so this export covers the currently-loaded ' +
-          'transcript, which may not include the entire conversation. Scroll to ' +
-          'the top to load earlier messages before exporting for a complete copy.</div>'
+        ? '<div class="hwx-print-note">' + t('windowedNoteHtml') + '</div>'
         : '') +
       '</div>';
     const head = document.createElement('div');
@@ -173,7 +236,7 @@
       msg.className = 'hwx-print-msg hwx-print-' + r.role;
       const role = document.createElement('div');
       role.className = 'hwx-print-role';
-      role.textContent = (r.role === 'user' ? 'You' : 'Assistant');
+      role.textContent = (r.role === 'user' ? t('you') : t('assistant'));
       const bodyWrap = document.createElement('div');
       bodyWrap.className = 'hwx-print-body';
       bodyWrap.appendChild(sanitizeClone(r.body));   // sanitized clone, not raw HTML
@@ -190,7 +253,7 @@
       window.removeEventListener('afterprint', cleanup);
     };
     window.addEventListener('afterprint', cleanup);
-    if (windowed) toast('Exporting the loaded transcript — scroll up to include earlier messages.');
+    if (windowed) toast(t('exportingLoaded'));
     // Give layout a tick, then print.
     setTimeout(() => { try { window.print(); } catch (_) { cleanup(); } }, 60);
     closeMenu();
@@ -199,20 +262,18 @@
   // ── Markdown copy ─────────────────────────────────────────────────────────
   function exportMarkdown() {
     const rows = collectRows();
-    if (!rows.length) { toast('No conversation to export.'); return; }
+    if (!rows.length) { toast(t('noConversation')); return; }
     const windowed = transcriptMaybeWindowed();
     let md = '# ' + currentTitle() + '\n\n';
     if (windowed) {
-      md += '> _Note: this export covers the currently-loaded transcript and may ' +
-        'not include the entire conversation (long transcripts are windowed). ' +
-        'Scroll to the top to load earlier messages before exporting._\n\n';
+      md += t('windowedMarkdownNote') + '\n\n';
     }
     for (const r of rows) {
-      md += '## ' + (r.role === 'user' ? 'You' : 'Assistant') + '\n\n' + r.text + '\n\n';
+      md += '## ' + (r.role === 'user' ? t('you') : t('assistant')) + '\n\n' + r.text + '\n\n';
     }
     const done = () => toast(windowed
-      ? 'Loaded transcript copied as Markdown (scroll up for earlier messages)'
-      : 'Conversation copied as Markdown');
+      ? t('loadedCopied')
+      : t('copied'));
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(md).then(done).catch(() => fallbackCopy(md, done));
     } else {
@@ -241,8 +302,8 @@
       b.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); fn(); });
       return b;
     };
-    menu.appendChild(mkItem('Export to PDF', exportPdf));
-    menu.appendChild(mkItem('Copy as Markdown', exportMarkdown));
+    menu.appendChild(mkItem(t('exportToPdf'), exportPdf));
+    menu.appendChild(mkItem(t('copyAsMarkdown'), exportMarkdown));
     document.body.appendChild(menu);
     const r = anchor.getBoundingClientRect();
     const w = menu.offsetWidth || 180;
@@ -294,8 +355,8 @@
     const btn = document.createElement('button');
     btn.id = BTN_ID;
     btn.type = 'button';
-    btn.dataset.tooltip = 'Export conversation';
-    btn.setAttribute('aria-label', 'Export conversation');
+    btn.dataset.tooltip = t('exportConversation');
+    btn.setAttribute('aria-label', t('exportConversation'));
     btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleMenu(btn); });
     if (titlebarUsable()) {
       const reload = $('btnReload');
@@ -323,6 +384,9 @@
   function refresh() {
     const btn = ensureButton();
     if (!btn) return;
+    // Re-read the locale so a language switch updates the tooltip without reload.
+    btn.dataset.tooltip = t('exportConversation');
+    btn.setAttribute('aria-label', t('exportConversation'));
     btn.style.display = hasOpenConversation() ? '' : 'none';
   }
 

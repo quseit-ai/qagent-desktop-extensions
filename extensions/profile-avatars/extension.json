@@ -1,8 +1,8 @@
 {
   "id": "profile-avatars",
   "name": "Profile Avatars",
-  "description": "Per-profile avatar images everywhere: profile chips, transcript assistant badges, and the session list (including other-profile chats). Server-stored via a loopback sidecar, so avatars sync across devices with zero localStorage.",
-  "version": "0.1.1",
+  "description": "Per-profile avatar images everywhere: profile chips, transcript assistant badges, and the session list (including other-profile chats). Server-stored via a loopback sidecar, so avatars sync across devices with zero localStorage. 每个资料的头像会显示在资料标签、聊天徽章和会话列表中，并存储在服务端，可在各设备间同步。",
+  "version": "0.2.0",
   "author": "asorourx",
   "assets": {
     "scripts": [

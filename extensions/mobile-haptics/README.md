@@ -4,6 +4,16 @@ Mobile Haptics is a trusted local Hermes WebUI extension that gives your phone a
 short vibration when an assistant turn finishes. If you start a long task and
 set the device down, the buzz is a physical "it's done" cue.
 
+## 中文说明
+
+本扩展在助手回合结束时让手机短暂振动一下，作为「已完成」的物理提示，适合
+发起长任务后把设备放下的场景。它通过 Core 的 `turn:complete` 生命周期事件
+触发 `navigator.vibrate()`，开关状态保存在扩展设置中。
+
+平台支持：Android / Android-PWA 可用；桌面浏览器与 iOS Safari 不支持
+`navigator.vibrate`，此时扩展会静默降级（仅在控制台输出提示）。设置面板中的
+开关标签会以中英文双语显示。
+
 ## What It Does
 
 - Subscribes to the Core `turn:complete` lifecycle event and triggers a short

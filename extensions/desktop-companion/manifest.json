@@ -3,7 +3,7 @@
     {
       "id": "desktop-companion",
       "name": "Hermes WebUI Desktop Companion",
-      "description": "Trusted local desktop companion adapter for Hermes WebUI.",
+      "description": "Trusted local desktop companion adapter for Hermes WebUI. 适用于 Hermes WebUI 的可信本地桌面伴侣适配器。",
       "scripts": [
         "assets/companion-adapter.js"
       ],

@@ -191,7 +191,13 @@ class FrontendContractTests(unittest.TestCase):
             "function _validateAvatarFile", 1
         )[0]
         message = "The selected file is not a decodable image."
-        self.assertEqual(block.count(message), 2)
+        # The frontend is localized: both decode-failure branches (bitmap
+        # path and <img> path) must reference the SAME i18n key, and the exact
+        # English copy still lives in the en table. Older builds used the raw
+        # literal twice; accept that shape too so the contract stays readable.
+        key_ref = "PROFILE_AVATARS_I18N.t('notDecodable')"
+        self.assertEqual(block.count(key_ref) + block.count(message), 2)
+        self.assertIn("notDecodable: '%s'" % message, self.source)
 
     def test_renamed_root_alias_is_canonical_across_public_frontend_api(self) -> None:
         harness = r"""

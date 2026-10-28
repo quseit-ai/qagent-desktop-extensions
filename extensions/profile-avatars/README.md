@@ -7,6 +7,13 @@ all your devices and browsers — and each image is downloaded **once per page
 load** into a shared in-memory object URL. Nothing is written to
 `localStorage` or any other persistent browser storage.
 
+## 中文说明
+
+- 为每个配置文件（profile）显示专属头像，出现在标题栏/输入框的资料标签、聊天记录中的助手徽章以及会话列表中。
+- 头像存储在服务端的回环 sidecar（SQLite）中，一次上传即可在所有设备间同步。
+- 点击“配置文件”标签页顶部的按钮可打开管理面板，上传、替换或移除头像。
+- 未设置头像时，会显示根据名称生成的颜色首字母。
+
 ## What It Does
 
 - **Native profile chips** — the titlebar and composer profile chips show the

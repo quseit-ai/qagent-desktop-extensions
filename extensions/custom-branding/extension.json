@@ -1,8 +1,8 @@
 {
   "id": "custom-branding",
   "name": "Custom Branding",
-  "description": "White-label the Hermes WebUI chrome with your own logo and favicon. Click the titlebar logo to upload a custom logo (swaps the titlebar + empty-state marks) and a custom favicon (swaps the browser tab icon). Images are downscaled and stored locally, and re-applied as the UI re-renders.",
-  "version": "0.1.0",
+  "description": "White-label the Hermes WebUI chrome with your own logo and favicon. Click the titlebar logo to upload a custom logo (swaps the titlebar + empty-state marks) and a custom favicon (swaps the browser tab icon). Images are downscaled and stored locally, and re-applied as the UI re-renders. 用自定义标志和网站图标替换 Hermes WebUI 的品牌标识：点击标题栏标志即可上传标志（同时替换标题栏和空状态图标）与网站图标；图片会压缩后保存在本地，并在界面重新渲染后自动恢复。",
+  "version": "0.2.0",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [

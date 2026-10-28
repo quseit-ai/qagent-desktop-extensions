@@ -31,14 +31,53 @@
     catch (_) { return true; }
   }
 
-  function translate(key, fallback) {
-    try {
-      if (typeof window.t === 'function') {
-        const value = window.t(key);
-        if (value && value !== key) return value;
-      }
-    } catch (_) {}
-    return fallback;
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang' ('en', 'zh', 'zh-Hant', …). Extension bundles cannot
+  // register into core's dictionary, so keep a small local one and follow the
+  // page language. Read live (no cache) so a locale switch is picked up on
+  // the next render without a reload.
+  const STR = {
+    en: {
+      openConversations: 'Open conversations',
+      closeConversations: 'Close conversations',
+      conversations: 'Conversations',
+      conversationShortcuts: 'Conversation shortcuts',
+      newConversation: 'New conversation',
+      openSidebar: 'Open sidebar',
+      openSidebarTitle: 'Open conversations sidebar',
+      goTop: 'Go to top',
+      goTopTitle: 'Go to top of this conversation',
+      goLast: 'Go to last message',
+      goLastTitle: 'Go to latest message',
+    },
+    zh: {
+      openConversations: '打开对话',
+      closeConversations: '关闭对话',
+      conversations: '对话',
+      conversationShortcuts: '对话快捷操作',
+      newConversation: '新建对话',
+      openSidebar: '打开侧边栏',
+      openSidebarTitle: '打开对话侧边栏',
+      goTop: '回到顶部',
+      goTopTitle: '回到本对话顶部',
+      goLast: '跳到最新消息',
+      goLastTitle: '跳到最新消息',
+    },
+  };
+
+  function isZh() {
+    let v = '';
+    try { v = String(document.documentElement.lang || ''); } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || ''); } catch (_) {}
+    }
+    return /^zh/i.test(v);
+  }
+
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en;
+    return (table && table[key]) || STR.en[key] || key;
   }
 
   function sidebarOpen() {
@@ -94,8 +133,8 @@
     setButtonIcon(btn, open);
     btn.classList.toggle('mobile-conversations-fab--drawer-open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    btn.setAttribute('aria-label', open ? 'Close conversations' : 'Open conversations');
-    btn.title = open ? 'Close conversations' : 'Conversations';
+    btn.setAttribute('aria-label', t(open ? 'closeConversations' : 'openConversations'));
+    btn.title = t(open ? 'closeConversations' : 'conversations');
     if (open) btn.removeAttribute('aria-haspopup');
     else btn.setAttribute('aria-haspopup', 'menu');
   }
@@ -309,11 +348,11 @@
     menu = document.createElement('div');
     menu.className = 'session-action-menu mobile-conversations-menu hwx-mobile-conversations-menu';
     menu.setAttribute('role', 'menu');
-    menu.setAttribute('aria-label', 'Conversation shortcuts');
-    menu.appendChild(actionButton(translate('new_conversation', 'New conversation'), 'New conversation', 'plus', newConversation));
-    menu.appendChild(actionButton('Open sidebar', 'Open conversations sidebar', 'message', openChatDrawer));
-    menu.appendChild(actionButton('Go to top', 'Go to top of this conversation', 'up', goTop));
-    menu.appendChild(actionButton('Go to last message', 'Go to latest message', 'down', goLast));
+    menu.setAttribute('aria-label', t('conversationShortcuts'));
+    menu.appendChild(actionButton(t('newConversation'), t('newConversation'), 'plus', newConversation));
+    menu.appendChild(actionButton(t('openSidebar'), t('openSidebarTitle'), 'message', openChatDrawer));
+    menu.appendChild(actionButton(t('goTop'), t('goTopTitle'), 'up', goTop));
+    menu.appendChild(actionButton(t('goLast'), t('goLastTitle'), 'down', goLast));
     document.body.appendChild(menu);
 
     btn.classList.add('active');
@@ -403,11 +442,11 @@
       btn.type = 'button';
       btn.className = 'mobile-conversations-fab hwx-mobile-conversations-fab';
       btn.dataset.hwxMobileConversations = '1';
-      btn.setAttribute('aria-label', 'Open conversations');
+      btn.setAttribute('aria-label', t('openConversations'));
       btn.setAttribute('aria-controls', 'panelChat');
       btn.setAttribute('aria-haspopup', 'menu');
       btn.setAttribute('aria-expanded', 'false');
-      btn.title = 'Conversations';
+      btn.title = t('conversations');
       btn.appendChild(buttonSvg());
       const before = buttonHomeBefore(shell);
       shell.insertBefore(btn, before || null);

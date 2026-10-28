@@ -3,7 +3,7 @@
     {
       "id": "mobile-haptics",
       "name": "Mobile Haptics",
-      "description": "Short device vibration when an assistant turn finishes (Android / Android-PWA).",
+      "description": "Short device vibration when an assistant turn finishes (Android / Android-PWA). 助手回合结束时短暂振动设备（Android / Android-PWA）。",
       "scripts": [
         "assets/mobile-haptics.js"
       ],
@@ -17,7 +17,7 @@
         {
           "key": "enabled",
           "type": "boolean",
-          "label": "Vibrate when a turn finishes",
+          "label": "Vibrate when a turn finishes / 回合结束后振动",
           "default": true
         }
       ]

@@ -5,6 +5,18 @@ give the assistant a custom avatar image in the chat transcript. The assistant's
 role badge is normally a single-letter glyph; this swaps in an image of your
 choice.
 
+## 中文说明
+
+本扩展为聊天记录中的助手消息设置自定义头像。助手头像徽章默认显示单个字母，
+本扩展会将其替换为你上传的图片。
+
+- **使用方法**：点击任意助手头像徽章打开选择器，上传图片或移除当前头像。
+- **按钮**：「上传图片… / 更换图片…」「移除头像」。
+- **本地保存**：图片会压缩为 64×64 正方形并以 data-URL 存入 `localStorage`，
+  不上传到任何服务器；消息重新渲染后会自动恢复。
+- 用户消息本身没有头像位置，因此仅支持自定义助手头像。
+- 界面文案跟随 WebUI 的界面语言（简体 / 繁体中文时自动显示中文）。
+
 ## What It Does
 
 - Click any assistant avatar badge (`.role-icon.assistant`) to open a small

@@ -3,7 +3,7 @@
     {
       "id": "typography",
       "name": "Typography",
-      "description": "Choose interface, conversation, and code fonts independently with curated Google Fonts, role-based presets, and browser-local imports.",
+      "description": "Choose interface, conversation, and code fonts independently with curated Google Fonts, role-based presets, and browser-local imports. 可分别选择界面、对话和代码字体，支持精选 Google 字体、按角色预设以及浏览器本地导入。",
       "scripts": [
         "assets/typography.js"
       ],

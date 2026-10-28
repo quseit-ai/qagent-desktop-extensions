@@ -1,8 +1,8 @@
 {
   "id": "external-app-tab",
   "name": "External App Tab",
-  "description": "Pin a compatible self-hosted web app (Grafana, a dashboard, or another framable tool) as a tab inside Hermes WebUI via an iframe. Adds a rail button that opens a full-area panel framing a configurable URL.",
-  "version": "0.1.0",
+  "description": "Pin a compatible self-hosted web app as a tab inside Hermes WebUI via an iframe, or browse the profile's trusted workspaces and preview local files (HTML first) in a sandboxed frame with a top-bar workspace switcher and a collapsible file list. 将兼容的自托管 Web 应用内嵌为标签页；也可浏览可信工作区并在沙箱中预览本地文件（优先 HTML），支持顶栏工作区切换与可折叠文件列表。",
+  "version": "0.5.0",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [
@@ -24,8 +24,16 @@
   "screenshots": [],
   "permissions": {
     "webui_api": {
-      "read": [],
-      "write": []
+      "read": [
+        "session",
+        "/api/workspaces",
+        "/api/list",
+        "/api/file",
+        "/api/file/raw"
+      ],
+      "write": [
+        "/api/session/new"
+      ]
     },
     "webui_navigation": false,
     "dom": {
@@ -48,16 +56,34 @@
   },
   "settings_schema": [
     {
+      "key": "mode",
+      "type": "string",
+      "label": "Mode / 模式 (default: workspace)",
+      "default": "workspace"
+    },
+    {
       "key": "url",
       "type": "string",
-      "label": "App URL",
+      "label": "App URL / 应用地址",
       "default": ""
     },
     {
       "key": "label",
       "type": "string",
-      "label": "Rail label",
+      "label": "Rail label / 侧栏标签",
       "default": "App"
+    },
+    {
+      "key": "workspace",
+      "type": "string",
+      "label": "Workspace path / 工作区路径",
+      "default": ""
+    },
+    {
+      "key": "lastFile",
+      "type": "string",
+      "label": "Last previewed file / 上次预览的文件",
+      "default": ""
     }
   ]
 }

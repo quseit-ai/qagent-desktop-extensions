@@ -11,14 +11,127 @@
   const THEME_KEY_RE = /^custom-[a-z0-9_-]+$/
   const DATA_IMAGE_RE = /^data:image\/(?:png|jpeg|jpg|gif|webp);base64,[A-Za-z0-9+/]+={0,2}$/
   const FIELDS = [
-    { id: 'bg', label: 'Background', def: '#0d0d1a' },
-    { id: 'surface', label: 'Panels / surfaces', def: '#16161f' },
-    { id: 'text', label: 'Text', def: '#f5f5f5' },
-    { id: 'muted', label: 'Muted text', def: '#9aa0b5' },
-    { id: 'accent', label: 'Accent', def: '#f5c542' },
-    { id: 'border', label: 'Borders', def: '#2a2a3a' },
-    { id: 'userBubble', label: 'Your message bubble', def: '#26314a' },
+    { id: 'bg', def: '#0d0d1a' },
+    { id: 'surface', def: '#16161f' },
+    { id: 'text', def: '#f5f5f5' },
+    { id: 'muted', def: '#9aa0b5' },
+    { id: 'accent', def: '#f5c542' },
+    { id: 'border', def: '#2a2a3a' },
+    { id: 'userBubble', def: '#26314a' },
   ]
+
+  // ── i18n (en / zh) ───────────────────────────────────────────────────────
+  // Core exposes its active locale via <html lang> and localStorage
+  // 'hermes-lang'. Extension bundles cannot register into core's dictionary,
+  // so keep a small local one and follow the page language. Read live (no
+  // cache) so a locale switch is picked up on the next render.
+  const STR = {
+    en: {
+      creatorTitle: 'Theme Creator',
+      close: 'Close',
+      capabilityWarn: 'The theme-registration capability isn’t available in this WebUI build (needs core PR #5100). You can still design a theme, but it can’t be applied yet.',
+      imageProcessFailed: 'Failed to process image.',
+      editTheme: 'Edit theme',
+      newTheme: 'New theme',
+      name: 'Name',
+      namePlaceholder: 'My Theme',
+      backgroundImage: 'Background image',
+      optional: '(optional)',
+      chooseImage: 'Choose image…',
+      none: 'None',
+      backgroundAlt: 'Background',
+      remove: 'Remove',
+      glassOpacity: 'Glass opacity',
+      blurIntensity: 'Blur intensity',
+      livePreview: 'Live preview',
+      stopPreview: 'Stop preview',
+      newButton: 'New',
+      update: 'Update',
+      save: 'Save',
+      nameRequired: 'Give your theme a name.',
+      invalidColour: '"{0}" is not a valid colour.',
+      invalidId: 'Could not derive a valid theme id from that name — try a name with letters or numbers.',
+      themeLimit: 'Theme limit reached ({0}). Delete one before adding another.',
+      storageFull: 'Could not save — theme storage is full. Delete a theme and try again.',
+      savedThemes: 'Saved themes',
+      noThemes: 'No custom themes yet.',
+      hasBgTitle: 'Has background image',
+      apply: 'Apply',
+      edit: 'Edit',
+      del: 'Delete',
+      preview: 'Preview',
+      field_bg: 'Background',
+      field_surface: 'Panels / surfaces',
+      field_text: 'Text',
+      field_muted: 'Muted text',
+      field_accent: 'Accent',
+      field_border: 'Borders',
+      field_userBubble: 'Your message bubble',
+    },
+    zh: {
+      creatorTitle: '主题创建器',
+      close: '关闭',
+      capabilityWarn: '当前 WebUI 版本不支持主题注册能力（需要核心 PR #5100）。你仍然可以设计主题，但暂时无法应用。',
+      imageProcessFailed: '图片处理失败。',
+      editTheme: '编辑主题',
+      newTheme: '新建主题',
+      name: '名称',
+      namePlaceholder: '我的主题',
+      backgroundImage: '背景图片',
+      optional: '（可选）',
+      chooseImage: '选择图片…',
+      none: '无',
+      backgroundAlt: '背景',
+      remove: '移除',
+      glassOpacity: '玻璃不透明度',
+      blurIntensity: '模糊强度',
+      livePreview: '实时预览',
+      stopPreview: '停止预览',
+      newButton: '新建',
+      update: '更新',
+      save: '保存',
+      nameRequired: '请为主题起一个名称。',
+      invalidColour: '“{0}”不是有效的颜色。',
+      invalidId: '无法从该名称生成有效的主题 ID —— 请使用包含字母或数字的名称。',
+      themeLimit: '主题数量已达上限（{0}）。请先删除一个再添加。',
+      storageFull: '保存失败 —— 主题存储已满。请删除一个主题后重试。',
+      savedThemes: '已保存的主题',
+      noThemes: '还没有自定义主题。',
+      hasBgTitle: '含背景图片',
+      apply: '应用',
+      edit: '编辑',
+      del: '删除',
+      preview: '预览',
+      field_bg: '背景',
+      field_surface: '面板 / 表面',
+      field_text: '文本',
+      field_muted: '次要文本',
+      field_accent: '强调色',
+      field_border: '边框',
+      field_userBubble: '你的消息气泡',
+    },
+  }
+
+  function isZh() {
+    let v = ''
+    try { v = String(document.documentElement.lang || '') } catch (_) {}
+    if (!/^zh/i.test(v)) {
+      try { v = String(localStorage.getItem('hermes-lang') || '') } catch (_) {}
+    }
+    return /^zh/i.test(v)
+  }
+  function t(key) {
+    const table = isZh() ? STR.zh : STR.en
+    return (table && table[key]) || STR.en[key] || key
+  }
+  // {0}, {1}, … substitution for messages carrying runtime values.
+  function tf(key, ...args) {
+    let out = t(key)
+    args.forEach((a, i) => { out = out.split('{' + i + '}').join(String(a)) })
+    return out
+  }
+  const fieldLabel = id => t('field_' + id)
+
   let editing = null, previewKey = null, prevSkinBeforePreview = null, _currentBgImage = null, _currentGlassOpacity = .08, _currentBlur = 20
 
   // ── helpers ──
@@ -173,7 +286,7 @@
     if (!rail) return
     const btn = document.createElement('button')
     btn.id = RAIL_BTN_ID; btn.type = 'button'; btn.className = 'rail-btn nav-tab has-tooltip hwx-tc-rail'
-    btn.dataset.tooltip = 'Theme Creator'; btn.setAttribute('aria-label', 'Theme Creator')
+    btn.dataset.tooltip = t('creatorTitle'); btn.setAttribute('aria-label', t('creatorTitle'))
     btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="11.5" r="2.5"/><circle cx="16.5" cy="14.5" r="2.5"/><path d="M3 21h18"/></svg>'
     btn.addEventListener('click', ev => { ev.preventDefault(); openPanel() })
     const spacer = rail.querySelector('.rail-spacer')
@@ -194,10 +307,10 @@
     const panel = document.createElement('div')
     panel.id = PANEL_ID; panel.className = 'hwx-tc-panel'
     panel.innerHTML =
-      '<div class="hwx-tc-card" role="dialog" aria-label="Theme Creator"><div class="hwx-tc-head">'
-      + '<span class="hwx-tc-title">Theme Creator</span>'
-      + '<button type="button" class="hwx-tc-x" aria-label="Close">\u2715</button></div>'
-      + (hasCap() ? '' : '<div class="hwx-tc-warn">The theme-registration capability isn\u2019t available in this WebUI build (needs core PR #5100). You can still design a theme, but it can\u2019t be applied yet.</div>')
+      '<div class="hwx-tc-card" role="dialog" aria-label="' + esc(t('creatorTitle')) + '"><div class="hwx-tc-head">'
+      + '<span class="hwx-tc-title">' + esc(t('creatorTitle')) + '</span>'
+      + '<button type="button" class="hwx-tc-x" aria-label="' + esc(t('close')) + '">\u2715</button></div>'
+      + (hasCap() ? '' : '<div class="hwx-tc-warn">' + esc(t('capabilityWarn')) + '</div>')
       + '<div class="hwx-tc-body"><div class="hwx-tc-editor"></div><div class="hwx-tc-saved"></div></div></div>'
     document.body.appendChild(panel)
     $('.hwx-tc-x', panel).addEventListener('click', closePanel)
@@ -212,7 +325,7 @@
   function handleBgUpload(ev) {
     const file = ev.target.files && ev.target.files[0]
     if (!file) return; showErr('')
-    compressImage(file, MAX_IMAGE_DIM, IMAGE_QUALITY).then(dataUrl => { _currentBgImage = dataUrl; updateBgPreviewUI(); if (previewKey) updatePreview() }).catch(() => showErr('Failed to process image.'))
+    compressImage(file, MAX_IMAGE_DIM, IMAGE_QUALITY).then(dataUrl => { _currentBgImage = dataUrl; updateBgPreviewUI(); if (previewKey) updatePreview() }).catch(() => showErr(t('imageProcessFailed')))
   }
   function removeBgImage() { _currentBgImage = null; updateBgPreviewUI(); if (previewKey) updatePreview() }
   function updateBgPreviewUI() {
@@ -232,19 +345,19 @@
     _currentBlur = Number.isFinite(base.blur) ? base.blur : 20
     const nameVal = editing ? editing.name : '', hasBg = !!_currentBgImage
     let rows = ''
-    FIELDS.forEach(f => { const v = base[f.id] || f.def; rows += '<label class="hwx-tc-row"><span>' + esc(f.label) + '</span><span class="hwx-tc-swatchwrap"><input type="color" class="hwx-tc-color hwx-tc-color-' + f.id + '" value="' + esc(v) + '"><input type="text" class="hwx-tc-hex hwx-tc-hex-' + f.id + '" value="' + esc(v) + '" maxlength="7"></span></label>' })
+    FIELDS.forEach(f => { const v = base[f.id] || f.def; rows += '<label class="hwx-tc-row"><span>' + esc(fieldLabel(f.id)) + '</span><span class="hwx-tc-swatchwrap"><input type="color" class="hwx-tc-color hwx-tc-color-' + f.id + '" value="' + esc(v) + '"><input type="text" class="hwx-tc-hex hwx-tc-hex-' + f.id + '" value="' + esc(v) + '" maxlength="7"></span></label>' })
     host.innerHTML =
-      '<div class="hwx-tc-section-title">' + (editing ? 'Edit theme' : 'New theme') + '</div>'
-      + '<label class="hwx-tc-namerow"><span>Name</span><input type="text" class="hwx-tc-name" maxlength="28" placeholder="My Theme" value="' + esc(nameVal) + '"></label>'
+      '<div class="hwx-tc-section-title">' + esc(editing ? t('editTheme') : t('newTheme')) + '</div>'
+      + '<label class="hwx-tc-namerow"><span>' + esc(t('name')) + '</span><input type="text" class="hwx-tc-name" maxlength="28" placeholder="' + esc(t('namePlaceholder')) + '" value="' + esc(nameVal) + '"></label>'
       + rows
-      + '<div class="hwx-tc-bg-section"><div class="hwx-tc-section-title" style="margin-top:14px">Background image <span class="hwx-tc-muted">(optional)</span></div>'
-      + '<div class="hwx-tc-bg-row"><label class="hwx-tc-filelabel"><input type="file" accept="image/*" class="hwx-tc-fileinput"><span class="hwx-tc-filelabel-text">Choose image\u2026</span></label>'
-      + '<span class="hwx-tc-bg-none"' + (hasBg ? ' hidden' : '') + '>None</span>'
-      + '<div class="hwx-tc-bg-preview-wrap"' + (!hasBg ? ' hidden' : '') + '><img class="hwx-tc-bg-preview" src="' + (hasBg ? esc(_currentBgImage) : '') + '" alt="Background"><button type="button" class="hwx-tc-link hwx-tc-remove-img">Remove</button></div></div></div>'
-      + sliderSection('glass', 'Glass opacity', 1, 50, '%', Math.round(Math.max(1, Math.min(50, _currentGlassOpacity * 100))))
-      + sliderSection('blur', 'Blur intensity', 0, 50, 'px', Math.round(Math.max(0, Math.min(50, _currentBlur))))
-      + '<div class="hwx-tc-actions"><button type="button" class="hwx-tc-btn hwx-tc-preview">Live preview</button><button type="button" class="hwx-tc-btn hwx-tc-stoppreview" hidden>Stop preview</button><span class="hwx-tc-spacer"></span>'
-      + (editing ? '<button type="button" class="hwx-tc-btn hwx-tc-newbtn">New</button>' : '') + '<button type="button" class="hwx-tc-btn hwx-tc-save">' + (editing ? 'Update' : 'Save') + '</button></div>'
+      + '<div class="hwx-tc-bg-section"><div class="hwx-tc-section-title" style="margin-top:14px">' + esc(t('backgroundImage')) + ' <span class="hwx-tc-muted">' + esc(t('optional')) + '</span></div>'
+      + '<div class="hwx-tc-bg-row"><label class="hwx-tc-filelabel"><input type="file" accept="image/*" class="hwx-tc-fileinput"><span class="hwx-tc-filelabel-text">' + esc(t('chooseImage')) + '</span></label>'
+      + '<span class="hwx-tc-bg-none"' + (hasBg ? ' hidden' : '') + '>' + esc(t('none')) + '</span>'
+      + '<div class="hwx-tc-bg-preview-wrap"' + (!hasBg ? ' hidden' : '') + '><img class="hwx-tc-bg-preview" src="' + (hasBg ? esc(_currentBgImage) : '') + '" alt="' + esc(t('backgroundAlt')) + '"><button type="button" class="hwx-tc-link hwx-tc-remove-img">' + esc(t('remove')) + '</button></div></div></div>'
+      + sliderSection('glass', esc(t('glassOpacity')), 1, 50, '%', Math.round(Math.max(1, Math.min(50, _currentGlassOpacity * 100))))
+      + sliderSection('blur', esc(t('blurIntensity')), 0, 50, 'px', Math.round(Math.max(0, Math.min(50, _currentBlur))))
+      + '<div class="hwx-tc-actions"><button type="button" class="hwx-tc-btn hwx-tc-preview">' + esc(t('livePreview')) + '</button><button type="button" class="hwx-tc-btn hwx-tc-stoppreview" hidden>' + esc(t('stopPreview')) + '</button><span class="hwx-tc-spacer"></span>'
+      + (editing ? '<button type="button" class="hwx-tc-btn hwx-tc-newbtn">' + esc(t('newButton')) + '</button>' : '') + '<button type="button" class="hwx-tc-btn hwx-tc-save">' + esc(editing ? t('update') : t('save')) + '</button></div>'
       + '<div class="hwx-tc-err" hidden></div>'
 
     FIELDS.forEach(f => {
@@ -266,12 +379,12 @@
   function startPreview() {
     if (!hasCap()) return; const base = currentBaseFromInputs(); previewKey = KEY_PREFIX + 'preview'
     if (prevSkinBeforePreview === null) { try { prevSkinBeforePreview = localStorage.getItem('hermes-skin') || 'default' } catch (_) { prevSkinBeforePreview = 'default' } }
-    try { window.registerHermesSkin({ name: 'Preview', value: previewKey, colors: [base.accent, base.bg, base.surface], tokens: deriveTokens(base) }); renderStyles({ key: previewKey, base }); applySkin(previewKey) } catch (_) {}
+    try { window.registerHermesSkin({ name: t('preview'), value: previewKey, colors: [base.accent, base.bg, base.surface], tokens: deriveTokens(base) }); renderStyles({ key: previewKey, base }); applySkin(previewKey) } catch (_) {}
     togglePreview(true)
   }
   function updatePreview() {
     if (!previewKey || !hasCap()) return; const base = currentBaseFromInputs()
-    try { window.registerHermesSkin({ name: 'Preview', value: previewKey, colors: [base.accent, base.bg, base.surface], tokens: deriveTokens(base) }); renderStyles({ key: previewKey, base }); applySkin(previewKey) } catch (_) {}
+    try { window.registerHermesSkin({ name: t('preview'), value: previewKey, colors: [base.accent, base.bg, base.surface], tokens: deriveTokens(base) }); renderStyles({ key: previewKey, base }); applySkin(previewKey) } catch (_) {}
   }
   function cancelPreview() { if (previewKey && prevSkinBeforePreview !== null) { try { applySkin(prevSkinBeforePreview) } catch (_) {} } previewKey = null; prevSkinBeforePreview = null; togglePreview(false) }
   function togglePreview(on) { const p = document.getElementById(PANEL_ID); if (!p) return; const b1 = $('.hwx-tc-preview', p), b2 = $('.hwx-tc-stoppreview', p); if (b1) b1.hidden = on; if (b2) b2.hidden = !on }
@@ -281,16 +394,16 @@
   function saveCurrent() {
     const panel = document.getElementById(PANEL_ID)
     const name = ($('.hwx-tc-name', panel).value || '').trim()
-    if (!name) { showErr('Give your theme a name.'); return }
+    if (!name) { showErr(t('nameRequired')); return }
     const base = currentBaseFromInputs()
-    for (const f of FIELDS) { if (!isHex(base[f.id])) { showErr('"' + f.label + '" is not a valid colour.'); return } }
+    for (const f of FIELDS) { if (!isHex(base[f.id])) { showErr(tf('invalidColour', fieldLabel(f.id))); return } }
     let themes = loadThemes()
     const key = editing ? editing.key : slugify(name), existingIdx = themes.findIndex(t => t.key === key)
-    if (!THEME_KEY_RE.test(key)) { showErr('Could not derive a valid theme id from that name \u2014 try a name with letters or numbers.'); return }
+    if (!THEME_KEY_RE.test(key)) { showErr(t('invalidId')); return }
     const rec = { key, name: name.slice(0, 28), base }
     if (existingIdx >= 0) themes[existingIdx] = rec
-    else { if (themes.length >= MAX_THEMES) { showErr('Theme limit reached (' + MAX_THEMES + '). Delete one before adding another.'); return }; themes.push(rec) }
-    if (!saveThemes(themes)) { showErr('Could not save \u2014 theme storage is full. Delete a theme and try again.'); return }
+    else { if (themes.length >= MAX_THEMES) { showErr(tf('themeLimit', MAX_THEMES)); return }; themes.push(rec) }
+    if (!saveThemes(themes)) { showErr(t('storageFull')); return }
     if (hasCap()) { try { window.registerHermesSkin(descriptorFor(rec)) } catch (_) {} renderStyles(); cancelPreview(); applySkin(key) }
     editing = rec; showErr(''); renderEditor(); renderSaved()
   }
@@ -298,16 +411,16 @@
   function renderSaved() {
     const panel = document.getElementById(PANEL_ID); if (!panel) return
     const host = $('.hwx-tc-saved', panel), themes = loadThemes()
-    if (!themes.length) { host.innerHTML = '<div class="hwx-tc-section-title">Saved themes</div><div class="hwx-tc-muted">No custom themes yet.</div>'; return }
+    if (!themes.length) { host.innerHTML = '<div class="hwx-tc-section-title">' + esc(t('savedThemes')) + '</div><div class="hwx-tc-muted">' + esc(t('noThemes')) + '</div>'; return }
     let items = ''
-    themes.forEach(t => {
+    themes.forEach(theme => {
       const sw = c => '<span class="hwx-tc-mini" style="background:' + esc(c) + '"></span>'
-      const bgIcon = t.base.bgImage
-        ? '<span class="hwx-tc-bg-indicator" title="Has background image"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><circle cx="5" cy="6.5" r="1"/><path d="M1.5 12l4-4 2 2 3-3 4 4"/></svg></span>'
+      const bgIcon = theme.base.bgImage
+        ? '<span class="hwx-tc-bg-indicator" title="' + esc(t('hasBgTitle')) + '"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><circle cx="5" cy="6.5" r="1"/><path d="M1.5 12l4-4 2 2 3-3 4 4"/></svg></span>'
         : ''
-      items += '<div class="hwx-tc-saved-row" data-key="' + esc(t.key) + '"><span class="hwx-tc-swatches">' + sw(t.base.bg) + sw(t.base.surface) + sw(t.base.accent) + '</span>' + bgIcon + '<span class="hwx-tc-saved-name">' + esc(t.name) + '</span><span class="hwx-tc-spacer"></span><button type="button" class="hwx-tc-link hwx-tc-apply">Apply</button><button type="button" class="hwx-tc-link hwx-tc-edit">Edit</button><button type="button" class="hwx-tc-link hwx-tc-del">Delete</button></div>'
+      items += '<div class="hwx-tc-saved-row" data-key="' + esc(theme.key) + '"><span class="hwx-tc-swatches">' + sw(theme.base.bg) + sw(theme.base.surface) + sw(theme.base.accent) + '</span>' + bgIcon + '<span class="hwx-tc-saved-name">' + esc(theme.name) + '</span><span class="hwx-tc-spacer"></span><button type="button" class="hwx-tc-link hwx-tc-apply">' + esc(t('apply')) + '</button><button type="button" class="hwx-tc-link hwx-tc-edit">' + esc(t('edit')) + '</button><button type="button" class="hwx-tc-link hwx-tc-del">' + esc(t('del')) + '</button></div>'
     })
-    host.innerHTML = '<div class="hwx-tc-section-title">Saved themes</div>' + items
+    host.innerHTML = '<div class="hwx-tc-section-title">' + esc(t('savedThemes')) + '</div>' + items
     $$('.hwx-tc-saved-row', host).forEach(row => {
       const key = row.dataset.key
       $('.hwx-tc-apply', row).addEventListener('click', () => { if (hasCap()) applySkin(key) })
@@ -325,7 +438,7 @@
     attempt = attempt || 0
     if (document.querySelector('.rail')) {
       ensureRailButton(); registerAll()
-      window.HermesThemeCreatorExtension = { version: '0.3.6', themes: loadThemes, open: openPanel, registerAll }
+      window.HermesThemeCreatorExtension = { version: '0.4.0', themes: loadThemes, open: openPanel, registerAll }
       return true
     }
     if (attempt < 80) { setTimeout(() => install(attempt + 1), 150); return false }

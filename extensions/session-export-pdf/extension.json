@@ -1,8 +1,8 @@
 {
   "id": "session-export-pdf",
   "name": "Session Export to PDF",
-  "description": "Export the current conversation to a clean PDF (via the browser print dialog, with a print-styled layout) or copy it as Markdown. Adds an export button to the app titlebar, or to the left rail on the redesigned banner-less homepage. No backend, no bundled PDF library.",
-  "version": "0.1.1",
+  "description": "Export the current conversation to a clean PDF (via the browser print dialog, with a print-styled layout) or copy it as Markdown. Adds an export button to the app titlebar, or to the left rail on the redesigned banner-less homepage. No backend, no bundled PDF library. 将当前对话导出为排版干净的 PDF（通过浏览器打印对话框），或复制为 Markdown；无需后端，也不内置 PDF 库。",
+  "version": "0.2.0",
   "author": "nesquena-hermes",
   "assets": {
     "scripts": [

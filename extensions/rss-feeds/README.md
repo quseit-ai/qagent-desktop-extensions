@@ -5,6 +5,19 @@ WebUI: a two-pane overlay with categorized subscriptions in the sidebar and
 entries on the right — plus keyword filtering, full-text search, cross-device
 read tracking, and optional AI summaries.
 
+## 中文说明
+
+RSS Feeds 是一个 Hermes WebUI 扩展，为界面加入完整的 RSS/Atom 阅读器：
+侧边栏按分类管理订阅源，右侧显示文章条目。主要功能：
+
+- **订阅管理**：添加、编辑、删除订阅源，并按分类分组。
+- **阅读体验**：分页卡片、已读标记，阅读状态可跨设备同步。
+- **过滤与搜索**：按关键词过滤，支持全文搜索。
+- **AI 摘要（可选）**：使用本地 Ollama、OpenRouter 免费模型或 Gemini 免费额度。
+- **界面语言**：界面文案支持英文与简体中文，随 WebUI 语言设置自动切换。
+
+安装与 sidecar 配置请参阅下方英文文档。
+
 ## What It Does
 
 - **Subscriptions** — add/remove feeds, grouped into categories with per-feed
