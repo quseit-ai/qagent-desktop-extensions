@@ -229,6 +229,9 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-width: 0;
+  /* Belt and braces: whatever the preview renders stays inside its column, so
+     wide CSV tables can never paint underneath the file list. */
+  overflow: hidden;
 }
 .hwx-extapp-files {
   flex: 0 0 auto;
@@ -236,7 +239,12 @@
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--border, rgba(127,127,127,.3));
-  background: var(--surface, #1a1d27);
+  /* Opaque on purpose. --surface is rewritten to rgba(…, ~.08) by glass themes
+     (Theme Creator), which left the file list see-through and let whatever sits
+     behind it — the previewed file itself — bleed through the names.
+     --topbar-bg is the theme's near-opaque chrome colour and is not touched by
+     glass mode, so the list stays legible in every theme. */
+  background: var(--topbar-bg, var(--surface, #1a1d27));
   overflow: hidden;
 }
 .hwx-extapp-files.collapsed { display: none; }
