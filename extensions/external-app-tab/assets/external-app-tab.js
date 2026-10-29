@@ -1044,7 +1044,14 @@
       }
       table.appendChild(tbody);
     }
-    setPreviewNode(table);
+    // The preview view (scroll container) must be a non-table box: a <table>
+    // sizes to its nowrap content and paints past the preview column instead of
+    // scrolling, so a wide CSV used to slide underneath the file list. The
+    // wrapper keeps the overflow (and the horizontal scrollbar) inside the
+    // preview area and clear of the file list.
+    const wrap = document.createElement('div');
+    wrap.appendChild(table);
+    setPreviewNode(wrap);
   }
 
   async function previewDocx(rel, gen) {
