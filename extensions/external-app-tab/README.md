@@ -54,9 +54,11 @@ mode works entirely same-origin against Desktop's own file APIs.
 设置项名称使用中英双语。工作区列表来自 Desktop 的「设置 → 工作区」，
 文件读取完全复用核心的同源 API，扩展自身不新增后端。
 
-已知限制：预览的 HTML 中的**相对路径资源**（如 `<link href="style.css">`）
-不会加载，这一点与 Desktop 原生工作区预览一致；自包含 HTML 与 CDN 绝对
-地址正常。
+HTML 预览支持**相对路径资源**（如 `<link href="style.css">`、同目录脚本、
+字体）：预览走路径式路由 `/api/workspace-files/<会话>/<相对路径>`，相对
+引用会解析到工作区里的真实同级文件，与 Desktop 原生工作区预览一致。
+旧版 Desktop 内核没有该路由时自动回退到 `/api/file/raw`，此时相对资源
+仍不加载（自包含 HTML 与 CDN 绝对地址不受影响）。
 
 ## What It Does
 
@@ -83,8 +85,11 @@ mode works entirely same-origin against Desktop's own file APIs.
   - clicking a file previews it, matching the native workspace preview's
     format matrix:
     - `.html`/`.htm` render in a sandboxed iframe via
-      `GET /api/file/raw?…&inline=1` (same endpoint and server-side CSP sandbox
-      as the native preview)
+      `GET /api/workspace-files/<sid>/<rel>?inline=1` — the same
+      directory-shaped route and server-side CSP sandbox as the native
+      preview, so relative CSS/JS/font references in the document resolve
+      to sibling workspace files (cores without that route fall back to
+      `GET /api/file/raw?…&inline=1`, where relative assets 404)
     - images (`png/jpg/jpeg/gif/svg/webp/ico/bmp`) in an `<img>`; PDFs in a
       framed viewer; audio and video with native controls
     - Markdown rendered with core's own `renderMd` (plain-text fallback)
@@ -135,7 +140,8 @@ Desktop page
        external mode:  <iframe src="<your URL>">
        workspace mode: workspace switcher (/api/workspaces)
                        + right file list (/api/list)
-                       + sandboxed <iframe src="/api/file/raw?...&inline=1">
+                       + sandboxed <iframe src="/api/workspace-files/…?inline=1">
+                          (HTML; falls back to /api/file/raw?…&inline=1)
   -> Settings → Extensions → External App Tab settings: { mode, url, label, workspace, lastFile }
   -> legacy fallback: localStorage hermes-ext-external-app
 ```
@@ -144,11 +150,13 @@ Workspace mode's file access is **session-anchored** like the native
 workspace panel: it mints one throwaway preview session per workspace via
 `POST /api/session/new {workspace}` — core's `new_session` is in-memory only
 (no disk write until a first message, no agent start, no sidebar entry) — and
-uses that `session_id` for `/api/list`, `/api/file`, and `/api/file/raw`. All
-path validation (traversal, symlink escape, trusted workspace roots, TOCTOU
-anchored opens) stays in core (`api/workspace.py`); the extension adds none of
-its own. Preview sessions are evicted by server restarts or the in-memory LRU;
-every session-anchored call self-heals a 404 by re-minting the session once.
+uses that `session_id` for `/api/list`, `/api/file`, `/api/file/raw`, and the
+path-shaped `/api/workspace-files/<sid>/<rel>` route HTML previews prefer.
+All path validation (traversal, symlink escape, trusted workspace roots,
+TOCTOU anchored opens) stays in core (`api/workspace.py`); the extension adds
+none of its own. Preview sessions are evicted by server restarts or the
+in-memory LRU; every session-anchored call self-heals a 404 by re-minting
+the session once.
 
 This extension is `static-ui` / manifest-bundle only. It does not add backend
 routes, start a sidecar, or use native host APIs. External mode sets an
@@ -207,7 +215,9 @@ This is trusted local code. Current disclosed behavior:
   sets and is subject to the page CSP
 - workspace mode calls same-origin Desktop HTTP APIs (`permissions.webui_api`):
   reads `GET /api/workspaces`, `GET /api/list`, `GET /api/file`,
-  `GET /api/file/raw`, and creates preview sessions with
+  `GET /api/file/raw`, `GET /api/workspace-files` (directory-shaped raw
+  reads used for HTML previews and their relative-asset subresource loads),
+  and creates preview sessions with
   `POST /api/session/new` (in-memory sessions bound to trusted workspace
   paths; it does **not** chat, does **not** touch other sessions, and does
   **not** change the profile's last-used workspace — switching here affects
@@ -259,8 +269,12 @@ rendered via `textContent`, never as HTML.
   `HermesExtensionSettings`, with localStorage fallback on older core builds
 - the left rail (`.rail`) to host the button
 - workspace mode: core APIs `/api/workspaces`, `/api/session/new`,
-  `/api/list`, `/api/file`, `/api/file/raw?…&inline=1` (the inline HTML
-  preview path) — all present in current core
+  `/api/list`, `/api/file`, `/api/file/raw?…&inline=1`, and — for HTML
+  previews with relative assets — `/api/workspace-files/<sid>/<rel>` (all
+  present in current core). On an older core without `/api/workspace-files`
+  the extension detects the missing route once and falls back to
+  `/api/file/raw?…&inline=1`, i.e. HTML still renders but relative
+  CSS/JS/font references 404 (the pre-existing behaviour)
 - external mode: the core `HERMES_WEBUI_CSP_FRAME_EXTRA` knob (PR #5091) for
   external origins
 
@@ -287,9 +301,13 @@ Manual verification:
 - workspace mode: the switcher lists the profile's workspaces; switching
   reloads the file list; entering the panel auto-opens the first HTML file
   (or `index.html` when present within the search bounds)
-- clicking an HTML file renders it in the sandboxed frame; images/PDF/text
+- clicking an HTML file renders it in the sandboxed frame; a multi-file page
+  (`demo/index.html` + `demo/style.css` + `demo/app.js` + a sibling font)
+  previews with its stylesheet applied and its script running (relative
+  assets load via `/api/workspace-files/…`); images/PDF/text
   show inline; other files download; Open ↗ opens the current file raw in a
-  new tab; Close / Escape closes the overlay
+  new tab (HTML there too resolves relative assets); Close / Escape closes
+  the overlay
 - the file-list icon toggles the right-side list; the refresh icon reloads it
 - config (mode + workspace + last file) persists across a reload
 - switching the Desktop interface language to 中文 makes the panel, tooltips,
@@ -319,12 +337,15 @@ Manual verification:
   embedded login usually requires a same-origin reverse proxy, or HTTPS plus
   appropriate cookie settings (`SameSite=None; Secure`) and a framing policy that
   permits embedding.
-- Workspace-mode HTML preview has the **same relative-asset limitation as the
-  native workspace preview**: a previewed `page.html` is served from
-  `/api/file/raw`, so relative references (`<link href="style.css">`,
-  `<img src="img/logo.png">`) do not resolve and will 404. Self-contained HTML
-  (inline CSS/JS) and absolute/CDN URLs render fully. Multi-file site preview
-  would need core-side relative-URL rewriting — deliberately out of scope here.
+- Workspace-mode HTML preview loads **relative assets** (sibling
+  `style.css`, `js/app.js`, `@font-face` fonts, images) through core's
+  `/api/workspace-files/<sid>/<rel>` route — same capability as the native
+  workspace preview. On an older core without that route the extension
+  falls back to `/api/file/raw?…&inline=1`, where relative references 404
+  (self-contained HTML and absolute/CDN URLs always render fully).
+  Root-absolute refs (`href="/style.css"`) resolve against the origin root
+  and will 404, and a document that sets its own `<base href>` controls its
+  resolution itself — use workspace-relative references.
 - Rich previews reuse the Desktop's **vendored parser bundles** under
   `static/vendor/` (`docx-preview`, `SheetJS`, `PptxViewJS` + `JSZip`/
   `Chart.js`) and are lazy-loaded on first use, exactly like core. On a core
