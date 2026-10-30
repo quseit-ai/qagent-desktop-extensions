@@ -37,6 +37,18 @@
   //                                       inline under a server-side CSP sandbox
   //                                       exactly like the native workspace
   //                                       preview iframe (static/workspace.js).
+  //   GET  /api/workspace-files/<sid>/<rel>[?inline=1]
+  //                                    -> the same files at a directory-shaped
+  //                                       URL. HTML previews use this route so
+  //                                       relative CSS/JS/font refs resolve to
+  //                                       sibling files: on the query-string
+  //                                       /api/file/raw route a `style.css` ref
+  //                                       drops the query and becomes
+  //                                       /api/file/style.css -> 404. Route
+  //                                       support is probed once; an older core
+  //                                       without it silently falls back to
+  //                                       /api/file/raw (relative assets then
+  //                                       404, same as before).
   // Preview sessions can be evicted (server restart / in-memory LRU); every
   // session-anchored call self-heals a 404 by re-minting the session once.
   //
@@ -403,6 +415,73 @@
     return new URL('api/file/raw?' + p.toString(), document.baseURI || location.href).href;
   }
 
+  // Path-shaped raw URL for workspace files (core's /api/workspace-files
+  // route, same one the native workspace preview now uses). The workspace-
+  // relative path lives in the URL path instead of a ?path= query, so an
+  // HTML preview's relative refs (./style.css, js/app.js, @font-face) resolve
+  // against the document's own directory. Segments are encoded individually
+  // (mirroring core's static/workspace.js _workspaceFileRouteForPath); an
+  // encoded slash can therefore not alter the path structure. Escape-grant
+  // files never appear in this panel (out-of-workspace symlinks are skipped
+  // in the tree), so only the plain variant is needed.
+  function workspaceFilesUrl(sid, rel, opts) {
+    opts = opts || {};
+    const encoded = String(rel || '')
+      .split('/')
+      .map((seg) => encodeURIComponent(seg))
+      .join('/');
+    const base = 'api/workspace-files/' + encodeURIComponent(sid) + '/' + encoded;
+    const p = new URLSearchParams();
+    if (opts.inline) p.set('inline', '1');
+    if (opts.bust) p.set('_t', String(Date.now()));
+    const qs = p.toString();
+    return new URL(qs ? base + '?' + qs : base, document.baseURI || location.href).href;
+  }
+
+  // ── /api/workspace-files capability probe ────────────────────────────────
+  // Route existence is a core-version property, so it is probed once per page
+  // load and cached. An old core answers /api/workspace-files/* with the same
+  // 404 JSON as a genuinely missing file, so a 404 alone cannot tell "no
+  // route" from "no file" — the /api/file/raw query route breaks the tie:
+  // if the file serves there, the path route 404 was core lacking the route.
+  // Range: bytes=0-0 keeps the probe to one byte via the server's range
+  // support (206; 200 if ignored, 416 for an empty file — all mean "served").
+  let wsFilesRouteOk = null; // null = not yet probed, true/false = cached
+
+  async function probeStatus(url) {
+    const res = await fetch(url, { credentials: 'include', headers: { Range: 'bytes=0-0' } });
+    return res.status;
+  }
+
+  // HTML preview URL: path-shaped when core supports it, query-shaped
+  // /api/file/raw?inline=1 otherwise (identical rendering, but relative
+  // sibling assets 404 — the pre-existing behaviour on old core).
+  async function htmlPreviewUrl(sid, rel, opts) {
+    opts = opts || {};
+    const served = (s) => s === 200 || s === 206 || s === 416;
+    const fallback = rawFileUrl(sid, rel, { inline: true, bust: opts.bust });
+    if (wsFilesRouteOk !== null) {
+      return wsFilesRouteOk
+        ? workspaceFilesUrl(sid, rel, { inline: true, bust: opts.bust })
+        : fallback;
+    }
+    try {
+      const status = await probeStatus(workspaceFilesUrl(sid, rel));
+      if (served(status)) {
+        wsFilesRouteOk = true;
+        return workspaceFilesUrl(sid, rel, { inline: true, bust: opts.bust });
+      }
+      if (status === 404) {
+        const rawStatus = await probeStatus(rawFileUrl(sid, rel));
+        if (served(rawStatus)) wsFilesRouteOk = false;
+        // raw 404 too → the file itself is missing; capability stays unknown
+        // and the fallback URL frames the same JSON error the raw route has
+        // always shown for missing files.
+      }
+    } catch (_) { /* network failure — capability stays unknown, fall back */ }
+    return fallback;
+  }
+
   function joinWsPath(dir, name) {
     return (!dir || dir === '.') ? name : dir + '/' + name;
   }
@@ -492,12 +571,16 @@
       const cfg = loadCfg();
       if (cfg.mode === 'workspace') {
         if (WS.current && WS.currentFile) {
-          ensurePreviewSession(WS.current).then((sid) => {
+          ensurePreviewSession(WS.current).then(async (sid) => {
             // inline=1 keeps HTML renderable in the new tab instead of
             // force-downloading it (core serves dangerous MIME types inline
-            // only behind this opt-in, under a CSP sandbox).
-            window.open(rawFileUrl(sid, WS.currentFile, { inline: isHtmlFile(WS.currentFile) }),
-              '_blank', 'noopener');
+            // only behind this opt-in, under a CSP sandbox). HTML uses the
+            // path-shaped route so relative assets resolve in the new tab
+            // too, exactly like the in-panel preview.
+            const url = isHtmlFile(WS.currentFile)
+              ? await htmlPreviewUrl(sid, WS.currentFile, {})
+              : rawFileUrl(sid, WS.currentFile, {});
+            window.open(url, '_blank', 'noopener');
           }).catch(() => {});
           return;
         }
@@ -783,7 +866,9 @@
   }
 
   // ── preview routing (mirrors core's static/workspace.js format matrix) ───
-  // HTML      -> sandboxed iframe of /api/file/raw?inline=1
+  // HTML      -> sandboxed iframe of /api/workspace-files/<sid>/<rel>?inline=1
+  //              (path-shaped so relative assets resolve; falls back to
+  //              /api/file/raw?inline=1 on cores without that route)
   // images    -> <img>          PDF      -> iframe of /api/file/raw
   // audio     -> <audio>        video    -> <video>
   // markdown  -> core's renderMd (fallback: plain text)
@@ -903,10 +988,10 @@
     frame.className = 'hwx-extapp-iframe';
     frame.src = url;
     frame.setAttribute('title', titleRel || t('preview'));
-    // Same-origin /api/file/raw content. For HTML, core already serves
-    // &inline=1 with CSP `sandbox allow-scripts ...`; mirror it on the element
-    // and keep allow-same-origin OFF so the previewed file stays in an opaque
-    // origin.
+    // Same-origin /api/file/raw or /api/workspace-files content. For HTML,
+    // core already serves &inline=1 with CSP `sandbox allow-scripts ...`;
+    // mirror it on the element and keep allow-same-origin OFF so the
+    // previewed file stays in an opaque origin.
     //
     // PDF deliberately opts out of the element sandbox (opts.sandbox === false):
     // Chromium renders PDFs with its built-in viewer, and that viewer is
@@ -1236,7 +1321,12 @@
       if (HTML_FILE_RE.test(rel)) {
         const sid = await ensurePreviewSession(WS.current);
         if (gen !== WS.previewGen) return;
-        setPreviewFrame(rawFileUrl(sid, rel, { inline: true, bust: opts.bust }), rel);
+        // Path-shaped URL so relative CSS/JS/font references in the document
+        // resolve to sibling workspace files (probe falls back to the raw
+        // query route on cores without /api/workspace-files).
+        const url = await htmlPreviewUrl(sid, rel, opts);
+        if (gen !== WS.previewGen) return;
+        setPreviewFrame(url, rel);
       } else if (IMAGE_EXTS.has(ext)) {
         const sid = await ensurePreviewSession(WS.current);
         if (gen !== WS.previewGen) return;
