@@ -6,7 +6,8 @@ opt-in alternative (switch it in **Configure**):
 
 - **Workspace files** — browses the profile's trusted workspaces and previews
   local files, HTML first: a workspace switcher in the top-right corner, a
-  collapsible file list on the right side, and a sandboxed preview area.
+  collapsible file list on the right side, and a preview area (an embedded
+  browser view on desktop, a sandboxed frame on the web).
   Entering the panel auto-opens the first HTML file of the current workspace.
   With no saved config it starts on the server's **last workspace**
   (`/api/workspaces` → `last`).
@@ -44,7 +45,8 @@ mode works entirely same-origin against Desktop's own file APIs.
 - **工作区文件模式**：顶栏左侧显示应用名称、`工作区` 标签和切换下拉框；
   右侧是可折叠的文件列表；点击文件即可预览。进入面板时会自动打开当前
   工作区的第一个 HTML 文件（优先 `index.html`），并记住上次预览的文件。
-  支持的预览格式与 Desktop 原生工作区预览一致：HTML（沙箱 iframe）、图片、
+  支持的预览格式与 Desktop 原生工作区预览一致：HTML（桌面版为内嵌浏览器
+  webview，网页版为沙箱 iframe）、图片、
   PDF、音频、视频、Markdown、CSV/TSV 表格、代码/文本（语法高亮）、
   Word（.docx）、Excel（.xlsx/.xls，支持多工作表切换）、
   PowerPoint（.pptx，上一页/下一页翻页）。压缩包、安装包、字体、
@@ -84,12 +86,14 @@ HTML 预览支持**相对路径资源**（如 `<link href="style.css">`、同目
     names with an ellipsis)
   - clicking a file previews it, matching the native workspace preview's
     format matrix:
-    - `.html`/`.htm` render in a sandboxed iframe via
-      `GET /api/workspace-files/<sid>/<rel>?inline=1` — the same
-      directory-shaped route and server-side CSP sandbox as the native
-      preview, so relative CSS/JS/font references in the document resolve
-      to sibling workspace files (cores without that route fall back to
-      `GET /api/file/raw?…&inline=1`, where relative assets 404)
+    - `.html`/`.htm` render via `GET /api/workspace-files/<sid>/<rel>?inline=1`
+      — the same directory-shaped route as the native preview, so relative
+      CSS/JS/font references in the document resolve to sibling workspace
+      files (cores without that route fall back to
+      `GET /api/file/raw?…&inline=1`, where relative assets 404). On the
+      desktop the document renders in a real `<webview>` guest (same
+      hardened config as the native preview and Browser tabs); on the web,
+      or when the guest fails to load, in the sandboxed iframe
     - images (`png/jpg/jpeg/gif/svg/webp/ico/bmp`) in an `<img>`; PDFs in a
       framed viewer; audio and video with native controls
     - Markdown rendered with core's own `renderMd` (plain-text fallback)
@@ -140,8 +144,10 @@ Desktop page
        external mode:  <iframe src="<your URL>">
        workspace mode: workspace switcher (/api/workspaces)
                        + right file list (/api/list)
-                       + sandboxed <iframe src="/api/workspace-files/…?inline=1">
-                          (HTML; falls back to /api/file/raw?…&inline=1)
+                       + HTML preview: <webview src="/api/workspace-files/…?inline=1">
+                          on desktop; sandboxed <iframe src=…> on the web or
+                          on guest load failure (URL falls back to
+                          /api/file/raw?…&inline=1 on cores without the route)
   -> Settings → Extensions → External App Tab settings: { mode, url, label, workspace, lastFile }
   -> legacy fallback: localStorage hermes-ext-external-app
 ```
@@ -241,7 +247,22 @@ any app you embed as trusted: you opt in per-origin by allow-listing it via
 `HERMES_WEBUI_CSP_FRAME_EXTRA`, and cross-origin targets remain bounded by the
 same-origin policy.
 
-Workspace-mode HTML previews run in a stricter frame: `sandbox="allow-scripts
+On the desktop, workspace-mode HTML previews render in a real `<webview>`
+guest — the same hardened configuration as core's native workspace preview
+and Browser tabs: the app-scope `will-attach-webview` handler in
+`electron/main.js` forces a sandboxed renderer with no node/preload,
+http(s)-only sources, and the `persist:qagent-webview` partition, which is
+separate from the WebUI session's cookie jar. The guest therefore carries no
+`hermes_session` cookie; both raw routes embed `session_id` in the URL and
+are loopback-exempt, so the preview loads exactly like the system-browser
+"open in new tab" path — no new authority. Guest `target=_blank` popups are
+denied by main.js and rerouted into a Browser panel tab. If the guest fails
+to load (`did-fail-load`), the preview falls back to the iframe below. In
+plain web (browser) the `<webview>` element does not exist, so the iframe
+path is the only one.
+
+Workspace-mode HTML previews on the web (and the desktop fallback) run in a
+stricter frame: `sandbox="allow-scripts
 allow-popups allow-popups-to-escape-sandbox"` with **no**
 `allow-same-origin`, matching the server-side CSP sandbox core puts on
 `/api/file/raw?…&inline=1` responses. The previewed file executes scripts but
@@ -277,6 +298,9 @@ rendered via `textContent`, never as HTML.
   CSS/JS/font references 404 (the pre-existing behaviour)
 - external mode: the core `HERMES_WEBUI_CSP_FRAME_EXTRA` knob (PR #5091) for
   external origins
+- desktop HTML previews use the `<webview>` guest, gated on
+  `window.qagentElectron.webview` (the same primitive core's Browser tabs
+  use); plain-web and guest-fallback previews use the sandboxed iframe
 
 ## Verification
 
@@ -301,7 +325,8 @@ Manual verification:
 - workspace mode: the switcher lists the profile's workspaces; switching
   reloads the file list; entering the panel auto-opens the first HTML file
   (or `index.html` when present within the search bounds)
-- clicking an HTML file renders it in the sandboxed frame; a multi-file page
+- clicking an HTML file renders it (desktop: `<webview>` guest; web: the
+  sandboxed frame); a multi-file page
   (`demo/index.html` + `demo/style.css` + `demo/app.js` + a sibling font)
   previews with its stylesheet applied and its script running (relative
   assets load via `/api/workspace-files/…`); images/PDF/text
