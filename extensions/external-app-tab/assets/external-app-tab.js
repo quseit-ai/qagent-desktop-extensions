@@ -52,6 +52,20 @@
   // Preview sessions can be evicted (server restart / in-memory LRU); every
   // session-anchored call self-heals a 404 by re-minting the session once.
   //
+  // HTML preview renderer depends on the host, mirroring core's native
+  // workspace preview (static/workspace.js):
+  //   * Desktop (Electron) — a real <webview> guest (same engine as core's
+  //     workspace HTML preview and Browser tabs). The app-scope
+  //     will-attach-webview handler in electron/main.js hardens every guest:
+  //     sandboxed renderer, no node/preload, http(s)-only src, and a
+  //     persist:qagent-webview partition that never holds the WebUI session
+  //     cookie. Both raw routes below embed session_id in the URL and are
+  //     loopback-exempt, so the cookie-less guest loads them exactly like
+  //     the system-browser "open in new tab" path. A guest load failure
+  //     (did-fail-load) falls back to the iframe below.
+  //   * Plain web — the sandboxed <iframe> (WS_IFRAME_SANDBOX) as before;
+  //     the <webview> element only exists in Electron.
+  //
   // Pure DOM-injection + HermesExtensionSettings (with legacy localStorage fallback).
   // No backend of its own; workspace-mode fetches are same-origin WebUI API
   // calls (cookies + the page's global fetch CSRF patch apply automatically).
@@ -70,6 +84,14 @@
   // opaque origin and cannot read the parent page's cookies or storage.
   const WS_IFRAME_SANDBOX = 'allow-scripts allow-popups allow-popups-to-escape-sandbox';
   const HTML_FILE_RE = /\.html?$/i;
+
+  // Desktop gate, same primitive core's Browser tabs use
+  // (static/browser.js btFeatureEnabled): the Electron preload exposes
+  // window.qagentElectron.webview only in desktop builds. In plain web the
+  // <webview> element does not exist and HTML previews keep the iframe path.
+  function webviewSupported() {
+    return !!(window.qagentElectron && window.qagentElectron.webview);
+  }
 
   let overlayOpen = false;
 
@@ -225,7 +247,7 @@
       listFailed: 'Could not list workspace: {0}',
       emptyWorkspace: 'This workspace is empty.',
       selectFile: 'Select a file to preview.',
-      selectFileHint: 'HTML files render in a sandboxed frame; images, PDFs and text show inline.',
+      selectFileHint: 'HTML files render in an embedded browser on desktop (sandboxed frame on the web); images, PDFs and text show inline.',
       noHtml: 'No HTML files found in this workspace.',
       previewFailed: 'Preview failed: {0}',
       previewFailedPlain: 'Could not render this preview.',
@@ -246,8 +268,8 @@
       cspNote: 'To frame an external origin, the operator must allow it via ' +
         '<code>HERMES_WEBUI_CSP_FRAME_EXTRA</code>. Same-origin / loopback URLs work without it.',
       wsNote: 'Workspace mode browses the profile\'s trusted workspaces ' +
-        '(Settings → Workspaces) and previews local files in a sandboxed frame — same-origin, no CSP change needed. ' +
-        'Pick the workspace from the switcher inside the panel.',
+        '(Settings → Workspaces) and previews local files — HTML in an embedded browser on desktop, otherwise a sandboxed frame — ' +
+        'same-origin, no CSP change needed. Pick the workspace from the switcher inside the panel.',
       invalidUrl: 'Enter a valid http(s) URL (or leave blank to clear).',
       cancel: 'Cancel',
       save: 'Save',
@@ -274,7 +296,7 @@
       listFailed: '无法列出工作区：{0}',
       emptyWorkspace: '该工作区为空。',
       selectFile: '选择一个文件进行预览。',
-      selectFileHint: 'HTML 文件会渲染在沙箱 iframe 中；图片、PDF 和文本会内联显示。',
+      selectFileHint: '桌面版中 HTML 文件渲染于内嵌浏览器（webview），网页版为沙箱 iframe；图片、PDF 和文本会内联显示。',
       noHtml: '该工作区中没有找到 HTML 文件。',
       previewFailed: '预览失败：{0}',
       previewFailedPlain: '无法渲染该预览。',
@@ -294,8 +316,8 @@
       labelPlaceholder: '应用',
       cspNote: '如需内嵌外部来源，运维需通过 ' +
         '<code>HERMES_WEBUI_CSP_FRAME_EXTRA</code> 放行该来源。同源 / 回环地址无需额外配置。',
-      wsNote: '工作区模式会浏览当前配置文件的可信工作区（设置 → 工作区），并在沙箱 iframe 中预览本地文件——' +
-        '同源访问，无需修改 CSP。在工作区面板内顶部的下拉框切换工作区。',
+      wsNote: '工作区模式会浏览当前配置文件的可信工作区（设置 → 工作区）并预览本地文件——桌面版 HTML 渲染于内嵌浏览器（webview），' +
+        '其余为沙箱 iframe——同源访问，无需修改 CSP。在工作区面板内顶部的下拉框切换工作区。',
       invalidUrl: '请输入有效的 http(s) URL（或留空以清除）。',
       cancel: '取消',
       save: '保存',
@@ -1005,6 +1027,35 @@
     host.appendChild(frame);
   }
 
+  // Desktop HTML preview: render in a real <webview> guest — same engine
+  // core's workspace HTML preview and Browser tabs use (see the header
+  // note). Mirrors static/workspace.js _showHtmlWebviewPreview: absolute
+  // http(s) src (the app-scope will-attach-webview gate rejects anything
+  // else; the URL builders here already return absolute URLs), the shared
+  // persist:qagent-webview partition (main.js forces it on attach anyway),
+  // and NO allowpopups — a guest target=_blank is denied by main.js and
+  // rerouted into a Browser panel tab. Returns false (caller keeps the
+  // iframe path) when webviews are unavailable, i.e. plain web.
+  function setPreviewWebview(url, rel) {
+    if (!webviewSupported()) return false;
+    const host = clearPreviewDom();
+    if (!host) return false;
+    const v = document.createElement('webview');
+    v.className = 'hwx-extapp-webview';
+    v.setAttribute('src', url);
+    v.setAttribute('partition', 'persist:qagent-webview');
+    v.addEventListener('did-fail-load', (e) => {
+      // -3 = ERR_ABORTED (cancelled/superseded navigation) — routine, not an
+      // error. A guest already detached from the document was superseded by
+      // a newer preview; never clobber it with the fallback.
+      if (e.isMainFrame && e.errorCode !== -3 && v.isConnected) {
+        setPreviewFrame(url, rel);   // classic sandboxed-iframe fallback
+      }
+    });
+    host.appendChild(v);   // removing the element destroys the guest process
+    return true;
+  }
+
   function setPreviewMedia(kind, url, titleRel) {
     const wrap = document.createElement('div');
     wrap.className = 'hwx-extapp-media-view';
@@ -1326,7 +1377,9 @@
         // query route on cores without /api/workspace-files).
         const url = await htmlPreviewUrl(sid, rel, opts);
         if (gen !== WS.previewGen) return;
-        setPreviewFrame(url, rel);
+        // Desktop: real browser-engine <webview> guest (which itself falls
+        // back to the iframe on guest load failure); plain web: iframe.
+        if (!setPreviewWebview(url, rel)) setPreviewFrame(url, rel);
       } else if (IMAGE_EXTS.has(ext)) {
         const sid = await ensurePreviewSession(WS.current);
         if (gen !== WS.previewGen) return;
